@@ -1,12 +1,23 @@
-package auth
+package utils
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
+
+func GenerateSecureToken(length int) string {
+	bytes := make([]byte, length)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		panic("failed to generate secure token") // or log and handle differently
+	}
+	return hex.EncodeToString(bytes)
+}
 
 func GenerateJWT(userID string, duration time.Duration) (string, error) {
 
@@ -60,7 +71,7 @@ func VerifyJWT(tokenStr string) (string, error) {
 		}
 
 		return []byte(secret), nil
-	})	
+	})
 
 	if err != nil {
 		return "", fmt.Errorf("failed to parse or verify token: %w", err)
