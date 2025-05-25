@@ -1,6 +1,7 @@
 package auth
 
 import (
+	utils "habit_tracker/api/internal/tokens"
 	"net/http"
 	"strings"
 
@@ -19,7 +20,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
-		sub, err := VerifyJWT(tokenString)
+		sub, err := utils.VerifyJWT(tokenString)
 		if err != nil {
 			// Verification failed — abort with 401 and error message
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
