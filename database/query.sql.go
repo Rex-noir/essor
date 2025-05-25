@@ -129,7 +129,7 @@ func (q *Queries) GetRefreshTokenByToken(ctx context.Context, token string) (Ref
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, password, created_at
+SELECT id, email, password, created_at, username
 FROM users
 WHERE email = $1
 `
@@ -139,6 +139,7 @@ type GetUserByEmailRow struct {
 	Email     string
 	Password  string
 	CreatedAt pgtype.Timestamp
+	Username  string
 }
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error) {
@@ -149,6 +150,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEm
 		&i.Email,
 		&i.Password,
 		&i.CreatedAt,
+		&i.Username,
 	)
 	return i, err
 }
