@@ -23,16 +23,25 @@ type UserData struct {
 	Email    string `json:"email"`
 }
 
-type RegisterResponse struct {
+type SuccessResponse struct {
 	Data         UserData `json:"data"`
 	Token        string   `json:"token,omitempty"`
 	RefreshToken string   `json:"refresh_token,omitempty"`
 }
 
+type LoginRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=6"`
+}
+
 func RegisterRoutes(r *gin.RouterGroup, q *database.Queries) {
 	route := r.Group("/auth")
 
-	route.POST("/login", func(ctx *gin.Context) {})
+	route.POST("/login", func(ctx *gin.Context) {
+
+		
+
+	})
 
 	route.POST("/register", func(ctx *gin.Context) {
 		var req RegisterRequest
@@ -76,7 +85,7 @@ func RegisterRoutes(r *gin.RouterGroup, q *database.Queries) {
 			return
 		}
 
-		ctx.JSON(http.StatusCreated, RegisterResponse{
+		ctx.JSON(http.StatusCreated, SuccessResponse{
 			Data: UserData{
 				ID:       createdUser.ID.String(),
 				Username: createdUser.Username,
