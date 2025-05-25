@@ -11,6 +11,44 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const createRefreshToken = `-- name: CreateRefreshToken :one
+INSERT INTO refresh_tokens (
+    user_id, token, user_agent, ip_address, expires_at
+) VALUES (
+    $1, $2, $3, $4, $5
+)
+RETURNING id, user_id, token, user_agent, ip_address, created_at, expires_at
+`
+
+type CreateRefreshTokenParams struct {
+	UserID    pgtype.UUID
+	Token     string
+	UserAgent pgtype.Text
+	IpAddress pgtype.Text
+	ExpiresAt pgtype.Timestamptz
+}
+
+func (q *Queries) CreateRefreshToken(ctx context.Context, arg CreateRefreshTokenParams) (RefreshToken, error) {
+	row := q.db.QueryRow(ctx, createRefreshToken,
+		arg.UserID,
+		arg.Token,
+		arg.UserAgent,
+		arg.IpAddress,
+		arg.ExpiresAt,
+	)
+	var i RefreshToken
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Token,
+		&i.UserAgent,
+		&i.IpAddress,
+		&i.CreatedAt,
+		&i.ExpiresAt,
+	)
+	return i, err
+}
+
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
     username, email, password
@@ -36,6 +74,56 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Password,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const deleteExpiredRefreshTokens = `-- name: DeleteExpiredRefreshTokens :exec
+DELETE FROM refresh_tokens
+WHERE expires_at < now()
+`
+
+func (q *Queries) DeleteExpiredRefreshTokens(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, deleteExpiredRefreshTokens)
+	return err
+}
+
+const deleteRefreshTokenByToken = `-- name: DeleteRefreshTokenByToken :exec
+DELETE FROM refresh_tokens
+WHERE token = $1
+`
+
+func (q *Queries) DeleteRefreshTokenByToken(ctx context.Context, token string) error {
+	_, err := q.db.Exec(ctx, deleteRefreshTokenByToken, token)
+	return err
+}
+
+const deleteRefreshTokensByUserID = `-- name: DeleteRefreshTokensByUserID :exec
+DELETE FROM refresh_tokens
+WHERE user_id = $1
+`
+
+func (q *Queries) DeleteRefreshTokensByUserID(ctx context.Context, userID pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteRefreshTokensByUserID, userID)
+	return err
+}
+
+const getRefreshTokenByToken = `-- name: GetRefreshTokenByToken :one
+SELECT id, user_id, token, user_agent, ip_address, created_at, expires_at FROM refresh_tokens
+WHERE token = $1
+`
+
+func (q *Queries) GetRefreshTokenByToken(ctx context.Context, token string) (RefreshToken, error) {
+	row := q.db.QueryRow(ctx, getRefreshTokenByToken, token)
+	var i RefreshToken
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Token,
+		&i.UserAgent,
+		&i.IpAddress,
+		&i.CreatedAt,
+		&i.ExpiresAt,
 	)
 	return i, err
 }
@@ -82,6 +170,40 @@ func (q *Queries) GetUserById(ctx context.Context, id pgtype.UUID) (User, error)
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const listRefreshTokensByUser = `-- name: ListRefreshTokensByUser :many
+SELECT id, user_id, token, user_agent, ip_address, created_at, expires_at FROM refresh_tokens
+WHERE user_id = $1
+ORDER BY created_at DESC
+`
+
+func (q *Queries) ListRefreshTokensByUser(ctx context.Context, userID pgtype.UUID) ([]RefreshToken, error) {
+	rows, err := q.db.Query(ctx, listRefreshTokensByUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RefreshToken
+	for rows.Next() {
+		var i RefreshToken
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Token,
+			&i.UserAgent,
+			&i.IpAddress,
+			&i.CreatedAt,
+			&i.ExpiresAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listUsers = `-- name: ListUsers :many
