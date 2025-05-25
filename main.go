@@ -40,7 +40,10 @@ func main() {
 
 	// Register PING ROUTES
 	ping.RegisterRoutes(api)
-	auth.RegisterRoutes(api, queries)
+
+	// Register AUTH routes
+	authService := auth.NewAuthService(queries)
+	auth.RegisterRoutes(api, authService)
 
 	fmt.Printf("Server starting on port %s\n", cfg.ServerPort)
 	if err := router.Run(cfg.ServerPort); err != nil {
