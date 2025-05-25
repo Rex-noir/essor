@@ -40,6 +40,64 @@ func RegisterRoutes(r *gin.RouterGroup, q *database.Queries) {
 	route := r.Group("/auth")
 
 	route.POST("/login", func(ctx *gin.Context) {
+		var req LoginRequest
+
+		// Verify user password and email
+		if err := ctx.ShouldBindJSON(&req); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid input"})
+			return
+		}
+
+		req.Email = strings.ToLower(strings.TrimSpace(req.Email))
+		req.Password = strings.TrimSpace(req.Password)
+
+		user, err := q.GetUserByEmail(ctx.Request.Context(), req.Email)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid email or password"})
+		}
+
+		// Verify hashed password
+		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid email or password"})
+			return
+		}
+
+		newAccessToken, err := utils.GenerateJWT(user.ID.String(), time.Minute*5)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate access token"})
+			return
+		}
+
+		// generate access token for this instance
+		refreshToken := utils.GenerateSecureToken(64)
+		userAgent := ctx.GetHeader("User-Agent")
+		ipAddress := ctx.ClientIP()
+		expiresAt := time.Now().Add(7 * 24 * time.Hour)
+
+		params := database.CreateRefreshTokenParams{
+			UserID:    user.ID,
+			Token:     refreshToken,
+			UserAgent: pgtype.Text{String: userAgent, Valid: userAgent != ""}, // assuming nullable columns, use pointers
+			IpAddress: pgtype.Text{String: ipAddress, Valid: ipAddress != ""},
+			ExpiresAt: pgtype.Timestamptz{Time: expiresAt, Valid: true},
+		}
+		// Store refresh token inside database
+		createdRefreshToken, err := q.CreateRefreshToken(ctx.Request.Context(), params)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create refresh token"})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, AuthSuccessResponse{
+			Data: UserData{
+				ID:       user.ID.String(),
+				Username: user.Username,
+				Email:    user.Email,
+			},
+			Token:        newAccessToken,
+			RefreshToken: createdRefreshToken.Token,
+		})
 
 	})
 
