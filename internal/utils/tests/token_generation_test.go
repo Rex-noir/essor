@@ -1,8 +1,8 @@
-package tests
+package utils
 
 import (
 	"fmt"
-	utils "habit_tracker/api/internal/tokens"
+	"habit_tracker/api/internal/utils"
 	"os"
 	"testing"
 	"time"

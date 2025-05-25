@@ -1,7 +1,7 @@
 package auth
 
 import (
-	utils "habit_tracker/api/internal/tokens"
+	"habit_tracker/api/internal/utils"
 	"net/http"
 	"strings"
 

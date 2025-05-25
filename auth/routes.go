@@ -3,7 +3,7 @@ package auth
 import (
 	"fmt"
 	"habit_tracker/api/database"
-	utils "habit_tracker/api/internal/tokens"
+	"habit_tracker/api/internal/utils"
 	"net/http"
 	"strings"
 	"time"
