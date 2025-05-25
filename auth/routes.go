@@ -78,13 +78,6 @@ func RegisterRoutes(r *gin.RouterGroup, q *database.Queries) {
 		}
 
 		refreshToken := utils.GenerateSecureToken(64)
-		if err != nil {
-			// Log the error
-			fmt.Printf("Error generating refresh token for user %s: %v\n", createdUser.ID.String(), err)
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate refresh token"})
-			return
-		}
-
 		userAgent := ctx.GetHeader("User-Agent")
 		ipAddress := ctx.ClientIP()
 		expiresAt := time.Now().Add(7 * 24 * time.Hour)
