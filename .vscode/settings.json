@@ -1,0 +1,16 @@
+{
+  "plpgsqlLanguageServer.database": "mydb",
+  "plpgsqlLanguageServer.user": "acerex",
+  "plpgsqlLanguageServer.password": "root",
+  "plpgsqlLanguageServer.definitionFiles": [
+    // Support glob.
+    "**/*.sql",
+    "**/*.psql",
+    "**/*.pgsql"
+  ],
+  // The supported extention types are ['*.pgsql', '*.psql'].
+  // If you want to use this extension in '*.sql', add the following settings.
+  "files.associations": {
+    "*.sql": "postgres"
+  }
+}
