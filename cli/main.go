@@ -1,5 +1,7 @@
 package main
 
+import "habit_tracker/api/cli/cmd"
+
 func main() {
-	println("HELLO WORLD")
+	cmd.Execute()
 }
