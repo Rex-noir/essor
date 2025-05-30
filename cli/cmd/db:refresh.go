@@ -30,36 +30,32 @@ var dbRefreshCmd = &cobra.Command{
 			log.Fatalln("Error loading config:", err)
 		}
 
-		fmt.Printf("Dropping and recreating database %s...\n", cfg.DBName)
+		fmt.Printf("Dropping all tables in database %s...\n", cfg.DBName)
 
-		// Drop the database
-		dropCmd := exec.Command("psql",
+		dropTablesCmd := exec.Command("psql",
 			"-U", cfg.DBUser,
 			"-h", cfg.DBHost,
 			"-p", fmt.Sprintf("%d", cfg.DBPort),
-			"-c", fmt.Sprintf("DROP DATABASE IF EXISTS %s;", cfg.DBName),
+			"-d", cfg.DBName,
+			"-c", `
+					DO
+					$$
+					DECLARE
+						r RECORD;
+					BEGIN
+						FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+							EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
+						END LOOP;
+					END;
+					$$;
+				`,
 		)
-		dropCmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", cfg.DBPass))
-		dropCmd.Stdout = os.Stdout
-		dropCmd.Stderr = os.Stderr
+		dropTablesCmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", cfg.DBPass))
+		dropTablesCmd.Stdout = os.Stdout
+		dropTablesCmd.Stderr = os.Stderr
 
-		if err := dropCmd.Run(); err != nil {
-			log.Fatalf("Failed to drop database: %v\n", err)
-		}
-
-		// Create the database
-		createCmd := exec.Command("psql",
-			"-U", cfg.DBUser,
-			"-h", cfg.DBHost,
-			"-p", fmt.Sprintf("%d", cfg.DBPort),
-			"-c", fmt.Sprintf("CREATE DATABASE %s;", cfg.DBName),
-		)
-		createCmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", cfg.DBPass))
-		createCmd.Stdout = os.Stdout
-		createCmd.Stderr = os.Stderr
-
-		if err := createCmd.Run(); err != nil {
-			log.Fatalf("Failed to create database: %v\n", err)
+		if err := dropTablesCmd.Run(); err != nil {
+			log.Fatalf("Failed to drop tables: %v\n", err)
 		}
 
 		fmt.Println("Running tern migration...")
