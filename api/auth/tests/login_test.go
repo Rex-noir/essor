@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"habit_tracker/api/auth"
+	"habit_tracker/api/api/auth"
 	"habit_tracker/api/database"
 	"habit_tracker/api/internal/config"
 	"log"

@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"habit_tracker/api/auth"
+	"habit_tracker/api/api/auth"
+	"habit_tracker/api/api/ping"
 	"habit_tracker/api/database"
 	"habit_tracker/api/internal/config"
-	"habit_tracker/api/ping"
 	"log"
 	"time"
 
