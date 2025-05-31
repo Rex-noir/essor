@@ -5,9 +5,9 @@ package cmd
 
 import (
 	"context"
+	"essor/backend/database"
+	"essor/backend/internal/config"
 	"fmt"
-	"habit_tracker/api/database"
-	"habit_tracker/api/internal/config"
 	"log"
 	"os"
 	"path/filepath"

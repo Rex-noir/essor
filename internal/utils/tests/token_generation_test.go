@@ -1,8 +1,8 @@
 package utils
 
 import (
+	"essor/backend/internal/utils"
 	"fmt"
-	"habit_tracker/api/internal/utils"
 	"os"
 	"testing"
 	"time"

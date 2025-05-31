@@ -1,6 +1,6 @@
 package main
 
-import "habit_tracker/api/cli/cmd"
+import "essor/backend/cli/cmd"
 
 func main() {
 	cmd.Execute()

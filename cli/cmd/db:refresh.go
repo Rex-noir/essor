@@ -4,8 +4,8 @@ Copyright © 2025 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"essor/backend/internal/config"
 	"fmt"
-	"habit_tracker/api/internal/config"
 	"log"
 	"os"
 	"os/exec"

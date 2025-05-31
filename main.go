@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
+	"essor/backend/api/auth"
+	"essor/backend/api/ping"
+	"essor/backend/database"
+	"essor/backend/internal/config"
 	"fmt"
-	"habit_tracker/api/api/auth"
-	"habit_tracker/api/api/ping"
-	"habit_tracker/api/database"
-	"habit_tracker/api/internal/config"
 	"log"
 	"time"
 

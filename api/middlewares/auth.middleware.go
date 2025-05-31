@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"habit_tracker/api/internal/utils"
+	"essor/backend/internal/utils"
 	"net/http"
 	"strings"
 

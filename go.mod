@@ -1,4 +1,4 @@
-module habit_tracker/api
+module essor/backend
 
 go 1.23.5
 

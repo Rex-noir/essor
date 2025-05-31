@@ -2,9 +2,9 @@ package auth
 
 import (
 	"context"
+	"essor/backend/database"
+	"essor/backend/internal/utils"
 	"fmt"
-	"habit_tracker/api/database"
-	"habit_tracker/api/internal/utils" // Contains GenerateJWT, GenerateSecureToken
 	"log"
 	"strings"
 	"time"
