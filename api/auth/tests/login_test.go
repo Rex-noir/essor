@@ -2,13 +2,11 @@ package tests
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"essor/backend/api/auth"
 	"essor/backend/database"
-	"essor/backend/internal/config"
 
-	_ "essor/backend/internal/utils/test-utils"
+	testutils "essor/backend/internal/utils/test-utils"
 	"fmt"
 	"log"
 	"net/http"
@@ -33,25 +31,8 @@ func setUpRouter(q *database.Queries) *gin.Engine {
 
 var testQueries *database.Queries
 
-func setupTestDB() *database.Queries {
-	cfg, err := config.LoadConfig()
-	if err != nil {
-		log.Fatalf("Failed to load config: %v", err)
-	}
-
-	dbCtx, dbCancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer dbCancel()
-
-	dbPool, err := database.ConnectDB(dbCtx, cfg.GetDBConnString())
-	if err != nil {
-		log.Fatalf("Failed to connect to DB: %v", err)
-	}
-
-	return database.New(dbPool)
-}
-
 func TestMain(m *testing.M) {
-	testQueries = setupTestDB()
+	testQueries = testutils.SetupTestDB()
 	m.Run()
 }
 

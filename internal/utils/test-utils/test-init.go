@@ -1,9 +1,13 @@
 package testutils
 
 import (
+	"context"
+	"essor/backend/database"
+	"essor/backend/internal/config"
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -39,4 +43,21 @@ func findRootDir() string {
 	}
 
 	return ""
+}
+
+func SetupTestDB() *database.Queries {
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("Failed to load config: %v", err)
+	}
+
+	dbCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	db, err := database.ConnectDB(dbCtx, cfg.GetDBConnString())
+	if err != nil {
+		log.Fatalf("Failed to connect to DB: %v", err)
+	}
+
+	return database.New(db)
 }
