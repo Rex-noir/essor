@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"essor/backend/internal/utils"
+	utils "essor/backend/internal/utils/token"
 	"net/http"
 	"strings"
 

@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 	"essor/backend/database"
-	"essor/backend/internal/utils"
+	utils "essor/backend/internal/utils/token"
 	"fmt"
 	"log"
 	"strings"

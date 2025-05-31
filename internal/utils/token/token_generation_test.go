@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"essor/backend/internal/utils"
 	"fmt"
 	"os"
 	"testing"
@@ -22,7 +21,7 @@ func TestGenerateJWT(t *testing.T) {
 	userId := "user123"
 	duration := time.Hour
 
-	tokenStr, err := utils.GenerateJWT(userId, duration)
+	tokenStr, err := GenerateJWT(userId, duration)
 
 	assert.NoError(err)
 	assert.NotEmpty(tokenStr)
@@ -58,7 +57,7 @@ func TestGenerateJWT_ExpiredToken(t *testing.T) {
 	userId := "user123"
 	duration := time.Second // token expires in 1 second
 
-	tokenStr, err := utils.GenerateJWT(userId, duration)
+	tokenStr, err := GenerateJWT(userId, duration)
 	assert.NoError(err)
 	assert.NotEmpty(tokenStr)
 
@@ -87,23 +86,23 @@ func TestVerifyJWT(t *testing.T) {
 	userId := "user123"
 
 	t.Run("Valid token", func(t *testing.T) {
-		tokenStr, err := utils.GenerateJWT(userId, time.Hour)
+		tokenStr, err := GenerateJWT(userId, time.Hour)
 		assert.NoError(err)
 		assert.NotEmpty(tokenStr)
 
-		verifiedUserId, err := utils.VerifyJWT(tokenStr)
+		verifiedUserId, err := VerifyJWT(tokenStr)
 		assert.NoError(err)
 		assert.Equal(userId, verifiedUserId)
 	})
 
 	t.Run("expired tokens", func(t *testing.T) {
-		tokenStr, err := utils.GenerateJWT(userId, time.Second)
+		tokenStr, err := GenerateJWT(userId, time.Second)
 		assert.NoError(err)
 		assert.NotEmpty(tokenStr)
 
 		time.Sleep(2 * time.Second)
 
-		verifiedUserId, err := utils.VerifyJWT(tokenStr)
+		verifiedUserId, err := VerifyJWT(tokenStr)
 		assert.Error(err)
 		assert.Contains(err.Error(), "token is expired")
 		assert.Empty(verifiedUserId)
@@ -111,14 +110,14 @@ func TestVerifyJWT(t *testing.T) {
 
 	t.Run("tampered token", func(t *testing.T) {
 		// Generate a valid token
-		tokenStr, err := utils.GenerateJWT(userId, time.Hour)
+		tokenStr, err := GenerateJWT(userId, time.Hour)
 		assert.NoError(err)
 		assert.NotEmpty(tokenStr)
 
 		// Tamper the token by changing one character (simulate invalid signature)
 		tamperedToken := tokenStr[:len(tokenStr)-1] + "X"
 
-		verifiedUserId, err := utils.VerifyJWT(tamperedToken)
+		verifiedUserId, err := VerifyJWT(tamperedToken)
 		assert.Error(err)
 		assert.Contains(err.Error(), "signature is invalid")
 		assert.Empty(verifiedUserId)
