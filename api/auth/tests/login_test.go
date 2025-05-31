@@ -7,6 +7,8 @@ import (
 	"essor/backend/api/auth"
 	"essor/backend/database"
 	"essor/backend/internal/config"
+
+	_ "essor/backend/internal/utils/test-utils"
 	"fmt"
 	"log"
 	"net/http"
@@ -15,7 +17,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -50,10 +51,8 @@ func setupTestDB() *database.Queries {
 }
 
 func TestMain(m *testing.M) {
-	godotenv.Load("../../.env")
 	testQueries = setupTestDB()
 	m.Run()
-
 }
 
 func TestRegisterAndLoginFlow(t *testing.T) {
