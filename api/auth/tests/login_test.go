@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"essor/backend/api/auth"
 	"essor/backend/database"
-
 	testutils "essor/backend/internal/utils/test-utils"
+
 	"fmt"
 	"log"
 	"net/http"
