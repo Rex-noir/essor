@@ -8,6 +8,50 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Habit struct {
+	ID             pgtype.UUID
+	UserID         pgtype.UUID
+	CategoryID     pgtype.UUID
+	Name           string
+	Description    pgtype.Text
+	HabitType      string
+	Unit           pgtype.Text
+	TargetValue    pgtype.Numeric
+	TargetOperator pgtype.Text
+	Frequency      pgtype.Text
+	ActiveDays     []int32
+	IsActive       pgtype.Bool
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+	DeletedAt      pgtype.Timestamptz
+	SyncVersion    pgtype.Int8
+}
+
+type HabitCategory struct {
+	ID          pgtype.UUID
+	UserID      pgtype.UUID
+	Name        string
+	Color       pgtype.Text
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+	DeletedAt   pgtype.Timestamptz
+	SyncVersion pgtype.Int8
+}
+
+type HabitEntry struct {
+	ID          pgtype.UUID
+	HabitID     pgtype.UUID
+	UserID      pgtype.UUID
+	EntryDate   pgtype.Date
+	Completed   pgtype.Bool
+	Value       pgtype.Numeric
+	Notes       pgtype.Text
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+	DeletedAt   pgtype.Timestamptz
+	SyncVersion pgtype.Int8
+}
+
 type RefreshToken struct {
 	ID        pgtype.UUID
 	UserID    pgtype.UUID
@@ -18,11 +62,21 @@ type RefreshToken struct {
 	ExpiresAt pgtype.Timestamptz
 }
 
+type SyncToken struct {
+	ID              pgtype.UUID
+	UserID          pgtype.UUID
+	DeviceID        string
+	LastSyncVersion pgtype.Int8
+	CreatedAt       pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
+}
+
 type User struct {
-	ID        pgtype.UUID
-	Username  string
-	Email     string
-	Password  string
-	CreatedAt pgtype.Timestamp
-	UpdatedAt pgtype.Timestamp
+	ID         pgtype.UUID
+	Username   string
+	Email      string
+	Password   string
+	CreatedAt  pgtype.Timestamp
+	UpdatedAt  pgtype.Timestamp
+	LastSyncAt pgtype.Timestamptz
 }

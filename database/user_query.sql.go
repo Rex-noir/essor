@@ -17,7 +17,7 @@ INSERT INTO users (
 ) VALUES (
     $1, $2, $3
 )
-RETURNING id, username, email, password, created_at, updated_at
+RETURNING id, username, email, password, created_at, updated_at, last_sync_at
 `
 
 type CreateUserParams struct {
@@ -36,6 +36,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Password,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.LastSyncAt,
 	)
 	return i, err
 }
@@ -68,7 +69,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEm
 }
 
 const getUserById = `-- name: GetUserById :one
-SELECT id, username, email, password, created_at, updated_at FROM users
+SELECT id, username, email, password, created_at, updated_at, last_sync_at FROM users
 WHERE  id = $1 LIMIT 1
 `
 
@@ -82,12 +83,13 @@ func (q *Queries) GetUserById(ctx context.Context, id pgtype.UUID) (User, error)
 		&i.Password,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.LastSyncAt,
 	)
 	return i, err
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, username, email, password, created_at, updated_at FROM users
+SELECT id, username, email, password, created_at, updated_at, last_sync_at FROM users
 ORDER BY created_at
 `
 
@@ -107,6 +109,7 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 			&i.Password,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.LastSyncAt,
 		); err != nil {
 			return nil, err
 		}
