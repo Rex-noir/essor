@@ -1,6 +1,3 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -20,9 +17,10 @@ var (
 
 // new:featCmd represents the new:feat command
 var newFeatCmd = &cobra.Command{
-	Use:   "new:feat",
+	Use:   "new:feat [name]",
 	Short: "Add new feature to the project.",
 	Long:  `This will write up new feature inside the specified application. Default is api.`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		featureName := args[0]
 		target := "api"
@@ -56,5 +54,4 @@ func init() {
 
 	newFeatCmd.Flags().BoolVar(&apiFlag, "api", false, "Create feature in api module")
 	newFeatCmd.Flags().BoolVar(&databaseFlag, "database", false, "Create feature in database module")
-
 }
