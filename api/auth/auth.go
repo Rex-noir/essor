@@ -2,7 +2,9 @@ package auth
 
 import (
 	"context"
+	"log"
 	"net/http"
+	"strings"
 
 	// Only needed for time.Minute/Hour constants for JWT generation
 	"github.com/gin-gonic/gin"
@@ -118,12 +120,17 @@ func refreshHandler(service AuthService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		refreshToken, err := ctx.Cookie("refresh_token")
 		if err != nil || refreshToken == "" {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "missing or invalid refresh token"})
-			return
+			refreshToken = ctx.GetHeader("Authorization")
+			if refreshToken == "" {
+				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "missing or invalid refresh token"})
+				return
+			}
 		}
+		refreshToken = strings.TrimPrefix(refreshToken, "Bearer ")
 
 		resp, err := service.RefreshToken(ctx.Request.Context(), refreshToken, ctx.GetHeader("User-Agent"), ctx.ClientIP(), ctx.GetHeader("Device-ID"))
 		if err != nil {
+			log.Printf("Error refreshing token: %v", err)
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "invalid refresh token"})
 			return
 		}
