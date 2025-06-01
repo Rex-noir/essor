@@ -17,7 +17,7 @@ INSERT INTO refresh_tokens (
 ) VALUES (
     $1, $2, $3, $4, $5
 )
-RETURNING id, user_id, token, user_agent, ip_address, created_at, expires_at
+RETURNING id, user_id, token, user_agent, device_id, ip_address, created_at, expires_at
 `
 
 type CreateRefreshTokenParams struct {
@@ -42,6 +42,7 @@ func (q *Queries) CreateRefreshToken(ctx context.Context, arg CreateRefreshToken
 		&i.UserID,
 		&i.Token,
 		&i.UserAgent,
+		&i.DeviceID,
 		&i.IpAddress,
 		&i.CreatedAt,
 		&i.ExpiresAt,
@@ -69,6 +70,31 @@ func (q *Queries) DeleteRefreshTokenByToken(ctx context.Context, token string) e
 	return err
 }
 
+const deleteRefreshTokenByTokenAndDeviceId = `-- name: DeleteRefreshTokenByTokenAndDeviceId :exec
+DELETE FROM refresh_tokens
+WHERE token = $1 AND device_id = $2
+`
+
+type DeleteRefreshTokenByTokenAndDeviceIdParams struct {
+	Token    string
+	DeviceID string
+}
+
+func (q *Queries) DeleteRefreshTokenByTokenAndDeviceId(ctx context.Context, arg DeleteRefreshTokenByTokenAndDeviceIdParams) error {
+	_, err := q.db.Exec(ctx, deleteRefreshTokenByTokenAndDeviceId, arg.Token, arg.DeviceID)
+	return err
+}
+
+const deleteRefreshTokensByDeviceId = `-- name: DeleteRefreshTokensByDeviceId :exec
+DELETE FROM refresh_tokens
+WHERE device_id = $1
+`
+
+func (q *Queries) DeleteRefreshTokensByDeviceId(ctx context.Context, deviceID string) error {
+	_, err := q.db.Exec(ctx, deleteRefreshTokensByDeviceId, deviceID)
+	return err
+}
+
 const deleteRefreshTokensByUserID = `-- name: DeleteRefreshTokensByUserID :exec
 DELETE FROM refresh_tokens
 WHERE user_id = $1
@@ -79,8 +105,51 @@ func (q *Queries) DeleteRefreshTokensByUserID(ctx context.Context, userID pgtype
 	return err
 }
 
+const expireAllTokensExceptDeviceId = `-- name: ExpireAllTokensExceptDeviceId :exec
+UPDATE refresh_tokens
+SET expires_at = NOW()
+WHERE user_id = $1 AND device_id != $2
+`
+
+type ExpireAllTokensExceptDeviceIdParams struct {
+	UserID   pgtype.UUID
+	DeviceID string
+}
+
+func (q *Queries) ExpireAllTokensExceptDeviceId(ctx context.Context, arg ExpireAllTokensExceptDeviceIdParams) error {
+	_, err := q.db.Exec(ctx, expireAllTokensExceptDeviceId, arg.UserID, arg.DeviceID)
+	return err
+}
+
+const expireRefreshTokenByTokenWithDevceId = `-- name: ExpireRefreshTokenByTokenWithDevceId :exec
+UPDATE refresh_tokens
+SET expires_at = NOW()
+WHERE token = $1 AND device_id = $2
+`
+
+type ExpireRefreshTokenByTokenWithDevceIdParams struct {
+	Token    string
+	DeviceID string
+}
+
+func (q *Queries) ExpireRefreshTokenByTokenWithDevceId(ctx context.Context, arg ExpireRefreshTokenByTokenWithDevceIdParams) error {
+	_, err := q.db.Exec(ctx, expireRefreshTokenByTokenWithDevceId, arg.Token, arg.DeviceID)
+	return err
+}
+
+const expireRefreshTokensByDeviceId = `-- name: ExpireRefreshTokensByDeviceId :exec
+UPDATE refresh_tokens
+SET expires_at = NOW()
+WHERE device_id = $1
+`
+
+func (q *Queries) ExpireRefreshTokensByDeviceId(ctx context.Context, deviceID string) error {
+	_, err := q.db.Exec(ctx, expireRefreshTokensByDeviceId, deviceID)
+	return err
+}
+
 const getRefreshTokenByToken = `-- name: GetRefreshTokenByToken :one
-SELECT id, user_id, token, user_agent, ip_address, created_at, expires_at FROM refresh_tokens
+SELECT id, user_id, token, user_agent, device_id, ip_address, created_at, expires_at FROM refresh_tokens
 WHERE token = $1
 `
 
@@ -92,6 +161,33 @@ func (q *Queries) GetRefreshTokenByToken(ctx context.Context, token string) (Ref
 		&i.UserID,
 		&i.Token,
 		&i.UserAgent,
+		&i.DeviceID,
+		&i.IpAddress,
+		&i.CreatedAt,
+		&i.ExpiresAt,
+	)
+	return i, err
+}
+
+const getRefreshTokenByTokenAndDeviceId = `-- name: GetRefreshTokenByTokenAndDeviceId :one
+SELECT id, user_id, token, user_agent, device_id, ip_address, created_at, expires_at FROM refresh_tokens
+WHERE token = $1 AND device_id = $2
+`
+
+type GetRefreshTokenByTokenAndDeviceIdParams struct {
+	Token    string
+	DeviceID string
+}
+
+func (q *Queries) GetRefreshTokenByTokenAndDeviceId(ctx context.Context, arg GetRefreshTokenByTokenAndDeviceIdParams) (RefreshToken, error) {
+	row := q.db.QueryRow(ctx, getRefreshTokenByTokenAndDeviceId, arg.Token, arg.DeviceID)
+	var i RefreshToken
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Token,
+		&i.UserAgent,
+		&i.DeviceID,
 		&i.IpAddress,
 		&i.CreatedAt,
 		&i.ExpiresAt,
@@ -100,7 +196,7 @@ func (q *Queries) GetRefreshTokenByToken(ctx context.Context, token string) (Ref
 }
 
 const listRefreshTokensByUser = `-- name: ListRefreshTokensByUser :many
-SELECT id, user_id, token, user_agent, ip_address, created_at, expires_at FROM refresh_tokens
+SELECT id, user_id, token, user_agent, device_id, ip_address, created_at, expires_at FROM refresh_tokens
 WHERE user_id = $1
 ORDER BY created_at DESC
 `
@@ -119,6 +215,7 @@ func (q *Queries) ListRefreshTokensByUser(ctx context.Context, userID pgtype.UUI
 			&i.UserID,
 			&i.Token,
 			&i.UserAgent,
+			&i.DeviceID,
 			&i.IpAddress,
 			&i.CreatedAt,
 			&i.ExpiresAt,
@@ -131,4 +228,59 @@ func (q *Queries) ListRefreshTokensByUser(ctx context.Context, userID pgtype.UUI
 		return nil, err
 	}
 	return items, nil
+}
+
+const listRefreshTokensByUserAndDeviceId = `-- name: ListRefreshTokensByUserAndDeviceId :many
+SELECT id, user_id, token, user_agent, device_id, ip_address, created_at, expires_at FROM refresh_tokens
+WHERE user_id = $1 AND device_id = $2
+ORDER BY created_at DESC
+`
+
+type ListRefreshTokensByUserAndDeviceIdParams struct {
+	UserID   pgtype.UUID
+	DeviceID string
+}
+
+func (q *Queries) ListRefreshTokensByUserAndDeviceId(ctx context.Context, arg ListRefreshTokensByUserAndDeviceIdParams) ([]RefreshToken, error) {
+	rows, err := q.db.Query(ctx, listRefreshTokensByUserAndDeviceId, arg.UserID, arg.DeviceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RefreshToken
+	for rows.Next() {
+		var i RefreshToken
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Token,
+			&i.UserAgent,
+			&i.DeviceID,
+			&i.IpAddress,
+			&i.CreatedAt,
+			&i.ExpiresAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const revokeAllTokensExceptDeviceId = `-- name: RevokeAllTokensExceptDeviceId :exec
+DELETE FROM refresh_tokens
+WHERE user_id = $1 AND device_id != $2
+`
+
+type RevokeAllTokensExceptDeviceIdParams struct {
+	UserID   pgtype.UUID
+	DeviceID string
+}
+
+func (q *Queries) RevokeAllTokensExceptDeviceId(ctx context.Context, arg RevokeAllTokensExceptDeviceIdParams) error {
+	_, err := q.db.Exec(ctx, revokeAllTokensExceptDeviceId, arg.UserID, arg.DeviceID)
+	return err
 }

@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     token TEXT NOT NULL UNIQUE,
     user_agent TEXT,
-    device_id TEXT,
+    device_id TEXT NOT NULL,
     ip_address TEXT,
     created_at TIMESTAMPTZ DEFAULT now(),
     expires_at TIMESTAMPTZ NOT NULL

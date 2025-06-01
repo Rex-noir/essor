@@ -26,3 +26,39 @@ WHERE user_id = $1;
 -- name: DeleteExpiredRefreshTokens :exec
 DELETE FROM refresh_tokens
 WHERE expires_at < now();
+
+-- name: ExpireRefreshTokenByTokenWithDevceId :exec
+UPDATE refresh_tokens
+SET expires_at = NOW()
+WHERE token = $1 AND device_id = $2;
+
+-- name: GetRefreshTokenByTokenAndDeviceId :one
+SELECT * FROM refresh_tokens
+WHERE token = $1 AND device_id = $2;
+
+-- name: DeleteRefreshTokenByTokenAndDeviceId :exec
+DELETE FROM refresh_tokens
+WHERE token = $1 AND device_id = $2;
+
+-- name: ListRefreshTokensByUserAndDeviceId :many
+SELECT * FROM refresh_tokens
+WHERE user_id = $1 AND device_id = $2
+ORDER BY created_at DESC;
+
+-- name: ExpireRefreshTokensByDeviceId :exec
+UPDATE refresh_tokens
+SET expires_at = NOW()
+WHERE device_id = $1;
+
+-- name: DeleteRefreshTokensByDeviceId :exec
+DELETE FROM refresh_tokens
+WHERE device_id = $1;
+
+-- name: RevokeAllTokensExceptDeviceId :exec
+DELETE FROM refresh_tokens
+WHERE user_id = $1 AND device_id != $2;
+
+-- name: ExpireAllTokensExceptDeviceId :exec
+UPDATE refresh_tokens
+SET expires_at = NOW()
+WHERE user_id = $1 AND device_id != $2;
