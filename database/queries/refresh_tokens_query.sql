@@ -1,14 +1,14 @@
 -- name: CreateRefreshToken :one
 INSERT INTO refresh_tokens (
-    user_id, token, user_agent, ip_address, expires_at
+    user_id, token, user_agent, ip_address, expires_at,device_id
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1, $2, $3, $4, $5, $6
 )
 RETURNING *;
 
 -- name: GetRefreshTokenByToken :one
 SELECT * FROM refresh_tokens
-WHERE token = $1;
+WHERE token = $1 AND expires_at > NOW();
 
 -- name: ListRefreshTokensByUser :many
 SELECT * FROM refresh_tokens
