@@ -66,6 +66,7 @@ func TestRegisterAndLoginFlow(t *testing.T) {
 	assert.Equal(t, email, regResp.Data.Email)
 	assert.NotEmpty(t, regResp.Token)
 	assert.NotEmpty(t, regResp.RefreshToken)
+	assert.NotEmpty(t, regResp.DeviceID)
 
 	loginPayload := map[string]string{
 		"email":    email,
