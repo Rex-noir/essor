@@ -121,19 +121,19 @@ func (q *Queries) ExpireAllTokensExceptDeviceId(ctx context.Context, arg ExpireA
 	return err
 }
 
-const expireRefreshTokenByTokenWithDevceId = `-- name: ExpireRefreshTokenByTokenWithDevceId :exec
+const expireRefreshTokenByTokenWithDeviceId = `-- name: ExpireRefreshTokenByTokenWithDeviceId :exec
 UPDATE refresh_tokens
 SET expires_at = NOW()
 WHERE token = $1 AND device_id = $2
 `
 
-type ExpireRefreshTokenByTokenWithDevceIdParams struct {
+type ExpireRefreshTokenByTokenWithDeviceIdParams struct {
 	Token    string
 	DeviceID string
 }
 
-func (q *Queries) ExpireRefreshTokenByTokenWithDevceId(ctx context.Context, arg ExpireRefreshTokenByTokenWithDevceIdParams) error {
-	_, err := q.db.Exec(ctx, expireRefreshTokenByTokenWithDevceId, arg.Token, arg.DeviceID)
+func (q *Queries) ExpireRefreshTokenByTokenWithDeviceId(ctx context.Context, arg ExpireRefreshTokenByTokenWithDeviceIdParams) error {
+	_, err := q.db.Exec(ctx, expireRefreshTokenByTokenWithDeviceId, arg.Token, arg.DeviceID)
 	return err
 }
 

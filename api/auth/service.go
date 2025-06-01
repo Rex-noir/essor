@@ -204,3 +204,16 @@ func (s *authService) ClearAuthCookies(ctx *gin.Context) {
 	ctx.SetCookie("access_token", "", -1, "/", s.config.CookieDomain, s.config.CookieSecure, s.config.CookieHTTPOnly)
 	ctx.SetCookie("refresh_token", "", -1, "/", s.config.CookieDomain, s.config.CookieSecure, s.config.CookieHTTPOnly)
 }
+
+func (s *authService) LogoutUser(ctx *gin.Context, deviceId, refreshToken string) error {
+	// Expire token
+	err := s.queries.ExpireRefreshTokenByTokenWithDeviceId(ctx, database.ExpireRefreshTokenByTokenWithDeviceIdParams{
+		Token:    refreshToken,
+		DeviceID: deviceId,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

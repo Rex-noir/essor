@@ -57,6 +57,7 @@ type RefreshToken struct {
 	UserID    pgtype.UUID
 	Token     string
 	UserAgent pgtype.Text
+	DeviceID  string
 	IpAddress pgtype.Text
 	CreatedAt pgtype.Timestamptz
 	ExpiresAt pgtype.Timestamptz

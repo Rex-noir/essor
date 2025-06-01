@@ -39,6 +39,7 @@ type AuthService interface {
 	RefreshToken(ctx context.Context, token, userAgent, ipAddress string) (*AuthSuccessResponse, error)
 	SetAuthCookies(ctx *gin.Context, token, refreshToken string)
 	ClearAuthCookies(ctx *gin.Context)
+	LogoutUser(ctx *gin.Context, deviceId, refreshToken string) error
 }
 
 func RegisterRoutes(r *gin.RouterGroup, service AuthService) { // Now takes an AuthService interface
@@ -47,6 +48,7 @@ func RegisterRoutes(r *gin.RouterGroup, service AuthService) { // Now takes an A
 	route.POST("/login", loginHandler(service))
 	route.POST("/register", registerHandler(service))
 	route.POST("/refresh", refreshHandler(service))
+	route.POST("/logout", logoutHandler(service))
 
 }
 
@@ -125,5 +127,31 @@ func refreshHandler(service AuthService) gin.HandlerFunc {
 		}
 
 		ctx.JSON(http.StatusOK, resp)
+	}
+}
+
+func logoutHandler(service AuthService) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		refreshToken, err := ctx.Cookie("refresh_token")
+		if err != nil || refreshToken == "" {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "missing or invalid refresh token"})
+			return
+		}
+
+		deviceId := ctx.GetHeader("Device-ID")
+		if deviceId == "" {
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": "missing device ID"})
+			return
+		}
+
+		err = service.LogoutUser(ctx, deviceId, refreshToken)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "invalid refresh token"})
+			return
+		} else {
+			service.ClearAuthCookies(ctx)
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{"message": "successfully logged out"})
 	}
 }

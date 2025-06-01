@@ -27,7 +27,7 @@ WHERE user_id = $1;
 DELETE FROM refresh_tokens
 WHERE expires_at < now();
 
--- name: ExpireRefreshTokenByTokenWithDevceId :exec
+-- name: ExpireRefreshTokenByTokenWithDeviceId :exec
 UPDATE refresh_tokens
 SET expires_at = NOW()
 WHERE token = $1 AND device_id = $2;
