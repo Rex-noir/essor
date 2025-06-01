@@ -100,3 +100,60 @@ func TestRegisterAndLoginFlow(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 
 }
+
+func TestRefreshTokenFlow(t *testing.T) {
+	email := fmt.Sprintf("user%d@example.com", time.Now().UnixNano())
+	registerPayload := auth.RegisterRequest{
+		Email:    email,
+		Password: "password",
+		Username: "testuser",
+	}
+
+	jsonData, err := json.Marshal(registerPayload)
+	if err != nil {
+		log.Fatalf("Failed to marshal JSON payload: %v", err)
+	}
+	req := httptest.NewRequest(http.MethodPost, "/api/auth/register", bytes.NewReader(jsonData))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	var registerResponse auth.AuthSuccessResponse
+	err = json.Unmarshal(w.Body.Bytes(), &registerResponse)
+
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusCreated, w.Code)
+	assert.Equal(t, "testuser", registerResponse.Data.Username)
+
+	// refresh token inside database
+	refreshToken := registerResponse.RefreshToken
+	storedRefreshToken, err := testQueries.GetRefreshTokenByTokenAndDeviceId(req.Context(), database.GetRefreshTokenByTokenAndDeviceIdParams{
+		Token:    refreshToken,
+		DeviceID: registerResponse.DeviceID,
+	})
+	if err != nil {
+		log.Fatalf("Failed to get refresh token: %v", err)
+	}
+	assert.Equal(t, refreshToken, storedRefreshToken.Token)
+
+	// refresh the token and make sure the new token is not the same
+	var refreshResponse auth.AuthSuccessResponse
+	req = httptest.NewRequest(http.MethodPost, "/api/auth/refresh", nil)
+	req.Header.Set("Content-Type", "application/json")
+
+	req.Header.Set("Authorization", "Bearer "+refreshToken)
+	req.Header.Set("Device-ID", registerResponse.DeviceID)
+	w = httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	err = json.Unmarshal(w.Body.Bytes(), &refreshResponse)
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.NotEqual(t, refreshToken, refreshResponse.RefreshToken)
+
+	// Make sure old token is not still inside database
+	result, err := testQueries.GetRefreshTokenByToken(req.Context(), refreshToken)
+	assert.Error(t, err)
+	assert.Empty(t, result)
+
+}
