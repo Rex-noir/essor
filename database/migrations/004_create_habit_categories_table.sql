@@ -7,6 +7,8 @@ CREATE TABLE habit_categories (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     deleted_at TIMESTAMP WITH TIME ZONE NULL,
     sync_version BIGINT DEFAULT 1
+
+    UNIQUE(user_id, name)
 )
 ---- create above / drop below ----
 DROP TABLE IF EXISTS habit_categories;
