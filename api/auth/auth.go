@@ -31,12 +31,13 @@ type AuthSuccessResponse struct {
 	Data         UserData `json:"data"`
 	Token        string   `json:"token,omitempty"`
 	RefreshToken string   `json:"refresh_token,omitempty"`
+	DeviceID     string   `json:"device_id,omitempty"`
 }
 
 type AuthService interface {
 	RegisterUser(ctx context.Context, req RegisterRequest, userAgent, ipAddress string) (*AuthSuccessResponse, error)
-	LoginUser(ctx context.Context, req LoginRequest, userAgent, ipAddress string) (*AuthSuccessResponse, error)
-	RefreshToken(ctx context.Context, token, userAgent, ipAddress string) (*AuthSuccessResponse, error)
+	LoginUser(ctx context.Context, req LoginRequest, userAgent, ipAddress string, deviceId string) (*AuthSuccessResponse, error)
+	RefreshToken(ctx context.Context, token, userAgent, ipAddress string, deviceId string) (*AuthSuccessResponse, error)
 	SetAuthCookies(ctx *gin.Context, token, refreshToken string)
 	ClearAuthCookies(ctx *gin.Context)
 	LogoutUser(ctx *gin.Context, deviceId, refreshToken string) error
@@ -65,6 +66,7 @@ func loginHandler(service AuthService) gin.HandlerFunc {
 			req,
 			ctx.GetHeader("User-Agent"),
 			ctx.ClientIP(),
+			ctx.GetHeader("Device-ID"),
 		)
 
 		if err != nil {
@@ -120,7 +122,7 @@ func refreshHandler(service AuthService) gin.HandlerFunc {
 			return
 		}
 
-		resp, err := service.RefreshToken(ctx.Request.Context(), refreshToken, ctx.GetHeader("User-Agent"), ctx.ClientIP())
+		resp, err := service.RefreshToken(ctx.Request.Context(), refreshToken, ctx.GetHeader("User-Agent"), ctx.ClientIP(), ctx.GetHeader("Device-ID"))
 		if err != nil {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "invalid refresh token"})
 			return

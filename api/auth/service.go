@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -68,12 +69,15 @@ func (s *authService) RegisterUser(ctx context.Context, req RegisterRequest, use
 	refreshToken := utils.GenerateSecureToken(64)
 	expiresAt := time.Now().Add(time.Duration(s.config.RefreshTokenMaxAge) * time.Second)
 
+	deviceId := uuid.New().String()
+
 	refreshTokenParams := database.CreateRefreshTokenParams{
 		UserID:    createdUser.ID,
 		Token:     refreshToken,
 		UserAgent: pgtype.Text{String: userAgent, Valid: userAgent != ""},
 		IpAddress: pgtype.Text{String: ipAddress, Valid: ipAddress != ""},
 		ExpiresAt: pgtype.Timestamptz{Time: expiresAt, Valid: true},
+		DeviceID:  deviceId,
 	}
 	_, err = s.queries.CreateRefreshToken(ctx, refreshTokenParams)
 	if err != nil {
@@ -89,11 +93,12 @@ func (s *authService) RegisterUser(ctx context.Context, req RegisterRequest, use
 		},
 		Token:        accessToken,
 		RefreshToken: refreshToken,
+		DeviceID:     deviceId,
 	}, nil
 }
 
 // LoginUser handles the business logic for user login
-func (s *authService) LoginUser(ctx context.Context, req LoginRequest, userAgent, ipAddress string) (*AuthSuccessResponse, error) {
+func (s *authService) LoginUser(ctx context.Context, req LoginRequest, userAgent, ipAddress string, deviceId string) (*AuthSuccessResponse, error) {
 	req.Email = strings.ToLower(strings.TrimSpace(req.Email))
 	req.Password = strings.TrimSpace(req.Password)
 
@@ -124,10 +129,15 @@ func (s *authService) LoginUser(ctx context.Context, req LoginRequest, userAgent
 	refreshToken := utils.GenerateSecureToken(64)
 	expiresAt := time.Now().Add(time.Duration(s.config.RefreshTokenMaxAge) * time.Second) // 7 days
 
+	if deviceId == "" {
+		deviceId = uuid.New().String()
+	}
+
 	refreshTokenParams := database.CreateRefreshTokenParams{
 		UserID:    user.ID,
 		Token:     refreshToken,
 		UserAgent: pgtype.Text{String: userAgent, Valid: userAgent != ""},
+		DeviceID:  deviceId,
 		IpAddress: pgtype.Text{String: ipAddress, Valid: ipAddress != ""},
 		ExpiresAt: pgtype.Timestamptz{Time: expiresAt, Valid: true},
 	}
@@ -145,11 +155,20 @@ func (s *authService) LoginUser(ctx context.Context, req LoginRequest, userAgent
 		},
 		Token:        accessToken,
 		RefreshToken: refreshToken,
+		DeviceID:     deviceId,
 	}, nil
 }
 
-func (s *authService) RefreshToken(ctx context.Context, token, userAgent, ipAddress string) (*AuthSuccessResponse, error) {
-	stored, err := s.queries.GetRefreshTokenByToken(ctx, token)
+func (s *authService) RefreshToken(ctx context.Context, token, userAgent, ipAddress string, deviceId string) (*AuthSuccessResponse, error) {
+	if deviceId == "" {
+		log.Printf("Refresh failed: missing device ID")
+		return nil, fmt.Errorf("missing device ID")
+	}
+
+	stored, err := s.queries.GetRefreshTokenByTokenAndDeviceId(ctx, database.GetRefreshTokenByTokenAndDeviceIdParams{
+		Token:    token,
+		DeviceID: deviceId,
+	})
 	if err != nil || stored.ExpiresAt.Time.Before(time.Now()) {
 		log.Printf("Refresh failed: token not found or expired")
 		return nil, fmt.Errorf("invalid refresh token")
@@ -176,6 +195,7 @@ func (s *authService) RefreshToken(ctx context.Context, token, userAgent, ipAddr
 		UserAgent: pgtype.Text{String: userAgent, Valid: userAgent != ""},
 		IpAddress: pgtype.Text{String: ipAddress, Valid: ipAddress != ""},
 		ExpiresAt: pgtype.Timestamptz{Time: expiresAt, Valid: true},
+		DeviceID:  deviceId,
 	})
 	if err != nil {
 		log.Printf("Refresh failed: could not store new refresh token for user %s", user.ID)
@@ -192,6 +212,7 @@ func (s *authService) RefreshToken(ctx context.Context, token, userAgent, ipAddr
 		},
 		Token:        newAccessToken,
 		RefreshToken: newRefreshToken,
+		DeviceID:     deviceId,
 	}, nil
 }
 
