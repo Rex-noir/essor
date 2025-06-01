@@ -33,23 +33,23 @@ type AuthSuccessResponse struct {
 	RefreshToken string   `json:"refresh_token,omitempty"`
 }
 
-// Define the AuthService interface
-// This specifies the contract for our authentication business logic
 type AuthService interface {
 	RegisterUser(ctx context.Context, req RegisterRequest, userAgent, ipAddress string) (*AuthSuccessResponse, error)
 	LoginUser(ctx context.Context, req LoginRequest, userAgent, ipAddress string) (*AuthSuccessResponse, error)
-	// Add other methods as your auth needs grow, e.g., Logout, RefreshToken, ForgotPassword etc.
+	RefreshToken(ctx context.Context, token, userAgent, ipAddress string) (*AuthSuccessResponse, error)
+	SetAuthCookies(ctx *gin.Context, token, refreshToken string)
+	ClearAuthCookies(ctx *gin.Context)
 }
 
-// RegisterRoutes sets up the authentication API endpoints
 func RegisterRoutes(r *gin.RouterGroup, service AuthService) { // Now takes an AuthService interface
 	route := r.Group("/auth")
 
 	route.POST("/login", loginHandler(service))
 	route.POST("/register", registerHandler(service))
+	route.POST("/refresh", refreshHandler(service))
+
 }
 
-// loginHandler is the Gin handler for user login
 func loginHandler(service AuthService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req LoginRequest
@@ -58,19 +58,15 @@ func loginHandler(service AuthService) gin.HandlerFunc {
 			return
 		}
 
-		// Call the service layer for business logic
 		resp, err := service.LoginUser(
-			ctx.Request.Context(), // Use the request context
+			ctx.Request.Context(),
 			req,
 			ctx.GetHeader("User-Agent"),
 			ctx.ClientIP(),
 		)
 
 		if err != nil {
-			// Translate service errors to HTTP responses
-			// You might want to define custom error types in your service
-			// to return more specific HTTP status codes (e.g., ErrNotFound, ErrInvalidCredentials)
-			if err.Error() == "invalid credentials" { // Example: match specific service error
+			if err.Error() == "invalid credentials" {
 				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "invalid email or password"})
 			} else {
 				ctx.JSON(http.StatusInternalServerError, gin.H{"message": "failed to log in"})
@@ -78,11 +74,12 @@ func loginHandler(service AuthService) gin.HandlerFunc {
 			return
 		}
 
+		service.SetAuthCookies(ctx, resp.Token, resp.RefreshToken)
+
 		ctx.JSON(http.StatusOK, resp)
 	}
 }
 
-// registerHandler is the Gin handler for user registration
 func registerHandler(service AuthService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req RegisterRequest
@@ -91,17 +88,15 @@ func registerHandler(service AuthService) gin.HandlerFunc {
 			return
 		}
 
-		// Call the service layer for business logic
 		resp, err := service.RegisterUser(
-			ctx.Request.Context(), // Use the request context
+			ctx.Request.Context(),
 			req,
 			ctx.GetHeader("User-Agent"),
 			ctx.ClientIP(),
 		)
 
 		if err != nil {
-			// Translate service errors to HTTP responses
-			if err.Error() == "user already exists" { // Example: match specific service error
+			if err.Error() == "user already exists" {
 				ctx.JSON(http.StatusConflict, gin.H{"message": "user with this email or username already exists"})
 			} else {
 				ctx.JSON(http.StatusInternalServerError, gin.H{"message": "failed to register user"})
@@ -109,6 +104,26 @@ func registerHandler(service AuthService) gin.HandlerFunc {
 			return
 		}
 
+		service.SetAuthCookies(ctx, resp.Token, resp.RefreshToken)
+
 		ctx.JSON(http.StatusCreated, resp)
+	}
+}
+
+func refreshHandler(service AuthService) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		refreshToken, err := ctx.Cookie("refresh_token")
+		if err != nil || refreshToken == "" {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "missing or invalid refresh token"})
+			return
+		}
+
+		resp, err := service.RefreshToken(ctx.Request.Context(), refreshToken, ctx.GetHeader("User-Agent"), ctx.ClientIP())
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "invalid refresh token"})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, resp)
 	}
 }

@@ -3,12 +3,14 @@ package auth
 import (
 	"context"
 	"essor/backend/database"
+	"essor/backend/internal/config"
 	utils "essor/backend/internal/utils/token"
 	"fmt"
 	"log"
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -16,12 +18,14 @@ import (
 // authService is the concrete implementation of the AuthService interface
 type authService struct {
 	queries *database.Queries
+	config  *config.AppConfig
 }
 
 // NewAuthService creates a new instance of AuthService
-func NewAuthService(q *database.Queries) AuthService {
+func NewAuthService(q *database.Queries, config *config.AppConfig) AuthService {
 	return &authService{
 		queries: q,
+		config:  config,
 	}
 }
 
@@ -54,7 +58,7 @@ func (s *authService) RegisterUser(ctx context.Context, req RegisterRequest, use
 	}
 
 	// Generate Access Token
-	accessToken, err := utils.GenerateJWT(createdUser.ID.String(), time.Minute*15)
+	accessToken, err := utils.GenerateJWT(createdUser.ID.String(), time.Second*time.Duration(s.config.AccessTokenMaxAge))
 	if err != nil {
 		log.Printf("Error generating access token for user %s: %v", createdUser.ID.String(), err)
 		return nil, fmt.Errorf("failed to generate access token")
@@ -62,7 +66,7 @@ func (s *authService) RegisterUser(ctx context.Context, req RegisterRequest, use
 
 	// Generate Refresh Token and store
 	refreshToken := utils.GenerateSecureToken(64)
-	expiresAt := time.Now().Add(7 * 24 * time.Hour) // 7 days
+	expiresAt := time.Now().Add(time.Duration(s.config.RefreshTokenMaxAge) * time.Second)
 
 	refreshTokenParams := database.CreateRefreshTokenParams{
 		UserID:    createdUser.ID,
@@ -110,7 +114,7 @@ func (s *authService) LoginUser(ctx context.Context, req LoginRequest, userAgent
 	}
 
 	// Generate Access Token
-	accessToken, err := utils.GenerateJWT(user.ID.String(), time.Minute*5)
+	accessToken, err := utils.GenerateJWT(user.ID.String(), time.Duration(s.config.AccessTokenMaxAge)*time.Second)
 	if err != nil {
 		log.Printf("Error generating access token for user %s during login: %v", user.ID.String(), err)
 		return nil, fmt.Errorf("failed to generate access token")
@@ -118,7 +122,7 @@ func (s *authService) LoginUser(ctx context.Context, req LoginRequest, userAgent
 
 	// Generate Refresh Token and store
 	refreshToken := utils.GenerateSecureToken(64)
-	expiresAt := time.Now().Add(7 * 24 * time.Hour) // 7 days
+	expiresAt := time.Now().Add(time.Duration(s.config.RefreshTokenMaxAge) * time.Second) // 7 days
 
 	refreshTokenParams := database.CreateRefreshTokenParams{
 		UserID:    user.ID,
@@ -142,4 +146,61 @@ func (s *authService) LoginUser(ctx context.Context, req LoginRequest, userAgent
 		Token:        accessToken,
 		RefreshToken: refreshToken,
 	}, nil
+}
+
+func (s *authService) RefreshToken(ctx context.Context, token, userAgent, ipAddress string) (*AuthSuccessResponse, error) {
+	stored, err := s.queries.GetRefreshTokenByToken(ctx, token)
+	if err != nil || stored.ExpiresAt.Time.Before(time.Now()) {
+		log.Printf("Refresh failed: token not found or expired")
+		return nil, fmt.Errorf("invalid refresh token")
+	}
+
+	user, err := s.queries.GetUserById(ctx, stored.UserID)
+	if err != nil {
+		log.Printf("Refresh failed: user not found for token %s", token)
+		return nil, fmt.Errorf("user not found")
+	}
+
+	newAccessToken, err := utils.GenerateJWT(user.ID.String(), time.Duration(s.config.AccessTokenMaxAge)*time.Second)
+	if err != nil {
+		log.Printf("Refresh failed: could not generate new access token for user %s", user.ID)
+		return nil, fmt.Errorf("failed to create new token")
+	}
+
+	newRefreshToken := utils.GenerateSecureToken(64)
+	expiresAt := time.Now().Add(time.Duration(s.config.RefreshTokenMaxAge) * time.Second)
+
+	_, err = s.queries.CreateRefreshToken(ctx, database.CreateRefreshTokenParams{
+		UserID:    user.ID,
+		Token:     newRefreshToken,
+		UserAgent: pgtype.Text{String: userAgent, Valid: userAgent != ""},
+		IpAddress: pgtype.Text{String: ipAddress, Valid: ipAddress != ""},
+		ExpiresAt: pgtype.Timestamptz{Time: expiresAt, Valid: true},
+	})
+	if err != nil {
+		log.Printf("Refresh failed: could not store new refresh token for user %s", user.ID)
+		return nil, fmt.Errorf("failed to create new refresh token")
+	}
+
+	_ = s.queries.DeleteRefreshTokenByToken(ctx, token)
+
+	return &AuthSuccessResponse{
+		Data: UserData{
+			ID:       user.ID.String(),
+			Username: user.Username,
+			Email:    user.Email,
+		},
+		Token:        newAccessToken,
+		RefreshToken: newRefreshToken,
+	}, nil
+}
+
+func (s *authService) SetAuthCookies(ctx *gin.Context, accessToken, refreshToken string) {
+	ctx.SetCookie("access_token", accessToken, s.config.AccessTokenMaxAge, "/", s.config.CookieDomain, s.config.CookieSecure, s.config.CookieHTTPOnly)
+	ctx.SetCookie("refresh_token", refreshToken, s.config.RefreshTokenMaxAge, "/", s.config.CookieDomain, s.config.CookieSecure, s.config.CookieHTTPOnly)
+}
+
+func (s *authService) ClearAuthCookies(ctx *gin.Context) {
+	ctx.SetCookie("access_token", "", -1, "/", s.config.CookieDomain, s.config.CookieSecure, s.config.CookieHTTPOnly)
+	ctx.SetCookie("refresh_token", "", -1, "/", s.config.CookieDomain, s.config.CookieSecure, s.config.CookieHTTPOnly)
 }

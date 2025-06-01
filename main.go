@@ -42,7 +42,7 @@ func main() {
 	ping.RegisterRoutes(api)
 
 	// Register AUTH routes
-	authService := auth.NewAuthService(queries)
+	authService := auth.NewAuthService(queries, cfg)
 	auth.RegisterRoutes(api, authService)
 
 	fmt.Printf("Server starting on port %s\n", cfg.ServerPort)

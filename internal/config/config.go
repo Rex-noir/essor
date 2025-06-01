@@ -7,12 +7,17 @@ import (
 )
 
 type AppConfig struct {
-	DBHost     string
-	DBPort     int
-	DBUser     string
-	DBPass     string
-	DBName     string
-	ServerPort string
+	DBHost             string
+	DBPort             int
+	DBUser             string
+	DBPass             string
+	DBName             string
+	ServerPort         string
+	CookieSecure       bool
+	CookieHTTPOnly     bool
+	CookieDomain       string
+	AccessTokenMaxAge  int
+	RefreshTokenMaxAge int
 }
 
 func LoadConfig() (*AppConfig, error) {
@@ -51,15 +56,51 @@ func LoadConfig() (*AppConfig, error) {
 
 	cfg.ServerPort = os.Getenv("SERVER_PORT")
 	if cfg.ServerPort == "" {
-		cfg.ServerPort = ":8080" // Default port
+		cfg.ServerPort = ":8080"
+	}
+
+	secureFlag := os.Getenv("COOKIE_SECURE")
+	cfg.CookieSecure = secureFlag == "true"
+
+	httpOnlyFlag := os.Getenv("COOKIE_HTTPONLY")
+	cfg.CookieHTTPOnly = httpOnlyFlag != "false"
+
+	cfg.CookieDomain = os.Getenv("COOKIE_DOMAIN")
+
+	accessTokenMaxAge := os.Getenv("ACCESS_TOKEN_MAX_AGE")
+	if accessTokenMaxAge == "" {
+		cfg.AccessTokenMaxAge = 900
+	}
+
+	refreshTokenMaxAge := os.Getenv("REFRESH_TOKEN_MAX_AGE")
+	if refreshTokenMaxAge == "" {
+		cfg.RefreshTokenMaxAge = 604800
 	}
 
 	return cfg, nil
 
 }
 
-// GetDBConnString constructs the PostgreSQL connection string.
 func (c *AppConfig) GetDBConnString() string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		c.DBUser, c.DBPass, c.DBHost, c.DBPort, c.DBName)
+}
+
+func (c *AppConfig) GetCookieSecure() bool {
+	return c.CookieSecure
+}
+
+func (c *AppConfig) GetCookieHTTPOnly() bool {
+	return c.CookieHTTPOnly
+}
+
+func (c *AppConfig) GetCookieDomain() string {
+	return c.CookieDomain
+}
+
+func (c *AppConfig) GetAccessTokenMaxAge() int {
+	return c.AccessTokenMaxAge
+}
+func (c *AppConfig) GetRefreshTokenMaxAge() int {
+	return c.RefreshTokenMaxAge
 }

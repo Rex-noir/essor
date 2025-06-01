@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"essor/backend/api/auth"
 	"essor/backend/database"
+	"essor/backend/internal/config"
 	testutils "essor/backend/internal/utils/test-utils"
 
 	"fmt"
@@ -23,9 +24,12 @@ func setUpRouter(q *database.Queries) *gin.Engine {
 	r := gin.Default()
 
 	api := r.Group("/api")
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("Failed to load configuration: %v", err)
+	}
 
-	auth.RegisterRoutes(api, auth.NewAuthService(q))
-
+	auth.RegisterRoutes(api, auth.NewAuthService(q, cfg))
 	return r
 }
 
