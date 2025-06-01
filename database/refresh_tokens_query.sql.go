@@ -13,9 +13,9 @@ import (
 
 const createRefreshToken = `-- name: CreateRefreshToken :one
 INSERT INTO refresh_tokens (
-    user_id, token, user_agent, ip_address, expires_at
+    user_id, token, user_agent, ip_address, expires_at,device_id
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1, $2, $3, $4, $5, $6
 )
 RETURNING id, user_id, token, user_agent, device_id, ip_address, created_at, expires_at
 `
@@ -26,6 +26,7 @@ type CreateRefreshTokenParams struct {
 	UserAgent pgtype.Text
 	IpAddress pgtype.Text
 	ExpiresAt pgtype.Timestamptz
+	DeviceID  string
 }
 
 func (q *Queries) CreateRefreshToken(ctx context.Context, arg CreateRefreshTokenParams) (RefreshToken, error) {
@@ -35,6 +36,7 @@ func (q *Queries) CreateRefreshToken(ctx context.Context, arg CreateRefreshToken
 		arg.UserAgent,
 		arg.IpAddress,
 		arg.ExpiresAt,
+		arg.DeviceID,
 	)
 	var i RefreshToken
 	err := row.Scan(
@@ -150,7 +152,7 @@ func (q *Queries) ExpireRefreshTokensByDeviceId(ctx context.Context, deviceID st
 
 const getRefreshTokenByToken = `-- name: GetRefreshTokenByToken :one
 SELECT id, user_id, token, user_agent, device_id, ip_address, created_at, expires_at FROM refresh_tokens
-WHERE token = $1
+WHERE token = $1 AND expires_at > NOW()
 `
 
 func (q *Queries) GetRefreshTokenByToken(ctx context.Context, token string) (RefreshToken, error) {
