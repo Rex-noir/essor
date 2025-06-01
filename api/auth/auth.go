@@ -54,7 +54,7 @@ func loginHandler(service AuthService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req LoginRequest
 		if err := ctx.ShouldBindJSON(&req); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid input"})
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": "invalid input"})
 			return
 		}
 
@@ -71,9 +71,9 @@ func loginHandler(service AuthService) gin.HandlerFunc {
 			// You might want to define custom error types in your service
 			// to return more specific HTTP status codes (e.g., ErrNotFound, ErrInvalidCredentials)
 			if err.Error() == "invalid credentials" { // Example: match specific service error
-				ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid email or password"})
+				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "invalid email or password"})
 			} else {
-				ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log in"})
+				ctx.JSON(http.StatusInternalServerError, gin.H{"message": "failed to log in"})
 			}
 			return
 		}
@@ -87,7 +87,7 @@ func registerHandler(service AuthService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req RegisterRequest
 		if err := ctx.ShouldBindJSON(&req); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid input"})
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": "invalid input"})
 			return
 		}
 
@@ -102,9 +102,9 @@ func registerHandler(service AuthService) gin.HandlerFunc {
 		if err != nil {
 			// Translate service errors to HTTP responses
 			if err.Error() == "user already exists" { // Example: match specific service error
-				ctx.JSON(http.StatusConflict, gin.H{"error": "user with this email or username already exists"})
+				ctx.JSON(http.StatusConflict, gin.H{"message": "user with this email or username already exists"})
 			} else {
-				ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to register user"})
+				ctx.JSON(http.StatusInternalServerError, gin.H{"message": "failed to register user"})
 			}
 			return
 		}
