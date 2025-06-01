@@ -19,30 +19,25 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func setUpRouter(q *database.Queries) *gin.Engine {
-	gin.SetMode(gin.TestMode)
-	r := gin.Default()
+var (
+	testQueries *database.Queries
+	router      *gin.Engine
+	api         *gin.RouterGroup
+)
 
-	api := r.Group("/api")
+func TestMain(m *testing.M) {
+	testQueries = testutils.SetupTestDB()
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
-
-	auth.RegisterRoutes(api, auth.NewAuthService(q, cfg))
-	return r
-}
-
-var testQueries *database.Queries
-
-func TestMain(m *testing.M) {
-	testQueries = testutils.SetupTestDB()
+	router, api = testutils.NewApiRouter()
+	auth.RegisterRoutes(api, auth.NewAuthService(testQueries, cfg))
 	m.Run()
 }
 
 func TestRegisterAndLoginFlow(t *testing.T) {
 
-	router := setUpRouter(testQueries)
 	email := fmt.Sprintf("user%d@example.com", time.Now().UnixNano())
 
 	registerPayload := auth.RegisterRequest{

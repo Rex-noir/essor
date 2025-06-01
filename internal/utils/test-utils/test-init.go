@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
@@ -60,4 +61,12 @@ func SetupTestDB() *database.Queries {
 	}
 
 	return database.New(db)
+}
+
+func NewApiRouter() (*gin.Engine, *gin.RouterGroup) {
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+
+	api := r.Group("/api")
+	return r, api
 }
