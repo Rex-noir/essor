@@ -78,7 +78,7 @@ func updateHandler(service CategoryService) gin.HandlerFunc {
 			return
 		}
 
-		updatedCategory, err := service.UpdateCategory(ctx, req, ctx.GetString("userId"))
+		updatedCategory, err := service.UpdateCategory(ctx, req, ctx.GetString("userID"))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"message": "failed to update category"})
 			return
@@ -89,7 +89,7 @@ func updateHandler(service CategoryService) gin.HandlerFunc {
 
 func indexHandler(service CategoryService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		allCategories, err := service.ListCategories(ctx, ctx.GetString("userId"))
+		allCategories, err := service.ListCategories(ctx, ctx.GetString("userID"))
 		if err != nil {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "User ID not found"})
 			return
