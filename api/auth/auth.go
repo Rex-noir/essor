@@ -120,7 +120,7 @@ func refreshHandler(service AuthService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		refreshToken, err := ctx.Cookie("refresh_token")
 		if err != nil || refreshToken == "" {
-			refreshToken = ctx.GetHeader("Authorization")
+			refreshToken = ctx.GetHeader("X-Refresh-Token")
 			if refreshToken == "" {
 				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "missing or invalid refresh token"})
 				return
