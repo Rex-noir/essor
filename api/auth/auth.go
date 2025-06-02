@@ -143,8 +143,11 @@ func logoutHandler(service AuthService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		refreshToken, err := ctx.Cookie("refresh_token")
 		if err != nil || refreshToken == "" {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "missing or invalid refresh token"})
-			return
+			refreshToken = ctx.GetHeader("X-Refresh-Token")
+			if refreshToken == "" {
+				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "missing or invalid refresh token"})
+				return
+			}
 		}
 
 		deviceId := ctx.GetHeader("Device-ID")
