@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mobile/core/widgets/app_social_button.dart';
 import 'package:mobile/core/widgets/app_text_field.dart';
 import 'package:mobile/core/widgets/logo_widget.dart';
 import 'package:mobile/features/authentication/presentation/registration/registration_screen.dart';
@@ -14,7 +15,6 @@ class LoginScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
@@ -26,16 +26,31 @@ class LoginScreen extends StatelessWidget {
                   child: SvgPicture.asset(
                     'assets/images/particle_bg.svg',
                     fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(
+                      colorScheme.primary,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          colorScheme.surface.withValues(alpha: 0.7),
+                          colorScheme.surface.withValues(alpha: 0.8),
+                          colorScheme.surface.withValues(alpha: 0.9),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
                   width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: colorScheme.surface.withValues(
-                      alpha: 0.4,
-                    ), // Use theme surface color with transparency
-                  ),
+                  color: colorScheme.tertiary.withValues(alpha: 0.2),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -44,7 +59,7 @@ class LoginScreen extends StatelessWidget {
                       Text(
                         'Login to your Account',
                         style: textTheme.headlineMedium?.copyWith(
-                          color: colorScheme.onSurface, // Use theme text color
+                          color: colorScheme.onSurface,
                         ),
                       ),
                       SizedBox(height: 12),
@@ -55,7 +70,7 @@ class LoginScreen extends StatelessWidget {
                             style: TextStyle(
                               color: colorScheme.onSurface.withValues(
                                 alpha: 0.8,
-                              ), // Slightly muted theme color
+                              ),
                             ),
                           ),
                           TextButton(
@@ -82,10 +97,9 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  top: 10, // Adjust vertical position from top
-                  right: 10, // Adjust horizontal position from right
+                  top: 10,
+                  right: 10,
                   child: TextButton(
-                    // Using TextButton for a subtle look
                     onPressed: () {
                       print('Skip button pressed!');
                       // Example: Navigator.of(context).pushReplacement(
@@ -95,7 +109,7 @@ class LoginScreen extends StatelessWidget {
                     child: Text(
                       'Skip',
                       style: textTheme.titleMedium?.copyWith(
-                        color: colorScheme.onSurface, // Or colorScheme.primary
+                        color: colorScheme.onSurface,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -103,98 +117,89 @@ class LoginScreen extends StatelessWidget {
                 ),
               ],
             ),
-            Divider(
-              height: 24,
-              thickness: 1,
-              color: colorScheme.outline.withAlpha(70),
-            ),
-            Expanded(
-              child: Container(
-                color: colorScheme.surface,
-                padding: const EdgeInsets.all(30),
-                child: Column(
-                  children: [
-                    AppTextField(label: 'Email'),
-                    SizedBox(height: 32),
-                    AppPasswordField(label: 'Password'),
-                    SizedBox(height: 32),
-                    ElevatedButton(
-                      onPressed: () {
-                        //TODO
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        backgroundColor: colorScheme.primary,
-                        minimumSize: const Size(double.infinity, 50),
-                      ),
-                      child: Text(
-                        'Login',
-                        style: TextStyle(color: colorScheme.onPrimary),
-                      ),
-                    ),
-                    SizedBox(height: 32),
-                    Row(
-                      children: <Widget>[
-                        const Expanded(child: Divider()),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Text(
-                            "OR",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ),
-                        const Expanded(child: Divider()),
-                      ],
-                    ),
-                    SizedBox(height: 32),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 10,
-                                horizontal: 24,
-                              ),
-                              minimumSize: const Size(0, 50),
-                            ),
-                            label: const Text('Google'),
-                            icon: const FaIcon(FontAwesomeIcons.google),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          // Make the second button expand
-                          child: ElevatedButton.icon(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 10,
-                                horizontal: 24,
-                              ),
-                              minimumSize: const Size(0, 50),
-                            ),
-                            label: const Text('Facebook'),
-                            icon: const FaIcon(FontAwesomeIcons.facebook),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
 
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20.0, top: 10.0),
-              child: Text(
-                '© 2025 Essor. All rights reserved.',
-                style: textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurface.withAlpha(150),
+            // Form section with negative margin to overlap slightly
+            Expanded(
+              child: Transform.translate(
+                offset: const Offset(0, -10),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, -5),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.fromLTRB(30, 40, 30, 30),
+                  child: Column(
+                    children: [
+                      AppTextField(label: 'Email'),
+                      SizedBox(height: 32),
+                      AppPasswordField(label: 'Password'),
+                      SizedBox(height: 32),
+                      ElevatedButton(
+                        onPressed: () {
+                          //TODO
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          backgroundColor: colorScheme.primary,
+                          minimumSize: const Size(double.infinity, 50),
+                        ),
+                        child: Text(
+                          'Login',
+                          style: TextStyle(color: colorScheme.onPrimary),
+                        ),
+                      ),
+                      SizedBox(height: 32),
+                      Row(
+                        children: <Widget>[
+                          const Expanded(child: Divider()),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0,
+                            ),
+                            child: Text(
+                              "OR",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                          const Expanded(child: Divider()),
+                        ],
+                      ),
+                      SizedBox(height: 32),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          AppSocialButton(
+                            icon: FontAwesomeIcons.google,
+                            label: "Google",
+                          ),
+                          const SizedBox(width: 16),
+                          AppSocialButton(
+                            icon: FontAwesomeIcons.facebook,
+                            label: "Facebook",
+                          ),
+                        ],
+                      ),
+                      const Spacer(),
+                      Text(
+                        '© 2025 Essor. All rights reserved.',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurface.withAlpha(150),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
