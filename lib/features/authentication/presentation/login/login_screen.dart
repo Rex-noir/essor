@@ -6,6 +6,7 @@ import 'package:mobile/core/widgets/app_text_field.dart';
 import 'package:mobile/core/widgets/logo_widget.dart';
 import 'package:mobile/features/authentication/presentation/registration/registration_screen.dart';
 import 'package:mobile/features/authentication/presentation/shared/widgets/app_password_field.dart';
+import 'package:mobile/features/layouts/presentation/layout/home_layout.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -101,10 +102,9 @@ class LoginScreen extends StatelessWidget {
                   right: 10,
                   child: TextButton(
                     onPressed: () {
-                      print('Skip button pressed!');
-                      // Example: Navigator.of(context).pushReplacement(
-                      //   MaterialPageRoute(builder: (context) => HomeScreen()),
-                      // );
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) => HomeLayout()),
+                      );
                     },
                     child: Text(
                       'Skip',
