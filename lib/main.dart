@@ -20,12 +20,12 @@ void main() async {
       ? AuthenticationStatus.authenticated
       : AuthenticationStatus.unauthenticated;
 
-  // final isFirstTime = prefs.getBool(appConfig.isFirstTimeKey) ?? true;
-  // if (isFirstTime) {
-  //   prefs.setBool(appConfig.isFirstTimeKey, false);
-  // }
+  final isFirstTime = prefs.getBool(appConfig.isFirstTimeKey) ?? true;
+  if (isFirstTime) {
+    prefs.setBool(appConfig.isFirstTimeKey, false);
+  }
 
-  final isFirstTime = true;
+  // final isFirstTime = true;
   runApp(
     App(
       initialStatus: initialStatus,
