@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/core/utils/app_logger.dart';
 import 'package:mobile/features/habit_list/presentation/bloc/habit_list_bloc.dart';
+import 'package:mobile/features/habit_list/presentation/widgets/habit_list_item.dart';
 
 class HabitListScreen extends StatefulWidget {
   const HabitListScreen({super.key});
@@ -147,21 +148,30 @@ class _HabitListScreenState extends State<HabitListScreen>
               }).toList(),
             ),
             Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: days.map((day) {
-                  return Container(
-                    color: Theme.of(context).colorScheme.surface,
-                    child: Center(
-                      child: Text(
-                        "Habits for ${day.toLocal()}",
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 12,
+                ),
+                child: TabBarView(
+                  controller: _tabController,
+                  children: days.map((day) {
+                    return Container(
+                      color: Theme.of(context).colorScheme.surface,
+                      child: ListView.separated(
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 8),
+                        itemBuilder: (context, index) {
+                          final habit = state.habits[index];
+                          logger.debug(habit.toString());
+
+                          return HabitListItem(habit: habit);
+                        },
+                        itemCount: state.habits.length,
                       ),
-                    ),
-                  );
-                }).toList(),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
           ],
