@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen>
       _tabViews = [
         BlocProvider.value(
           value: _DailyListBloc,
-          child: const DailyItemsScreen(),
+          child: const DailyListScreen(),
         ),
         const _ExploreTab(), // Separate widget to avoid rebuilds
       ];

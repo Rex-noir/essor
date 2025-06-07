@@ -5,18 +5,18 @@ import 'package:mobile/core/utils/app_logger.dart';
 import 'package:mobile/features/daily_items/presentation/bloc/daily_list_bloc.dart';
 import 'package:mobile/features/daily_items/presentation/widgets/habit_list_item.dart';
 
-class DailyItemsScreen extends StatefulWidget {
-  const DailyItemsScreen({super.key});
+class DailyListScreen extends StatefulWidget {
+  const DailyListScreen({super.key});
 
   @override
-  State<DailyItemsScreen> createState() => _DailyItemsScreenState();
+  State<DailyListScreen> createState() => _DailyListScreenState();
 }
 
-class _DailyItemsScreenState extends State<DailyItemsScreen>
+class _DailyListScreenState extends State<DailyListScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
 
-  final logger = AppLogger.tag("DailyItemsScreen");
+  final logger = AppLogger.tag("DailyListScreen");
 
   @override
   void initState() {
