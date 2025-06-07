@@ -50,18 +50,13 @@ class HabitListBloc extends Bloc<HabitListEvent, HabitListState> {
             d.day == selectedDate.day,
       );
 
-      if (state is HabitListLoaded) {
-        final currentState = state as HabitListLoaded;
-        emit(currentState.copyWith(habits: habits));
-      } else {
-        emit(
-          HabitListLoaded(
-            habits: habits,
-            days: newDays,
-            selectedIndex: updatedNewIndex,
-          ),
-        );
-      }
+      emit(
+        HabitListLoaded(
+          habits: habits,
+          days: newDays,
+          selectedIndex: updatedNewIndex,
+        ),
+      );
     } catch (e) {
       logger.error("Failed to load habits", e);
       emit(HabitListError("Failed to load habits"));
