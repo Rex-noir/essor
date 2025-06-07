@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/features/daily_items/data/dtos/task_dto.dart';
-import 'package:mobile/features/daily_items/data/providers/task_provider.dart';
+import 'package:mobile/features/daily_items/domain/datasources/task_datasource.dart';
 
-class TaskLocalProivder implements TaskProvider {
+class TaskLocalDataSource implements TaskDataSource {
   @override
   Future<List<TaskDto>> fetchTasksForDate(DateTime date) async {
     // Simulate async delay

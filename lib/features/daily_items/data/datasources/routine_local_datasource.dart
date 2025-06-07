@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/features/daily_items/data/dtos/routine_dto.dart';
 import 'package:mobile/features/daily_items/data/dtos/task_dto.dart';
-import 'package:mobile/features/daily_items/data/providers/routine_provider.dart';
+import 'package:mobile/features/daily_items/domain/datasources/routine_datasource.dart';
 import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
 
-class RoutineLocalProvider implements RoutineProvider {
+class RoutineLocalDataSource implements RoutineDataSource {
   @override
   Future<List<RoutineDto>> fetchRoutinesForDate(DateTime date) async {
     return List.generate(10, (i) {

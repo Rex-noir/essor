@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile/features/daily_items/data/providers/habit_provider.dart';
-import 'package:mobile/features/daily_items/data/providers/routine_local_provider.dart';
-import 'package:mobile/features/daily_items/data/providers/task_local_proivder.dart';
+import 'package:mobile/features/daily_items/data/datasources/habit_local_datasource.dart';
+import 'package:mobile/features/daily_items/data/datasources/routine_local_datasource.dart';
+import 'package:mobile/features/daily_items/data/datasources/task_local_datasource.dart';
 import 'package:mobile/features/daily_items/data/repositories/habit_repository_impl.dart';
 import 'package:mobile/features/daily_items/data/repositories/routine_repository_impl.dart';
 import 'package:mobile/features/daily_items/data/repositories/task_repository_impl.dart';
@@ -54,9 +54,11 @@ class _HomeScreenState extends State<HomeScreen>
     });
 
     _DailyListBloc = DailyListBloc(
-      GetHabitsForDateUsecase(HabitRepositoryImpl(HabitLocalProvider())),
-      GetRoutinesForDateUsecase(RoutineRepositoryImpl(RoutineLocalProvider())),
-      GetTasksForDateUsecase(TaskRepositoryImpl(TaskLocalProivder())),
+      GetHabitsForDateUsecase(HabitRepositoryImpl(HabitLocalDataSource())),
+      GetRoutinesForDateUsecase(
+        RoutineRepositoryImpl(RoutineLocalDataSource()),
+      ),
+      GetTasksForDateUsecase(TaskRepositoryImpl(TaskLocalDataSource())),
     )..add(DailyListInitialize());
   }
 

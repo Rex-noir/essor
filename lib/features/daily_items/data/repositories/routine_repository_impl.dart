@@ -1,9 +1,9 @@
-import 'package:mobile/features/daily_items/data/providers/routine_provider.dart';
+import 'package:mobile/features/daily_items/domain/datasources/routine_datasource.dart';
 import 'package:mobile/features/daily_items/domain/entities/routine_enitity.dart';
 import 'package:mobile/features/daily_items/domain/repositories/routine_repository.dart';
 
 class RoutineRepositoryImpl implements RoutineRepository {
-  final RoutineProvider provider;
+  final RoutineDataSource provider;
   RoutineRepositoryImpl(this.provider);
   @override
   Future<List<RoutineEntity>> fetchRoutinesForDate(DateTime date) async {
