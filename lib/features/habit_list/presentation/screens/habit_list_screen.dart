@@ -89,7 +89,9 @@ class _HabitListScreenState extends State<HabitListScreen>
             TabBar(
               controller: _tabController,
               isScrollable: true,
-              key: UniqueKey(),
+              key: ValueKey(
+                state.days.map((e) => e.toIso8601String()).join(','),
+              ),
               tabAlignment: TabAlignment.center,
               indicatorPadding: EdgeInsets.zero,
               padding: EdgeInsets.zero,
@@ -102,22 +104,21 @@ class _HabitListScreenState extends State<HabitListScreen>
                 final index = days.indexOf(day);
                 final isSelected = state.selectedIndex == index;
 
-                return Container(
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
                   height: 90,
                   width: 70,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(14),
-                    border: isSelected
-                        ? Border.all(
-                            color: Theme.of(context).colorScheme.primary,
-                            width: 2,
-                          )
-                        : Border.all(
-                            color: Theme.of(
+                    border: Border.all(
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(
                               context,
-                            ).colorScheme.primary.withValues(alpha: 0.2),
-                            width: 2,
-                          ),
+                            ).colorScheme.primary.withOpacity(0.2),
+                      width: 2,
+                    ),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -135,10 +136,9 @@ class _HabitListScreenState extends State<HabitListScreen>
                       Text(
                         dayName,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onPrimaryContainer
-                              .withValues(alpha: .7),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer.withOpacity(0.7),
                         ),
                       ),
                     ],
