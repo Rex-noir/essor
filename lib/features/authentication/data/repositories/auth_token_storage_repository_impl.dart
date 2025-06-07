@@ -17,7 +17,7 @@ class AuthTokenStorageRepositoryImpl extends AuthTokenStorageRepository {
     if (_prefs == null) throw Exception('Not initialized');
     await _prefs!.remove(_config.accessTokenKey);
     await _prefs!.remove(_config.refreshTokenKey);
-    await _prefs!.remove(_config.deviceIdkey);
+    await _prefs!.remove(_config.deviceIdKey);
   }
 
   @override
@@ -25,7 +25,7 @@ class AuthTokenStorageRepositoryImpl extends AuthTokenStorageRepository {
   @override
   String? get refreshToken => _prefs?.getString(_config.refreshTokenKey);
   @override
-  String? get deviceId => _prefs?.getString(_config.deviceIdkey);
+  String? get deviceId => _prefs?.getString(_config.deviceIdKey);
 
   @override
   Future<void> saveTokens({
@@ -36,6 +36,6 @@ class AuthTokenStorageRepositoryImpl extends AuthTokenStorageRepository {
     if (_prefs == null) throw Exception('Not initialized');
     await _prefs!.setString(_config.accessTokenKey, accessToken);
     await _prefs!.setString(_config.refreshTokenKey, refreshToken);
-    await _prefs!.setString(_config.deviceIdkey, deviceId);
+    await _prefs!.setString(_config.deviceIdKey, deviceId);
   }
 }

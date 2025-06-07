@@ -17,7 +17,7 @@ class DevConfig implements AppConfig {
   String get refreshTokenKey => 'REFRESH_TOKEN';
 
   @override
-  String get deviceIdkey => 'DEVICE_ID';
+  String get deviceIdKey => 'DEVICE_ID';
 
   @override
   String get isFirstTimeKey => 'firstTime';

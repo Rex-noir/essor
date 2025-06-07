@@ -5,7 +5,7 @@ abstract class AppConfig {
 
   String get accessTokenKey;
   String get refreshTokenKey;
-  String get deviceIdkey;
+  String get deviceIdKey;
 
   String get isFirstTimeKey;
 }
