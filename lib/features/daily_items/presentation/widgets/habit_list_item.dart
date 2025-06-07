@@ -17,6 +17,7 @@ class HabitListItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
+              spacing: 8,
               children: [
                 Container(
                   width: 40,
@@ -29,7 +30,6 @@ class HabitListItem extends StatelessWidget {
                     child: Icon(Icons.water_drop, color: borderColor, size: 20),
                   ),
                 ),
-                const SizedBox(width: 8), // spacing inside group
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

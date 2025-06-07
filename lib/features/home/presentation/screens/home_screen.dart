@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/features/daily_items/data/providers/habit_provider.dart';
+import 'package:mobile/features/daily_items/data/providers/routine_local_provider.dart';
 import 'package:mobile/features/daily_items/data/repositories/habit_repository_impl.dart';
+import 'package:mobile/features/daily_items/data/repositories/routine_repository_impl.dart';
 import 'package:mobile/features/daily_items/domain/usecases/get_habits_for_date_usecase.dart';
+import 'package:mobile/features/daily_items/domain/usecases/get_routines_for_date_usecase.dart';
 import 'package:mobile/features/daily_items/presentation/bloc/daily_list_bloc.dart';
 import 'package:mobile/features/daily_items/presentation/screens/daily_list_screen.dart';
 import 'package:mobile/features/home/presentation/widgets/home_greeting.dart';
@@ -49,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     _DailyListBloc = DailyListBloc(
       GetHabitsForDateUsecase(HabitRepositoryImpl(HabitLocalProvider())),
+      GetRoutinesForDateUsecase(RoutineRepositoryImpl(RoutineLocalProvider())),
     )..add(DailyListInitialize());
   }
 

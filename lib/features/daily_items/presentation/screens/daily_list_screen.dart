@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:mobile/core/utils/app_logger.dart';
 import 'package:mobile/features/daily_items/presentation/bloc/daily_list_bloc.dart';
 import 'package:mobile/features/daily_items/presentation/widgets/habit_list_item.dart';
+import 'package:mobile/features/daily_items/presentation/widgets/routine_list_item.dart';
 
 class DailyListScreen extends StatefulWidget {
   const DailyListScreen({super.key});
@@ -74,6 +75,8 @@ class _DailyListScreenState extends State<DailyListScreen>
         }
 
         final days = state.days;
+
+        List<DailyItem> items = state.items;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,10 +172,19 @@ class _DailyListScreenState extends State<DailyListScreen>
                       separatorBuilder: (context, index) =>
                           const SizedBox(height: 8),
                       itemBuilder: (context, index) {
-                        final habit = state.habits[index];
-                        return HabitListItem(habit: habit);
+                        final item = items[index];
+
+                        if (item is HabitItem) {
+                          return HabitListItem(habit: item.habit);
+                        } else if (item is RoutineItem) {
+                          return RoutineListItem(
+                            routine: item.routine,
+                          ); // You'd implement this
+                        } else {
+                          return const SizedBox.shrink();
+                        }
                       },
-                      itemCount: state.habits.length,
+                      itemCount: items.length,
                     ),
                   );
                 }).toList(),
