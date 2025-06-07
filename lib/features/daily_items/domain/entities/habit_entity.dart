@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-enum HabitFrequency { daily, weekly, monthly }
+enum ItemFrequency { daily, weekly, monthly }
 
 enum DayOfWeek {
   monday,
@@ -16,7 +16,7 @@ class HabitEntity {
   final String title;
   final String? description;
   //enum
-  final HabitFrequency frequency;
+  final ItemFrequency frequency;
   final DateTime startDate;
   final List<DayOfWeek> weeklyDays;
   final List<int> monthlyDates;
@@ -39,7 +39,7 @@ class HabitEntity {
     String? id,
     String? title,
     String? description,
-    HabitFrequency? frequency,
+    ItemFrequency? frequency,
     DateTime? startDate,
     List<DayOfWeek>? weeklyDays,
     List<int>? monthlyDates,

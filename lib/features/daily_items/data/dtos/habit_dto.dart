@@ -9,7 +9,7 @@ class HabitDto with EquatableMixin {
   final String title;
   final String? description;
   //enum
-  final HabitFrequency frequency;
+  final ItemFrequency frequency;
   final DateTime startDate;
   //enum
   final List<DayOfWeek> weeklyDays;
@@ -33,7 +33,7 @@ class HabitDto with EquatableMixin {
     String? id,
     String? title,
     String? description,
-    HabitFrequency? frequency,
+    ItemFrequency? frequency,
     DateTime? startDate,
     List<DayOfWeek>? weeklyDays,
     List<int>? monthlyDates,
@@ -74,7 +74,7 @@ class HabitDto with EquatableMixin {
       description: map['description'] != null
           ? map['description'] as String
           : null,
-      frequency: HabitFrequency.values[map['frequency'] as int],
+      frequency: ItemFrequency.values[map['frequency'] as int],
       startDate: DateTime.fromMillisecondsSinceEpoch(map['start_date'] as int),
       weeklyDays: List<DayOfWeek>.from(
         (map['weekly_days'] as List<int>).map<DayOfWeek>(
