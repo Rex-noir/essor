@@ -22,6 +22,7 @@ class HabitEntity {
   final List<int> monthlyDates;
   final int repeatEvery;
   final bool isActive;
+  final int iconIndex;
 
   const HabitEntity({
     required this.id,
@@ -33,6 +34,7 @@ class HabitEntity {
     this.monthlyDates = const [],
     this.repeatEvery = 1,
     this.isActive = true,
+    this.iconIndex = 2,
   });
 
   HabitEntity copyWith({
@@ -45,6 +47,7 @@ class HabitEntity {
     List<int>? monthlyDates,
     int? repeatEvery,
     bool? isActive,
+    int? iconIndex,
   }) {
     return HabitEntity(
       id: id ?? this.id,
@@ -56,6 +59,7 @@ class HabitEntity {
       monthlyDates: monthlyDates ?? this.monthlyDates,
       repeatEvery: repeatEvery ?? this.repeatEvery,
       isActive: isActive ?? this.isActive,
+      iconIndex: iconIndex ?? this.iconIndex,
     );
   }
 }

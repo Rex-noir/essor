@@ -9,6 +9,7 @@ class TaskEntity with EquatableMixin {
   final TimeOfDay startTime;
   final bool isCompleted;
   final int importance;
+  final int iconIndex;
 
   TaskEntity({
     required this.title,
@@ -17,6 +18,7 @@ class TaskEntity with EquatableMixin {
     required this.startTime,
     required this.isCompleted,
     required this.importance,
+    this.iconIndex = 0,
   });
 
   TaskEntity copyWith({
@@ -26,6 +28,7 @@ class TaskEntity with EquatableMixin {
     TimeOfDay? startTime,
     bool? isCompleted,
     int? importance,
+    int? iconIndex,
   }) {
     return TaskEntity(
       title: title ?? this.title,
@@ -34,6 +37,7 @@ class TaskEntity with EquatableMixin {
       startTime: startTime ?? this.startTime,
       isCompleted: isCompleted ?? this.isCompleted,
       importance: importance ?? this.importance,
+      iconIndex: iconIndex ?? this.iconIndex,
     );
   }
 
