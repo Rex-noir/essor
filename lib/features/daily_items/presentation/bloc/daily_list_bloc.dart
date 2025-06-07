@@ -5,8 +5,10 @@ import 'package:equatable/equatable.dart';
 import 'package:mobile/core/utils/app_logger.dart';
 import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
 import 'package:mobile/features/daily_items/domain/entities/routine_enitity.dart';
+import 'package:mobile/features/daily_items/domain/entities/task_entity.dart';
 import 'package:mobile/features/daily_items/domain/usecases/get_habits_for_date_usecase.dart';
 import 'package:mobile/features/daily_items/domain/usecases/get_routines_for_date_usecase.dart';
+import 'package:mobile/features/daily_items/domain/usecases/get_tasks_for_date_usecase.dart';
 
 part 'daily_list_event.dart';
 part 'daily_list_state.dart';
@@ -14,14 +16,18 @@ part 'daily_list_state.dart';
 class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
   final GetHabitsForDateUsecase getHabitsForDate;
   final GetRoutinesForDateUsecase getRoutinesForDate;
+  final GetTasksForDateUsecase getTasksForDate;
   final logger = AppLogger.tag('DailyListBloc');
 
   static const int initialDaysEachSide = 15;
   static const int extendThreshold = 5;
   static const int daysToAdd = 10;
 
-  DailyListBloc(this.getHabitsForDate, this.getRoutinesForDate)
-    : super(HabitListInitial()) {
+  DailyListBloc(
+    this.getHabitsForDate,
+    this.getRoutinesForDate,
+    this.getTasksForDate,
+  ) : super(HabitListInitial()) {
     on<DailyListDateChanged>(_onDateChanged);
     on<DailyListInitialize>(_onInitialize);
   }
@@ -38,6 +44,7 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
       final selectedDate = currentState.days[newIndex];
       final habits = await getHabitsForDate.call(selectedDate);
       final routines = await getRoutinesForDate.call(selectedDate);
+      final tasks = await getTasksForDate.call(selectedDate);
 
       // Extend days if threshold reached
       List<DateTime> newDays = currentState.days;
@@ -60,6 +67,7 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
           habits: habits,
           routines: routines,
           days: newDays,
+          tasks: tasks,
           selectedIndex: updatedNewIndex,
         ),
       );
@@ -104,12 +112,14 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
       // Load habits for the initial selected day
       final habits = await getHabitsForDate.call(initialDays[initialIndex]);
       final routines = await getRoutinesForDate.call(initialDays[initialIndex]);
+      final tasks = await getTasksForDate(initialDays[initialIndex]);
 
       emit(
         HabitListLoaded(
           habits: habits,
           days: initialDays,
           routines: routines,
+          tasks: tasks,
           selectedIndex: initialIndex,
         ),
       );

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/features/daily_items/data/dtos/habit_dto.dart';
+import 'package:mobile/features/daily_items/data/dtos/task_dto.dart';
 import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
 import 'package:mobile/features/daily_items/domain/entities/routine_enitity.dart';
 
@@ -12,7 +13,7 @@ class RoutineDto with EquatableMixin {
   final DateTime startDate;
   final TimeOfDay startTime;
   final List<int> repeatDays;
-  final List<HabitDto> habits;
+  final List<TaskDto> tasks;
   final ItemFrequency frequency;
   final List<DayOfWeek> weeklyDays;
   final List<int> monthlyDates;
@@ -25,7 +26,7 @@ class RoutineDto with EquatableMixin {
     required this.startDate,
     required this.startTime,
     required this.repeatDays,
-    required this.habits,
+    required this.tasks,
     required this.frequency,
     required this.weeklyDays,
     required this.monthlyDates,
@@ -39,7 +40,7 @@ class RoutineDto with EquatableMixin {
     DateTime? startDate,
     TimeOfDay? startTime,
     List<int>? repeatDays,
-    List<HabitDto>? habits,
+    List<TaskDto>? tasks,
     ItemFrequency? frequency,
     List<DayOfWeek>? weeklyDays,
     List<int>? monthlyDates,
@@ -52,7 +53,7 @@ class RoutineDto with EquatableMixin {
       startDate: startDate ?? this.startDate,
       startTime: startTime ?? this.startTime,
       repeatDays: repeatDays ?? this.repeatDays,
-      habits: habits ?? this.habits,
+      tasks: tasks ?? this.tasks,
       frequency: frequency ?? this.frequency,
       weeklyDays: weeklyDays ?? this.weeklyDays,
       monthlyDates: monthlyDates ?? this.monthlyDates,
@@ -68,7 +69,7 @@ class RoutineDto with EquatableMixin {
       'start_date': startDate.millisecondsSinceEpoch,
       'start_time': {'hour': startTime.hour, 'minute': startTime.minute},
       'repeat_days': repeatDays,
-      'habits': habits.map((x) => x.toMap()).toList(),
+      'habits': tasks.map((x) => x.toMap()).toList(),
       'frequency': frequency.index,
       'weekly_days': weeklyDays.map((x) => x.index).toList(),
       'monthly_dates': monthlyDates,
@@ -87,7 +88,7 @@ class RoutineDto with EquatableMixin {
         minute: map['start_time']['minute'] as int,
       ),
       repeatDays: List<int>.from(map['repeat_days']),
-      habits: List<HabitDto>.from(
+      tasks: List<TaskDto>.from(
         (map['habits'] as List).map(
           (x) => HabitDto.fromMap(x as Map<String, dynamic>),
         ),
@@ -114,7 +115,7 @@ class RoutineDto with EquatableMixin {
       startDate: startDate,
       startTime: startTime,
       repeatDays: repeatDays,
-      habits: habits.map((h) => h.toEntity()).toList(),
+      tasks: tasks.map((h) => h.toEntity()).toList(),
       frequency: frequency,
       weeklyDays: weeklyDays,
       monthlyDates: monthlyDates,
@@ -133,7 +134,7 @@ class RoutineDto with EquatableMixin {
     startDate,
     startTime,
     repeatDays,
-    habits,
+    tasks,
     frequency,
     weeklyDays,
     monthlyDates,
