@@ -15,6 +15,7 @@ import 'package:mobile/features/authentication/domain/usecases/login_usecase.dar
 import 'package:mobile/features/authentication/domain/usecases/logout_usecase.dart';
 import 'package:mobile/features/authentication/presentation/login/login_screen.dart';
 import 'package:mobile/features/authentication/presentation/shared/bloc/authentication_bloc.dart';
+import 'package:mobile/features/layouts/presentation/layout/home_layout.dart';
 import 'package:mobile/features/profile/data/providers/profile_data_local_provider.dart';
 import 'package:mobile/features/profile/data/providers/profile_data_provider.dart';
 import 'package:mobile/features/profile/data/repositories/profile_respository_impl.dart';
@@ -97,7 +98,7 @@ class App extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'My App',
           theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-          home: isFirstTime ? const LoginScreen() : const LoginScreen(),
+          home: isFirstTime ? const LoginScreen() : const HomeLayout(),
         ),
       ),
     );
