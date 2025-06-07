@@ -2,7 +2,7 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
-import 'package:mobile/features/habit_list/domain/entities/habit_entity.dart';
+import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
 
 class HabitDto with EquatableMixin {
   final String id;

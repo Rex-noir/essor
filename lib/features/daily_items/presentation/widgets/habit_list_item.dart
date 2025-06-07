@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/features/habit_list/domain/entities/habit_entity.dart';
+import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
 
 class HabitListItem extends StatelessWidget {
   final HabitEntity habit;

@@ -1,6 +1,6 @@
-import 'package:mobile/features/habit_list/data/dtos/habit_dto.dart';
-import 'package:mobile/features/habit_list/data/providers/habit_list_provider.dart';
-import 'package:mobile/features/habit_list/domain/entities/habit_entity.dart';
+import 'package:mobile/features/daily_items/data/dtos/habit_dto.dart';
+import 'package:mobile/features/daily_items/data/providers/habit_list_provider.dart';
+import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
 
 class HabitListLocalProvider extends HabitListProvider {
   @override

@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/core/utils/app_logger.dart';
-import 'package:mobile/features/habit_list/presentation/bloc/habit_list_bloc.dart';
-import 'package:mobile/features/habit_list/presentation/widgets/habit_list_item.dart';
+import 'package:mobile/features/daily_items/presentation/bloc/habit_list_bloc.dart';
+import 'package:mobile/features/daily_items/presentation/widgets/habit_list_item.dart';
 
-class HabitListScreen extends StatefulWidget {
-  const HabitListScreen({super.key});
+class DailyItemsScreen extends StatefulWidget {
+  const DailyItemsScreen({super.key});
 
   @override
-  State<HabitListScreen> createState() => _HabitListScreenState();
+  State<DailyItemsScreen> createState() => _DailyItemsScreenState();
 }
 
-class _HabitListScreenState extends State<HabitListScreen>
+class _DailyItemsScreenState extends State<DailyItemsScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
 
-  final logger = AppLogger.tag("HabitListScreen");
+  final logger = AppLogger.tag("DailyItemsScreen");
 
   @override
   void initState() {
@@ -147,32 +147,35 @@ class _HabitListScreenState extends State<HabitListScreen>
                 );
               }).toList(),
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Text(
+                "Habits",
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
             Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24.0,
-                  vertical: 12,
-                ),
-                child: TabBarView(
-                  controller: _tabController,
-                  children: days.map((day) {
-                    return Container(
-                      color: Theme.of(context).colorScheme.surface,
-                      child: ListView.separated(
-                        padding: EdgeInsets.only(bottom: 80),
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 8),
-                        itemBuilder: (context, index) {
-                          final habit = state.habits[index];
-                          logger.debug(habit.toString());
-
-                          return HabitListItem(habit: habit);
-                        },
-                        itemCount: state.habits.length,
-                      ),
-                    );
-                  }).toList(),
-                ),
+              child: TabBarView(
+                controller: _tabController,
+                children: days.map((day) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0,
+                      vertical: 12,
+                    ),
+                    color: Theme.of(context).colorScheme.surface,
+                    child: ListView.separated(
+                      padding: EdgeInsets.only(bottom: 80),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 8),
+                      itemBuilder: (context, index) {
+                        final habit = state.habits[index];
+                        return HabitListItem(habit: habit);
+                      },
+                      itemCount: state.habits.length,
+                    ),
+                  );
+                }).toList(),
               ),
             ),
           ],

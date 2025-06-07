@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:mobile/core/utils/app_logger.dart';
-import 'package:mobile/features/habit_list/domain/entities/habit_entity.dart';
-import 'package:mobile/features/habit_list/domain/usecases/get_habits_for_date_usecase.dart';
+import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
+import 'package:mobile/features/daily_items/domain/usecases/get_habits_for_date_usecase.dart';
 
 part 'habit_list_event.dart';
 part 'habit_list_state.dart';
