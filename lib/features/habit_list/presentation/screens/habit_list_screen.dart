@@ -159,6 +159,7 @@ class _HabitListScreenState extends State<HabitListScreen>
                     return Container(
                       color: Theme.of(context).colorScheme.surface,
                       child: ListView.separated(
+                        padding: EdgeInsets.only(bottom: 80),
                         separatorBuilder: (context, index) =>
                             const SizedBox(height: 8),
                         itemBuilder: (context, index) {
