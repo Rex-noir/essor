@@ -64,7 +64,6 @@ class _HabitListScreenState extends State<HabitListScreen>
     return BlocConsumer<HabitListBloc, HabitListState>(
       listener: (context, state) {
         if (state is HabitListLoaded) {
-          logger.debug("Selected index ${state.selectedIndex}");
           _updateTabController(state.days.length, state.selectedIndex);
         }
       },
@@ -77,71 +76,65 @@ class _HabitListScreenState extends State<HabitListScreen>
 
         return Column(
           children: [
-            Container(
-              alignment: Alignment.topLeft,
-              child: TabBar(
-                controller: _tabController,
-                isScrollable: true,
-                tabAlignment: TabAlignment.center,
-                indicatorPadding: EdgeInsets.zero,
-                padding: EdgeInsets.zero,
-                overlayColor: WidgetStatePropertyAll(Colors.transparent),
-                dividerColor: Colors.transparent,
-                indicatorColor: Colors.transparent,
-                labelPadding: const EdgeInsets.all(4),
-                tabs: days.map((day) {
-                  final dayName = DateFormat.EEEE().format(day).substring(0, 3);
-                  final index = days.indexOf(day);
-                  final isSelected = state.selectedIndex == index;
+            TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              key: UniqueKey(),
+              tabAlignment: TabAlignment.center,
+              indicatorPadding: EdgeInsets.zero,
+              padding: EdgeInsets.zero,
+              overlayColor: WidgetStatePropertyAll(Colors.transparent),
+              dividerColor: Colors.transparent,
+              indicatorColor: Colors.transparent,
+              labelPadding: const EdgeInsets.all(4),
+              tabs: days.map((day) {
+                final dayName = DateFormat('EEE').format(day);
+                final index = days.indexOf(day);
+                final isSelected = state.selectedIndex == index;
 
-                  return AnimatedContainer(
-                    height: 90,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    width: 70,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                      border: isSelected
-                          ? Border.all(
-                              color: Theme.of(context).colorScheme.primary,
-                              width: 2,
-                            )
-                          : Border.all(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.primary.withValues(alpha: 0.2),
-                              width: 2,
-                            ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "${day.day}",
-                          style: Theme.of(context).textTheme.labelLarge
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onPrimaryContainer,
-                                fontWeight: FontWeight.bold,
-                              ),
+                return Container(
+                  height: 90,
+                  width: 70,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    border: isSelected
+                        ? Border.all(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2,
+                          )
+                        : Border.all(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.2),
+                            width: 2,
+                          ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "${day.day}",
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer,
+                          fontWeight: FontWeight.bold,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          dayName,
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimaryContainer
-                                    .withValues(alpha: .7),
-                              ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        dayName,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onPrimaryContainer
+                              .withValues(alpha: .7),
                         ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
             Expanded(
               child: TabBarView(
