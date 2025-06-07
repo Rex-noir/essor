@@ -75,7 +75,17 @@ class _HabitListScreenState extends State<HabitListScreen>
         final days = state.days;
 
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 12,
+              ),
+              child: Text(
+                DateFormat.yMMMMEEEEd().format(days[state.selectedIndex]),
+              ),
+            ),
             TabBar(
               controller: _tabController,
               isScrollable: true,
