@@ -1,5 +1,5 @@
 import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
-import 'package:mobile/features/daily_items/domain/repositories/habit_list_repository.dart';
+import 'package:mobile/features/daily_items/domain/repositories/habit_repository.dart';
 
 class GetHabitsForDateUsecase {
   final HabitListRepository repository;

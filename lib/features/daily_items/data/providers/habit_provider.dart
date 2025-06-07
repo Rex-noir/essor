@@ -1,8 +1,8 @@
 import 'package:mobile/features/daily_items/data/dtos/habit_dto.dart';
-import 'package:mobile/features/daily_items/data/providers/habit_list_provider.dart';
+import 'package:mobile/features/daily_items/data/providers/habit_local_provider.dart';
 import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
 
-class HabitListLocalProvider extends HabitListProvider {
+class HabitLocalProvider extends HabitProvider {
   @override
   Future<List<HabitDto>> fetchHabitsForDate(DateTime date) {
     final sampleHabits = <HabitDto>[
