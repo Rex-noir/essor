@@ -1,17 +1,17 @@
-part of 'habit_list_bloc.dart';
+part of 'daily_list_bloc.dart';
 
-sealed class HabitListState extends Equatable {
-  const HabitListState();
+sealed class DailyListState extends Equatable {
+  const DailyListState();
 
   @override
   List<Object?> get props => [];
 }
 
-final class HabitListInitial extends HabitListState {}
+final class HabitListInitial extends DailyListState {}
 
-final class HabitListLoading extends HabitListState {}
+final class DailyListLoading extends DailyListState {}
 
-class HabitListLoaded extends HabitListState {
+class HabitListLoaded extends DailyListState {
   final List<HabitEntity> habits;
   final List<DateTime> days;
   final int selectedIndex;
@@ -38,7 +38,7 @@ class HabitListLoaded extends HabitListState {
   }
 }
 
-class HabitListError extends HabitListState {
+class HabitListError extends DailyListState {
   final String message;
 
   const HabitListError(this.message);

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/features/daily_items/data/providers/habit_list_local_provider.dart';
 import 'package:mobile/features/daily_items/data/repositories/habit_list_repository_impl.dart';
 import 'package:mobile/features/daily_items/domain/usecases/get_habits_for_date_usecase.dart';
-import 'package:mobile/features/daily_items/presentation/bloc/habit_list_bloc.dart';
+import 'package:mobile/features/daily_items/presentation/bloc/daily_list_bloc.dart';
 import 'package:mobile/features/daily_items/presentation/screens/daily_items_screen.dart';
 import 'package:mobile/features/home/presentation/widgets/home_greeting.dart';
 
@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen>
   late TabController _tabController;
   int activeIndex = 0;
 
-  late final HabitListBloc _habitListBloc;
+  late final DailyListBloc _DailyListBloc;
 
   // Cache the tab views to prevent rebuilding
   late final List<Widget> _tabViews;
@@ -47,11 +47,11 @@ class _HomeScreenState extends State<HomeScreen>
       }
     });
 
-    _habitListBloc = HabitListBloc(
+    _DailyListBloc = DailyListBloc(
       GetHabitsForDateUsecase(
         HabitListRepositoryImpl(HabitListLocalProvider()),
       ),
-    )..add(HabitListInitialize());
+    )..add(DailyListInitialize());
   }
 
   // Initialize tab views only once
@@ -59,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen>
     if (!_tabViewsInitialized) {
       _tabViews = [
         BlocProvider.value(
-          value: _habitListBloc,
+          value: _DailyListBloc,
           child: const DailyItemsScreen(),
         ),
         const _ExploreTab(), // Separate widget to avoid rebuilds
@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void dispose() {
     _tabController.dispose();
-    _habitListBloc.close();
+    _DailyListBloc.close();
     super.dispose();
   }
 

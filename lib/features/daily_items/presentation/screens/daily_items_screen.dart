@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/core/utils/app_logger.dart';
-import 'package:mobile/features/daily_items/presentation/bloc/habit_list_bloc.dart';
+import 'package:mobile/features/daily_items/presentation/bloc/daily_list_bloc.dart';
 import 'package:mobile/features/daily_items/presentation/widgets/habit_list_item.dart';
 
 class DailyItemsScreen extends StatefulWidget {
@@ -44,8 +44,8 @@ class _DailyItemsScreenState extends State<DailyItemsScreen>
       // this will catch a tab change by tapping on the tab bar
       if (_tabController.indexIsChanging) {
         if (activeIndex != _tabController.index) {
-          context.read<HabitListBloc>().add(
-            HabitListDateChanged(_tabController.index),
+          context.read<DailyListBloc>().add(
+            DailyListDateChanged(_tabController.index),
           );
         }
         // this will catch a tab change by swipe
@@ -53,7 +53,7 @@ class _DailyItemsScreenState extends State<DailyItemsScreen>
         final int temp = _tabController.animation!.value.round();
         if (activeIndex != temp) {
           activeIndex = temp;
-          context.read<HabitListBloc>().add(HabitListDateChanged(activeIndex));
+          context.read<DailyListBloc>().add(DailyListDateChanged(activeIndex));
         }
       }
     });
@@ -62,7 +62,7 @@ class _DailyItemsScreenState extends State<DailyItemsScreen>
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<HabitListBloc, HabitListState>(
+    return BlocConsumer<DailyListBloc, DailyListState>(
       listener: (context, state) {
         if (state is HabitListLoaded) {
           _updateTabController(state.days.length, state.selectedIndex);
@@ -150,7 +150,7 @@ class _DailyItemsScreenState extends State<DailyItemsScreen>
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Text(
-                "Habits",
+                "Items",
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),

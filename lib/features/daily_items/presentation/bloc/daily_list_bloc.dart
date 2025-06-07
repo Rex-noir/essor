@@ -6,29 +6,29 @@ import 'package:mobile/core/utils/app_logger.dart';
 import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
 import 'package:mobile/features/daily_items/domain/usecases/get_habits_for_date_usecase.dart';
 
-part 'habit_list_event.dart';
-part 'habit_list_state.dart';
+part 'daily_list_event.dart';
+part 'daily_list_state.dart';
 
-class HabitListBloc extends Bloc<HabitListEvent, HabitListState> {
+class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
   final GetHabitsForDateUsecase getHabitsForDate;
-  final logger = AppLogger.tag('HabitListBloc');
+  final logger = AppLogger.tag('DailyListBloc');
 
   static const int initialDaysEachSide = 15;
   static const int extendThreshold = 5;
   static const int daysToAdd = 10;
 
-  HabitListBloc(this.getHabitsForDate) : super(HabitListInitial()) {
-    on<HabitListDateChanged>(_onDateChanged);
-    on<HabitListInitialize>(_onInitialize);
+  DailyListBloc(this.getHabitsForDate) : super(HabitListInitial()) {
+    on<DailyListDateChanged>(_onDateChanged);
+    on<DailyListInitialize>(_onInitialize);
   }
 
   FutureOr<void> _onDateChanged(
-    HabitListDateChanged event,
-    Emitter<HabitListState> emit,
+    DailyListDateChanged event,
+    Emitter<DailyListState> emit,
   ) async {
     if (state is! HabitListLoaded) return;
     final currentState = state as HabitListLoaded;
-    emit(HabitListLoading());
+    emit(DailyListLoading());
     try {
       final newIndex = event.newIndex;
       final selectedDate = currentState.days[newIndex];
@@ -83,10 +83,10 @@ class HabitListBloc extends Bloc<HabitListEvent, HabitListState> {
   }
 
   FutureOr<void> _onInitialize(
-    HabitListInitialize event,
-    Emitter<HabitListState> emit,
+    DailyListInitialize event,
+    Emitter<DailyListState> emit,
   ) async {
-    emit(HabitListLoading());
+    emit(DailyListLoading());
 
     final today = DateTime.now();
     final initialDays = List.generate(
