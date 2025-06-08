@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/core/utils/app_logger.dart';
 import 'package:mobile/features/daily_items/presentation/bloc/daily_list_bloc.dart';
-import 'package:mobile/features/daily_items/presentation/widgets/habit_list_item.dart';
-import 'package:mobile/features/daily_items/presentation/widgets/routine_list_item.dart';
+import 'package:mobile/features/daily_items/presentation/widgets/list_items_page.dart';
 
 class DailyListScreen extends StatefulWidget {
   const DailyListScreen({super.key});
@@ -141,9 +140,7 @@ class _DailyListScreenState extends State<DailyListScreen>
                 final index = days.indexOf(day);
                 final isSelected = state.selectedIndex == index;
 
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
+                return Container(
                   height: 90,
                   width: 70,
                   decoration: BoxDecoration(
@@ -194,31 +191,13 @@ class _DailyListScreenState extends State<DailyListScreen>
               child: TabBarView(
                 controller: _tabController,
                 children: days.map((day) {
-                  return Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0,
-                      vertical: 12,
-                    ),
-                    color: Theme.of(context).colorScheme.surface,
-                    child: state.isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : ListView.separated(
-                            padding: EdgeInsets.only(bottom: 80),
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 8),
-                            itemBuilder: (context, index) {
-                              final item = items[index];
-
-                              if (item is HabitItem) {
-                                return HabitListItem(habit: item.habit);
-                              } else if (item is RoutineItem) {
-                                return RoutineListItem(routine: item.routine);
-                              } else {
-                                return const SizedBox.shrink();
-                              }
-                            },
-                            itemCount: items.length,
-                          ),
+                  return ListItemsPage(
+                    day: day.toIso8601String(),
+                    items: items,
+                    isLoading: state.isLoading,
+                    onRefresh: () {
+                      logger.info("Refresh called");
+                    },
                   );
                 }).toList(),
               ),
