@@ -51,19 +51,8 @@ class RoutineListItem extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      routine.title,
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      _repeatDaysLabel(),
-                      style: textTheme.bodySmall?.copyWith(
-                        color: color.onSurfaceVariant,
-                      ),
-                    ),
+                    Text(routine.title, style: textTheme.titleSmall),
+                    Text(_repeatDaysLabel(), style: textTheme.labelSmall),
                   ],
                 ),
               ],
