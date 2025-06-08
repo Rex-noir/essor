@@ -1,27 +1,27 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'item_entity.dart'; // assuming this file is named item_entity.dart
 
-class TaskEntity with EquatableMixin {
-  final String title;
-  final String description;
+class TaskEntity extends ItemEntity {
   final DateTime startDate;
   final TimeOfDay startTime;
   final bool isCompleted;
   final int importance;
-  final int iconIndex;
 
-  TaskEntity({
-    required this.title,
-    required this.description,
+  const TaskEntity({
+    required super.id,
+    required super.title,
+    super.description,
     required this.startDate,
     required this.startTime,
-    required this.isCompleted,
+    this.isCompleted = false,
     required this.importance,
-    this.iconIndex = 0,
+    required super.type,
+    super.target,
+    super.iconIndex = 0,
   });
 
   TaskEntity copyWith({
+    String? id,
     String? title,
     String? description,
     DateTime? startDate,
@@ -29,20 +29,23 @@ class TaskEntity with EquatableMixin {
     bool? isCompleted,
     int? importance,
     int? iconIndex,
+    ItemType? type,
+    int? target,
   }) {
     return TaskEntity(
+      id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
       startDate: startDate ?? this.startDate,
       startTime: startTime ?? this.startTime,
       isCompleted: isCompleted ?? this.isCompleted,
       importance: importance ?? this.importance,
+      type: type ?? this.type,
+      target: target ?? this.target,
       iconIndex: iconIndex ?? this.iconIndex,
     );
   }
 
   @override
-  List<Object> get props {
-    return [title, description, startDate, startTime, isCompleted, importance];
-  }
+  List<Object?> get props => super.props + [startDate, startTime, isCompleted, importance];
 }

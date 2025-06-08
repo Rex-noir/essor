@@ -1,26 +1,23 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:equatable/equatable.dart';
 import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
+import 'package:mobile/features/daily_items/domain/entities/item_entity.dart';
 
-class HabitDto with EquatableMixin {
-  final String id;
-  final String title;
-  final String? description;
-  //enum
+class HabitDto extends ItemEntity {
   final ItemFrequency frequency;
   final DateTime startDate;
-  //enum
   final List<DayOfWeek> weeklyDays;
   final List<int> monthlyDates;
   final int repeatEvery;
   final bool isActive;
 
   const HabitDto({
-    required this.id,
-    required this.title,
-    this.description,
+    required super.id,
+    required super.title,
+    super.description,
+    required super.iconIndex,
+    required super.type,
+    super.target,
     required this.frequency,
     required this.startDate,
     this.weeklyDays = const [],
@@ -33,6 +30,9 @@ class HabitDto with EquatableMixin {
     String? id,
     String? title,
     String? description,
+    int? iconIndex,
+    ItemType? type,
+    int? target,
     ItemFrequency? frequency,
     DateTime? startDate,
     List<DayOfWeek>? weeklyDays,
@@ -44,6 +44,9 @@ class HabitDto with EquatableMixin {
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
+      iconIndex: iconIndex ?? this.iconIndex,
+      type: type ?? this.type,
+      target: target ?? this.target,
       frequency: frequency ?? this.frequency,
       startDate: startDate ?? this.startDate,
       weeklyDays: weeklyDays ?? this.weeklyDays,
@@ -54,10 +57,13 @@ class HabitDto with EquatableMixin {
   }
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
+    return {
       'id': id,
       'title': title,
       'description': description,
+      'icon_index': iconIndex,
+      'type': type.index,
+      'target': target,
       'frequency': frequency.index,
       'start_date': startDate.millisecondsSinceEpoch,
       'weekly_days': weeklyDays.map((x) => x.index).toList(),
@@ -69,58 +75,58 @@ class HabitDto with EquatableMixin {
 
   factory HabitDto.fromMap(Map<String, dynamic> map) {
     return HabitDto(
-      id: map['id'] as String,
-      title: map['title'] as String,
-      description: map['description'] != null
-          ? map['description'] as String
-          : null,
-      frequency: ItemFrequency.values[map['frequency'] as int],
-      startDate: DateTime.fromMillisecondsSinceEpoch(map['start_date'] as int),
-      weeklyDays: List<DayOfWeek>.from(
-        (map['weekly_days'] as List<int>).map<DayOfWeek>(
-          (x) => DayOfWeek.values[x],
-        ),
-      ),
-      monthlyDates: List<int>.from((map['monthly_dates'] as List<int>)),
-      repeatEvery: map['repeat_every'] as int,
-      isActive: map['is_active'] as bool,
+      id: map['id'],
+      title: map['title'],
+      description: map['description'],
+      iconIndex: map['icon_index'],
+      type: ItemType.values[map['type']],
+      target: map['target'],
+      frequency: ItemFrequency.values[map['frequency']],
+      startDate: DateTime.fromMillisecondsSinceEpoch(map['start_date']),
+      weeklyDays: List<int>.from(
+        map['weekly_days'],
+      ).map((x) => DayOfWeek.values[x]).toList(),
+      monthlyDates: List<int>.from(map['monthly_dates']),
+      repeatEvery: map['repeat_every'],
+      isActive: map['is_active'],
     );
   }
 
   String toJson() => json.encode(toMap());
 
   factory HabitDto.fromJson(String source) =>
-      HabitDto.fromMap(json.decode(source) as Map<String, dynamic>);
+      HabitDto.fromMap(json.decode(source));
 
   HabitEntity toEntity() {
     return HabitEntity(
       id: id,
       title: title,
-      frequency: frequency,
       description: description,
-      isActive: isActive,
-      repeatEvery: repeatEvery,
-      monthlyDates: monthlyDates,
-      weeklyDays: weeklyDays,
+      iconIndex: iconIndex,
+      type: type,
+      target: target,
+      frequency: frequency,
       startDate: startDate,
+      weeklyDays: weeklyDays,
+      monthlyDates: monthlyDates,
+      repeatEvery: repeatEvery,
+      isActive: isActive,
     );
   }
 
   @override
-  bool get stringify => true;
-
-  @override
-  List<Object?> get props {
-    return [
-      id,
-      title,
-      description,
-      frequency,
-      startDate,
-      weeklyDays,
-      monthlyDates,
-      repeatEvery,
-      isActive,
-    ];
-  }
+  List<Object?> get props => [
+    id,
+    title,
+    description,
+    iconIndex,
+    type,
+    target,
+    frequency,
+    startDate,
+    weeklyDays,
+    monthlyDates,
+    repeatEvery,
+    isActive,
+  ];
 }
