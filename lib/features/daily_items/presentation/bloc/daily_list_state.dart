@@ -35,12 +35,14 @@ class HabitListLoaded extends DailyListState {
   final List<TaskEntity> tasks;
   final List<DateTime> days;
   final int selectedIndex;
+  final bool isLoading;
 
   const HabitListLoaded({
     required this.habits,
     required this.days,
     required this.selectedIndex,
     required this.routines,
+    this.isLoading = false,
     required this.tasks,
   });
 
@@ -58,15 +60,18 @@ class HabitListLoaded extends DailyListState {
   HabitListLoaded copyWith({
     List<HabitEntity>? habits,
     List<RoutineEntity>? routines,
+    List<TaskEntity>? tasks,
     List<DateTime>? days,
     int? selectedIndex,
+    bool? isLoading,
   }) {
     return HabitListLoaded(
       habits: habits ?? this.habits,
-      tasks: tasks,
       routines: routines ?? this.routines,
+      tasks: tasks ?? this.tasks,
       days: days ?? this.days,
       selectedIndex: selectedIndex ?? this.selectedIndex,
+      isLoading: isLoading ?? this.isLoading,
     );
   }
 }

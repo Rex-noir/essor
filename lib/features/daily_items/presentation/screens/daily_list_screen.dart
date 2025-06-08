@@ -66,16 +66,49 @@ class _DailyListScreenState extends State<DailyListScreen>
     return BlocConsumer<DailyListBloc, DailyListState>(
       listener: (context, state) {
         if (state is HabitListLoaded) {
-          _updateTabController(state.days.length, state.selectedIndex);
+          if (_tabController.length != state.days.length ||
+              _tabController.index != state.selectedIndex) {
+            _updateTabController(state.days.length, state.selectedIndex);
+          }
         }
       },
       builder: (context, state) {
+        // Show a basic loading state only if we don't have any data yet
         if (state is! HabitListLoaded) {
-          return const Center(child: CircularProgressIndicator());
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Show placeholder for date
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 12,
+                ),
+                child: Text(
+                  DateFormat.yMMMMEEEEd().format(DateTime.now()),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.5),
+                  ),
+                ),
+              ),
+              // Show placeholder tabs or hide TabBar entirely
+              const SizedBox(height: 90), // Space where TabBar would be
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Text(
+                  "Items",
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              // Show loading indicator in the content area
+              const Expanded(child: Center(child: CircularProgressIndicator())),
+            ],
+          );
         }
 
         final days = state.days;
-
         List<DailyItem> items = state.items;
 
         return Column(
@@ -167,25 +200,25 @@ class _DailyListScreenState extends State<DailyListScreen>
                       vertical: 12,
                     ),
                     color: Theme.of(context).colorScheme.surface,
-                    child: ListView.separated(
-                      padding: EdgeInsets.only(bottom: 80),
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 8),
-                      itemBuilder: (context, index) {
-                        final item = items[index];
+                    child: state.isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : ListView.separated(
+                            padding: EdgeInsets.only(bottom: 80),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 8),
+                            itemBuilder: (context, index) {
+                              final item = items[index];
 
-                        if (item is HabitItem) {
-                          return HabitListItem(habit: item.habit);
-                        } else if (item is RoutineItem) {
-                          return RoutineListItem(
-                            routine: item.routine,
-                          ); // You'd implement this
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      },
-                      itemCount: items.length,
-                    ),
+                              if (item is HabitItem) {
+                                return HabitListItem(habit: item.habit);
+                              } else if (item is RoutineItem) {
+                                return RoutineListItem(routine: item.routine);
+                              } else {
+                                return const SizedBox.shrink();
+                              }
+                            },
+                            itemCount: items.length,
+                          ),
                   );
                 }).toList(),
               ),

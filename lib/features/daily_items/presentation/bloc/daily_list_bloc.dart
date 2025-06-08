@@ -38,7 +38,7 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
   ) async {
     if (state is! HabitListLoaded) return;
     final currentState = state as HabitListLoaded;
-    emit(DailyListLoading());
+    emit(currentState.copyWith(isLoading: true));
     try {
       final newIndex = event.newIndex;
       final selectedDate = currentState.days[newIndex];
@@ -69,6 +69,7 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
           days: newDays,
           tasks: tasks,
           selectedIndex: updatedNewIndex,
+          isLoading: false,
         ),
       );
     } catch (e) {
@@ -121,6 +122,7 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
           routines: routines,
           tasks: tasks,
           selectedIndex: initialIndex,
+          isLoading: false,
         ),
       );
     } catch (e) {
