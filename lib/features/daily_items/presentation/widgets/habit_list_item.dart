@@ -4,14 +4,15 @@ import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
 
 class HabitListItem extends StatelessWidget {
   final HabitEntity habit;
+
   const HabitListItem({required this.habit, super.key});
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = Theme.of(context).colorScheme.primary;
     final textTheme = Theme.of(context).textTheme;
-
+    final colorScheme = Theme.of(context).colorScheme;
     return Card(
+      color: colorScheme.tertiaryContainer,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -25,10 +26,14 @@ class HabitListItem extends StatelessWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: borderColor, width: 1),
+                    border: Border.all(color: colorScheme.primary, width: 1),
                   ),
                   child: Center(
-                    child: Icon(AppIcons.getIcon(habit.iconIndex), color: borderColor, size: 20),
+                    child: Icon(
+                      AppIcons.getIcon(habit.iconIndex),
+                      color: colorScheme.primary,
+                      size: 20,
+                    ),
                   ),
                 ),
                 Column(
@@ -47,7 +52,7 @@ class HabitListItem extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                side: BorderSide(color: borderColor),
+                side: BorderSide(color: colorScheme.primary),
                 padding: EdgeInsets.zero,
                 minimumSize: const Size(38, 38),
               ),

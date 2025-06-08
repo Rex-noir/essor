@@ -25,6 +25,7 @@ class RoutineListItem extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Card(
+      color: color.secondaryContainer,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
