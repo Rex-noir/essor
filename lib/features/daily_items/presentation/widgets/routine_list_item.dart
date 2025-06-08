@@ -23,51 +23,93 @@ class RoutineListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final routineColor = Colors.lightBlueAccent;
 
     return Card(
-      color: color.secondaryContainer,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16), // Softer corners
+        side: BorderSide(color: routineColor.withValues(alpha: 0.5)),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 8,
+              spacing: 16,
               children: [
                 Container(
-                  width: 40,
-                  height: 40,
+                  width: 56,
+                  height: 56,
                   decoration: BoxDecoration(
-                    border: Border.all(color: color.primary, width: 1),
+                    color: routineColor.withValues(alpha: 0.1),
+                    border: Border.all(
+                      color: routineColor.withValues(alpha: .3),
+                      width: 1,
+                    ),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     AppIcons.getIcon(routine.iconIndex),
-                    color: color.primary,
-                    size: 20,
+                    color: color.tertiary,
+                    size: 26,
                   ),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(routine.title, style: textTheme.titleSmall),
-                    Text(_repeatDaysLabel(), style: textTheme.labelSmall),
+                    Text(routine.title, style: textTheme.titleMedium),
+                    Text(
+                      _repeatDaysLabel(),
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: color.onSurface.withValues(alpha: .6),
+                      ),
+                    ),
                   ],
                 ),
               ],
             ),
-            OutlinedButton(
-              onPressed: () {},
-              style: OutlinedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                // Handle menu selection
+                switch (value) {
+                  case 'edit':
+                    // Handle edit
+                    break;
+                  case 'delete':
+                    // Handle delete
+                    break;
+                }
+              },
+              itemBuilder: (BuildContext context) => [
+                const PopupMenuItem<String>(
+                  value: 'edit',
+                  child: Row(
+                    children: [
+                      Icon(Icons.edit_outlined),
+                      SizedBox(width: 8),
+                      Text('Edit'),
+                    ],
+                  ),
                 ),
-                side: BorderSide(color: color.primary),
-                padding: EdgeInsets.zero,
-                minimumSize: const Size(38, 38),
+                const PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete_outlined),
+                      SizedBox(width: 8),
+                      Text('Delete'),
+                    ],
+                  ),
+                ),
+              ],
+              padding: EdgeInsets.zero,
+              child: Icon(
+                Icons.more_horiz, // Horizontal three dots
+                color: color.onSurface.withOpacity(0.6),
+                size: 24,
               ),
-              child: const Icon(Icons.play_arrow, size: 24),
             ),
           ],
         ),

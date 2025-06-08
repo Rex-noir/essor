@@ -11,52 +11,108 @@ class HabitListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final habitColor = Colors.amberAccent;
+
     return Card(
-      color: colorScheme.tertiaryContainer,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+      elevation: 0, // Soft appearance
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16), // Softer corners
+        side: BorderSide(color: habitColor.withValues(alpha: 0.5)),
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 24,
+        ), // Increased padding for larger size
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              spacing: 8,
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: colorScheme.primary, width: 1),
-                  ),
-                  child: Center(
+            Expanded(
+              child: Row(
+                spacing: 16, // Increased spacing
+                children: [
+                  Container(
+                    width: 56, // Larger icon container
+                    height: 56,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: habitColor.withValues(
+                        alpha: 0.1,
+                      ), // Soft background
+                      border: Border.all(
+                        color: habitColor.withValues(alpha: .3),
+                        width: 1.5,
+                      ),
+                    ),
                     child: Icon(
                       AppIcons.getIcon(habit.iconIndex),
-                      color: colorScheme.primary,
-                      size: 20,
+                      color: colorScheme.tertiary,
+                      size: 26, // Larger icon
                     ),
                   ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          habit.title,
+                          style: textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '30/480',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurface.withValues(alpha: .6),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                // Handle menu selection
+                switch (value) {
+                  case 'edit':
+                    // Handle edit
+                    break;
+                  case 'delete':
+                    // Handle delete
+                    break;
+                }
+              },
+              itemBuilder: (BuildContext context) => [
+                const PopupMenuItem<String>(
+                  value: 'edit',
+                  child: Row(
+                    children: [
+                      Icon(Icons.edit_outlined),
+                      SizedBox(width: 8),
+                      Text('Edit'),
+                    ],
+                  ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(habit.title, style: textTheme.titleSmall),
-                    Text('30/480', style: textTheme.labelSmall),
-                  ],
+                const PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete_outlined),
+                      SizedBox(width: 8),
+                      Text('Delete'),
+                    ],
+                  ),
                 ),
               ],
-            ),
-
-            OutlinedButton(
-              onPressed: () {},
-              style: OutlinedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                side: BorderSide(color: colorScheme.primary),
-                padding: EdgeInsets.zero,
-                minimumSize: const Size(38, 38),
+              padding: EdgeInsets.zero,
+              child: Icon(
+                Icons.more_horiz, // Horizontal three dots
+                color: colorScheme.onSurface.withOpacity(0.6),
+                size: 24,
               ),
-              child: const Icon(Icons.add, size: 24),
             ),
           ],
         ),

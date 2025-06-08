@@ -7,6 +7,7 @@ class ListItemsPage extends StatefulWidget {
   final String day;
   final List<DailyItem> items;
   final bool isLoading;
+  final ScrollController? scrollController; // Add this parameter
   final VoidCallback onRefresh;
 
   const ListItemsPage({
@@ -14,8 +15,10 @@ class ListItemsPage extends StatefulWidget {
     required this.items,
     required this.isLoading,
     required this.onRefresh,
+    this.scrollController, // Add this parameter
     super.key,
   });
+
   @override
   State<StatefulWidget> createState() => _ListItemsPageState();
 }
@@ -34,7 +37,9 @@ class _ListItemsPageState extends State<ListItemsPage>
             ? const Center(child: CircularProgressIndicator())
             : ListView.separated(
                 key: PageStorageKey('tab_${widget.day}'),
-                padding: EdgeInsets.only(bottom: 80),
+                controller: widget
+                    .scrollController, // Use the provided scroll controller
+                padding: const EdgeInsets.only(bottom: 80),
                 physics: const AlwaysScrollableScrollPhysics(),
                 separatorBuilder: (context, index) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
@@ -48,7 +53,6 @@ class _ListItemsPageState extends State<ListItemsPage>
                     return const SizedBox.shrink();
                   }
                 },
-
                 itemCount: widget.items.length,
               ),
       ),
