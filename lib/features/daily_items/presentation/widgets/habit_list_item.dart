@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/core/config/app_icons.dart';
 import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
 
 class HabitListItem extends StatelessWidget {
@@ -27,7 +28,7 @@ class HabitListItem extends StatelessWidget {
                     border: Border.all(color: borderColor, width: 1),
                   ),
                   child: Center(
-                    child: Icon(Icons.water_drop, color: borderColor, size: 20),
+                    child: Icon(AppIcons.getIcon(habit.iconIndex), color: borderColor, size: 20),
                   ),
                 ),
                 Column(

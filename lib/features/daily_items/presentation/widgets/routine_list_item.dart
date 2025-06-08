@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/core/config/app_icons.dart';
 import 'package:mobile/features/daily_items/domain/entities/routine_enitity.dart';
 
 class RoutineListItem extends StatelessWidget {
@@ -40,7 +41,11 @@ class RoutineListItem extends StatelessWidget {
                     border: Border.all(color: color.primary, width: 1),
                     shape: BoxShape.circle,
                   ),
-                  child: Center(child: Icon(Icons.health_and_safety_outlined)),
+                  child: Icon(
+                    AppIcons.getIcon(routine.iconIndex),
+                    color: color.primary,
+                    size: 20,
+                  ),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
