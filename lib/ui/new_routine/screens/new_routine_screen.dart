@@ -6,7 +6,6 @@ class NewRoutineScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -15,7 +14,9 @@ class NewRoutineScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
             icon: Icon(Icons.close),
             style: IconButton.styleFrom(
               shape: RoundedRectangleBorder(
