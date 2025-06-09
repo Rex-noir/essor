@@ -110,7 +110,7 @@ class HabitListItem extends StatelessWidget {
               padding: EdgeInsets.zero,
               child: Icon(
                 Icons.more_horiz, // Horizontal three dots
-                color: colorScheme.onSurface.withValues(0.6),
+                color: colorScheme.onSurface.withValues(alpha: 0.6),
                 size: 24,
               ),
             ),

@@ -173,7 +173,7 @@ class _CustomTabBar extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: theme.colorScheme.primary.withValues(0.3),
+              color: theme.colorScheme.primary.withValues(alpha: 0.3),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -312,7 +312,7 @@ class _ExploreTab extends StatelessWidget {
           Icon(
             Icons.explore_outlined,
             size: 64,
-            color: theme.colorScheme.primary.withValues(0.6),
+            color: theme.colorScheme.primary.withValues(alpha: 0.6),
           ),
           const SizedBox(height: 16),
           Text(
