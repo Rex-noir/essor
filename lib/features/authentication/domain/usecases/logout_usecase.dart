@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:mobile/core/failures/failures.dart';
+import 'package:mobile/core/domain/failures/failures.dart';
 import 'package:mobile/features/authentication/domain/repositories/auth_token_storage_repository.dart';
 import 'package:mobile/features/authentication/domain/repositories/authentication_repository.dart';
 

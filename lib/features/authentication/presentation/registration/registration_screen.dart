@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/core/widgets/app_text_field.dart';
-import 'package:mobile/core/widgets/logo_widget.dart';
+import 'package:mobile/core/ui/widgets/app_text_field.dart';
+import 'package:mobile/core/ui/widgets/logo_widget.dart';
 import 'package:mobile/features/authentication/presentation/login/login_screen.dart';
 import 'package:mobile/features/authentication/presentation/shared/widgets/app_password_field.dart';
 

@@ -1,4 +1,4 @@
-import 'package:mobile/core/failures/failures.dart';
+import 'package:mobile/core/domain/failures/failures.dart';
 
 class InvalidCredentialsFailure extends UnauthorizedFailure {
   const InvalidCredentialsFailure({String? message})

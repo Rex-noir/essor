@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile/core/failures/failures.dart';
+import 'package:mobile/core/domain/failures/failures.dart';
 import 'package:mobile/features/authentication/domain/entities/auth_response_entity.dart';
 import 'package:mobile/features/authentication/domain/failures/auth_failures.dart';
 import 'package:mobile/features/authentication/domain/repositories/auth_token_storage_repository.dart';

@@ -3,7 +3,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:mobile/core/failures/failures.dart';
+import 'package:mobile/core/domain/failures/failures.dart';
 import 'package:mobile/features/authentication/domain/enums/authentication_status.dart';
 import 'package:mobile/features/authentication/domain/usecases/login_usecase.dart';
 import 'package:mobile/features/authentication/domain/usecases/logout_usecase.dart';

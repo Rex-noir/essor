@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/core/widgets/app_text_field.dart';
+import 'package:mobile/core/ui/widgets/app_text_field.dart';
 
 class AppPasswordField extends StatefulWidget {
   final TextEditingController? controller;
