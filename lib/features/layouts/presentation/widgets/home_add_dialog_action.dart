@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class HomeAddActionCard extends StatelessWidget {
+class HomeAddDialogAction extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
   final Color backgroundColor;
   final VoidCallback onTap;
 
-  const HomeAddActionCard({
+  const HomeAddDialogAction({
     super.key,
     required this.title,
     required this.subtitle,

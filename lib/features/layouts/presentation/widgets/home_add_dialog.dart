@@ -1,0 +1,97 @@
+import 'package:flutter/material.dart';
+import 'package:mobile/features/layouts/presentation/widgets/home_add_dialog_action.dart';
+
+class HomeAddDialog extends StatelessWidget {
+  const HomeAddDialog({
+    super.key,
+    required AnimationController rotationController,
+    required ValueNotifier<bool> isSheetOpen,
+  }) : _rotationController = rotationController,
+       _isSheetOpen = isSheetOpen;
+
+  final AnimationController _rotationController;
+  final ValueNotifier<bool> _isSheetOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {},
+      child: Stack(
+        children: [
+          Positioned(
+            bottom: 140,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                HomeAddDialogAction(
+                  title: "New Habit",
+                  subtitle: "You can do it!",
+                  icon: Icons.add,
+                  backgroundColor: Colors.blue.shade50,
+                  onTap: () {
+                    // Todo
+                  },
+                ),
+                HomeAddDialogAction(
+                  title: "New Routine",
+                  subtitle: "Stay consistent!",
+                  icon: Icons.add,
+                  backgroundColor: Colors.green.shade50,
+                  onTap: () {
+                    // Todo
+                  },
+                ),
+              ],
+            ),
+          ),
+
+          Positioned(
+            bottom: 16,
+            left: MediaQuery.of(context).size.width / 2 - 36,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+                _rotationController.reverse(); // Reverse animation
+                _isSheetOpen.value = false;
+              },
+              child: Container(
+                height: 72,
+                width: 72,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withOpacity(0.35),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: AnimatedBuilder(
+                  animation: _rotationController,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle: _rotationController.value * 0.7854,
+                      child: child,
+                    );
+                  },
+                  child: Icon(
+                    Icons.close,
+                    size: 36,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

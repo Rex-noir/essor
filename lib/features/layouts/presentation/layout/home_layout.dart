@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/features/home/presentation/screens/home_screen.dart';
-import 'package:mobile/features/layouts/presentation/widgets/home_add_action_card.dart';
+import 'package:mobile/features/layouts/presentation/widgets/home_add_dialog.dart';
 
 class HomeLayout extends StatefulWidget {
   const HomeLayout({super.key});
@@ -97,97 +97,9 @@ class _HomeLayoutState extends State<HomeLayout> with TickerProviderStateMixin {
                           context: context,
                           useSafeArea: true,
                           builder: (context) {
-                            return GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTap: () {},
-                              child: Stack(
-                                children: [
-                                  Positioned(
-                                    bottom: 140,
-                                    left: 0,
-                                    right: 0,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        HomeAddActionCard(
-                                          title: "New Habit",
-                                          subtitle: "You can do it!",
-                                          icon: Icons.add,
-                                          backgroundColor: Colors.blue.shade50,
-                                          onTap: () {
-                                            // Todo
-                                          },
-                                        ),
-                                        HomeAddActionCard(
-                                          title: "New Routine",
-                                          subtitle: "Stay consistent!",
-                                          icon: Icons.add,
-                                          backgroundColor: Colors.green.shade50,
-                                          onTap: () {
-                                            // Todo
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  Positioned(
-                                    bottom: 16,
-                                    left:
-                                        MediaQuery.of(context).size.width / 2 -
-                                        36,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.of(context).pop();
-                                        _rotationController
-                                            .reverse(); // Reverse animation
-                                        _isSheetOpen.value = false;
-                                      },
-                                      child: Container(
-                                        height: 72,
-                                        width: 72,
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.primary,
-                                          borderRadius: BorderRadius.circular(
-                                            24,
-                                          ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary
-                                                  .withOpacity(0.35),
-                                              blurRadius: 20,
-                                              offset: const Offset(0, 8),
-                                            ),
-                                          ],
-                                        ),
-                                        child: AnimatedBuilder(
-                                          animation: _rotationController,
-                                          builder: (context, child) {
-                                            return Transform.rotate(
-                                              angle:
-                                                  _rotationController.value *
-                                                  0.7854,
-                                              child: child,
-                                            );
-                                          },
-                                          child: Icon(
-                                            Icons.close,
-                                            size: 36,
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.onPrimary,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            return HomeAddDialog(
+                              rotationController: _rotationController,
+                              isSheetOpen: _isSheetOpen,
                             );
                           },
                         ).whenComplete(() {
