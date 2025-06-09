@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/ui/new_routine/widgets/route_repeat_choice_chip.dart';
+import 'package:mobile/ui/new_routine/widgets/routine_repeat_days.dart';
 
 class NewRoutineScreen extends StatelessWidget {
   const NewRoutineScreen({super.key});
@@ -67,28 +67,7 @@ class NewRoutineScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width: double.infinity,
-                            child: Wrap(
-                              runAlignment: WrapAlignment.start,
-                              children: [
-                                RoutineRepeatChoiceChip(
-                                  label: "Mo",
-                                  selected: true,
-                                ),
-                                RoutineRepeatChoiceChip(
-                                  label: "Tu",
-                                  selected: false,
-                                ),
-                                RoutineRepeatChoiceChip(
-                                  label: "We",
-                                  selected: false,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                        children: [RoutineRepeatDays()],
                       ),
                     ),
                   ],

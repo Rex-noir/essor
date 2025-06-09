@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/domain/entities/habit_entity.dart';
 import 'package:mobile/domain/entities/task_entity.dart';
+import 'package:mobile/domain/enums/day_of_week.dart';
 
 class RoutineEntity {
   final String id;

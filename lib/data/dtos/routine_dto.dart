@@ -6,6 +6,7 @@ import 'package:mobile/data/dtos/habit_dto.dart';
 import 'package:mobile/data/dtos/task_dto.dart';
 import 'package:mobile/domain/entities/habit_entity.dart';
 import 'package:mobile/domain/entities/routine_enitity.dart';
+import 'package:mobile/domain/enums/day_of_week.dart';
 
 class RoutineDto with EquatableMixin {
   final String id;

@@ -1,17 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:mobile/domain/entities/item_entity.dart';
 
-enum ItemFrequency { daily, weekly, monthly }
+import '../enums/day_of_week.dart';
 
-enum DayOfWeek {
-  monday,
-  tuesday,
-  wednesday,
-  thursday,
-  friday,
-  saturday,
-  sunday,
-}
+enum ItemFrequency { daily, weekly, monthly }
 
 class HabitEntity extends ItemEntity {
   final ItemFrequency frequency;

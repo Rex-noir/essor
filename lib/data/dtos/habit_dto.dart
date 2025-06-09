@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:mobile/domain/entities/habit_entity.dart';
 import 'package:mobile/domain/entities/item_entity.dart';
+import 'package:mobile/domain/enums/day_of_week.dart';
 
 class HabitDto extends ItemEntity {
   final ItemFrequency frequency;
