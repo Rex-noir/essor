@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile/utils/app_logger.dart';
 import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
 import 'package:mobile/ui/daily_items/widgets/list_items_page.dart';
+import 'package:mobile/utils/app_logger.dart';
 
 class DailyListScreen extends StatefulWidget {
   const DailyListScreen({super.key});
@@ -187,7 +187,7 @@ class _DailyListScreenState extends State<DailyListScreen>
                     children: [
                       // Drag handle section
                       _buildDragHandle(context, state),
-                      
+
                       // Content section
                       Expanded(
                         child: state is! HabitListLoaded
@@ -199,7 +199,8 @@ class _DailyListScreenState extends State<DailyListScreen>
                                     day: day.toIso8601String(),
                                     items: state.items,
                                     isLoading: state.isLoading,
-                                    scrollController: scrollController, // Pass the scroll controller
+                                    scrollController: scrollController,
+                                    // Pass the scroll controller
                                     onRefresh: () {
                                       logger.info("Refresh called");
                                     },
@@ -374,9 +375,7 @@ class _DailyListScreenState extends State<DailyListScreen>
           final isSelected = _currentTabIndex == index;
           final isToday = DateUtils.isSameDay(day, DateTime.now());
 
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeInOut,
+          return Container(
             height: 90,
             width: 70,
             decoration: BoxDecoration(
@@ -387,7 +386,7 @@ class _DailyListScreenState extends State<DailyListScreen>
                       end: Alignment.bottomRight,
                       colors: [
                         colorScheme.primary,
-                        colorScheme.primary.withOpacity(0.8),
+                        colorScheme.primary.withValues(alpha: 0.8),
                       ],
                     )
                   : null,
@@ -396,21 +395,21 @@ class _DailyListScreenState extends State<DailyListScreen>
                 color: isSelected
                     ? colorScheme.primary
                     : isToday
-                    ? colorScheme.primary.withOpacity(0.3)
-                    : colorScheme.outline.withOpacity(0.2),
+                    ? colorScheme.primary.withValues(alpha: .3)
+                    : colorScheme.outline.withValues(alpha: 0.2),
                 width: isSelected ? 2 : 1,
               ),
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: colorScheme.primary.withOpacity(0.3),
+                        color: colorScheme.primary.withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
                     ]
                   : [
                       BoxShadow(
-                        color: colorScheme.shadow.withOpacity(0.1),
+                        color: colorScheme.shadow.withValues(alpha: 0.1),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -436,8 +435,8 @@ class _DailyListScreenState extends State<DailyListScreen>
                   duration: const Duration(milliseconds: 200),
                   style: theme.textTheme.labelSmall!.copyWith(
                     color: isSelected
-                        ? colorScheme.onPrimary.withOpacity(0.9)
-                        : colorScheme.onSurface.withOpacity(0.7),
+                        ? colorScheme.onPrimary.withValues(alpha: 0.9)
+                        : colorScheme.onSurface.withValues(alpha: 0.7),
                     fontWeight: isToday ? FontWeight.w600 : FontWeight.normal,
                   ),
                   child: Text(dayName),
