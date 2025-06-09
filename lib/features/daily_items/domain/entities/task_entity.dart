@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'item_entity.dart'; // assuming this file is named item_entity.dart
 
 class TaskEntity extends ItemEntity {
@@ -15,6 +16,8 @@ class TaskEntity extends ItemEntity {
     required this.startTime,
     this.isCompleted = false,
     required this.importance,
+    super.unit,
+    super.duration,
     required super.type,
     super.target,
     super.iconIndex = 0,
@@ -47,5 +50,6 @@ class TaskEntity extends ItemEntity {
   }
 
   @override
-  List<Object?> get props => super.props + [startDate, startTime, isCompleted, importance];
+  List<Object?> get props =>
+      super.props + [startDate, startTime, isCompleted, importance];
 }
