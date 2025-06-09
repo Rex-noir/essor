@@ -74,7 +74,7 @@ class HomeAddDialog extends StatelessWidget {
                     BoxShadow(
                       color: Theme.of(
                         context,
-                      ).colorScheme.primary.withOpacity(0.35),
+                      ).colorScheme.primary.withValues(0.35),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),

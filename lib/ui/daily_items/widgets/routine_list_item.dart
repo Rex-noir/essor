@@ -107,7 +107,7 @@ class RoutineListItem extends StatelessWidget {
               padding: EdgeInsets.zero,
               child: Icon(
                 Icons.more_horiz, // Horizontal three dots
-                color: color.onSurface.withOpacity(0.6),
+                color: color.onSurface.withValues(0.6),
                 size: 24,
               ),
             ),
