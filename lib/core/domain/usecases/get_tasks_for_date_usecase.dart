@@ -1,5 +1,5 @@
-import 'package:mobile/features/daily_items/domain/entities/task_entity.dart';
-import 'package:mobile/features/daily_items/domain/repositories/task_repository.dart';
+import 'package:mobile/core/domain/entities/task_entity.dart';
+import 'package:mobile/core/domain/repositories/task_repository.dart';
 
 class GetTasksForDateUsecase {
   final TaskRepository repository;

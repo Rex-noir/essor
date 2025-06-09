@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/features/daily_items/data/dtos/habit_dto.dart';
-import 'package:mobile/features/daily_items/data/dtos/task_dto.dart';
-import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
-import 'package:mobile/features/daily_items/domain/entities/routine_enitity.dart';
+import 'package:mobile/core/data/dtos/habit_dto.dart';
+import 'package:mobile/core/data/dtos/task_dto.dart';
+import 'package:mobile/core/domain/entities/habit_entity.dart';
+import 'package:mobile/core/domain/entities/routine_enitity.dart';
 
 class RoutineDto with EquatableMixin {
   final String id;

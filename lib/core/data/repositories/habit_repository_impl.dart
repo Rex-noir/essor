@@ -1,6 +1,6 @@
-import 'package:mobile/features/daily_items/domain/datasources/habit_datasource.dart';
-import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
-import 'package:mobile/features/daily_items/domain/repositories/habit_repository.dart';
+import 'package:mobile/core/domain/datasources/habit_datasource.dart';
+import 'package:mobile/core/domain/entities/habit_entity.dart';
+import 'package:mobile/core/domain/repositories/habit_repository.dart';
 
 class HabitRepositoryImpl implements HabitListRepository {
   final HabitDataSource provider;

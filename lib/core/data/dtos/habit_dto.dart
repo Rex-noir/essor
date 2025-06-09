@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
-import 'package:mobile/features/daily_items/domain/entities/item_entity.dart';
+import 'package:mobile/core/domain/entities/habit_entity.dart';
+import 'package:mobile/core/domain/entities/item_entity.dart';
 
 class HabitDto extends ItemEntity {
   final ItemFrequency frequency;

@@ -1,6 +1,6 @@
-import 'package:mobile/features/daily_items/domain/datasources/task_datasource.dart';
-import 'package:mobile/features/daily_items/domain/entities/task_entity.dart';
-import 'package:mobile/features/daily_items/domain/repositories/task_repository.dart';
+import 'package:mobile/core/domain/datasources/task_datasource.dart';
+import 'package:mobile/core/domain/entities/task_entity.dart';
+import 'package:mobile/core/domain/repositories/task_repository.dart';
 
 class TaskRepositoryImpl implements TaskRepository {
   final TaskDataSource _provider;

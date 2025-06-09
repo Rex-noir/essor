@@ -1,7 +1,7 @@
-import 'package:mobile/features/daily_items/data/dtos/habit_dto.dart';
-import 'package:mobile/features/daily_items/domain/datasources/habit_datasource.dart';
-import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
-import 'package:mobile/features/daily_items/domain/entities/item_entity.dart'; // Import ItemType
+import 'package:mobile/core/data/dtos/habit_dto.dart';
+import 'package:mobile/core/domain/datasources/habit_datasource.dart';
+import 'package:mobile/core/domain/entities/habit_entity.dart';
+import 'package:mobile/core/domain/entities/item_entity.dart'; // Import ItemType
 
 class HabitLocalDataSource extends HabitDataSource {
   @override

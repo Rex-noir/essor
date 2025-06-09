@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:mobile/features/daily_items/domain/entities/item_entity.dart';
-import 'package:mobile/features/daily_items/domain/entities/task_entity.dart';
+import 'package:mobile/core/domain/entities/item_entity.dart';
+import 'package:mobile/core/domain/entities/task_entity.dart';
 
 class TaskDto extends ItemEntity {
   final DateTime startDate;

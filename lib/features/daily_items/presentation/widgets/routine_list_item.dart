@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/core/config/app_icons.dart';
-import 'package:mobile/features/daily_items/domain/entities/routine_enitity.dart';
+import 'package:mobile/core/domain/entities/routine_enitity.dart';
 
 class RoutineListItem extends StatelessWidget {
   final RoutineEntity routine;

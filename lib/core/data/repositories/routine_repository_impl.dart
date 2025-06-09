@@ -1,6 +1,6 @@
-import 'package:mobile/features/daily_items/domain/datasources/routine_datasource.dart';
-import 'package:mobile/features/daily_items/domain/entities/routine_enitity.dart';
-import 'package:mobile/features/daily_items/domain/repositories/routine_repository.dart';
+import 'package:mobile/core/domain/datasources/routine_datasource.dart';
+import 'package:mobile/core/domain/entities/routine_enitity.dart';
+import 'package:mobile/core/domain/repositories/routine_repository.dart';
 
 class RoutineRepositoryImpl implements RoutineRepository {
   final RoutineDataSource provider;

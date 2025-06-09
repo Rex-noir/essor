@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:mobile/core/utils/app_logger.dart';
-import 'package:mobile/features/daily_items/domain/entities/habit_entity.dart';
-import 'package:mobile/features/daily_items/domain/entities/routine_enitity.dart';
-import 'package:mobile/features/daily_items/domain/entities/task_entity.dart';
-import 'package:mobile/features/daily_items/domain/usecases/get_habits_for_date_usecase.dart';
-import 'package:mobile/features/daily_items/domain/usecases/get_routines_for_date_usecase.dart';
-import 'package:mobile/features/daily_items/domain/usecases/get_tasks_for_date_usecase.dart';
+import 'package:mobile/core/domain/entities/habit_entity.dart';
+import 'package:mobile/core/domain/entities/routine_enitity.dart';
+import 'package:mobile/core/domain/entities/task_entity.dart';
+import 'package:mobile/core/domain/usecases/get_habits_for_date_usecase.dart';
+import 'package:mobile/core/domain/usecases/get_routines_for_date_usecase.dart';
+import 'package:mobile/core/domain/usecases/get_tasks_for_date_usecase.dart';
 
 part 'daily_list_event.dart';
 part 'daily_list_state.dart';

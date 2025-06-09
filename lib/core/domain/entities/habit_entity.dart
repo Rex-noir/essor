@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:mobile/features/daily_items/domain/entities/item_entity.dart';
+import 'package:mobile/core/domain/entities/item_entity.dart';
 
 enum ItemFrequency { daily, weekly, monthly }
 
