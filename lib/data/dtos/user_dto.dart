@@ -2,7 +2,7 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
-import 'package:mobile/features/profile/domain/entities/user_entity.dart';
+import 'package:mobile/domain/entities/user_entity.dart';
 
 class UserDTO extends Equatable {
   final String id;
