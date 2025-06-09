@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile/core/domain/failures/failures.dart';
-import 'package:mobile/features/authentication/domain/repositories/auth_token_storage_repository.dart';
-import 'package:mobile/features/authentication/domain/repositories/authentication_repository.dart';
-import 'package:mobile/features/authentication/domain/usecases/logout_usecase.dart'; // Adjust path if needed
+import 'package:mobile/domain/failures/failures.dart';
+import 'package:mobile/domain/repositories/auth_token_storage_repository.dart';
+import 'package:mobile/domain/repositories/authentication_repository.dart';
+import 'package:mobile/domain/usecases/logout_usecase.dart'; // Adjust path if needed
 import 'package:mocktail/mocktail.dart';
 
 // Mock classes using Mocktail

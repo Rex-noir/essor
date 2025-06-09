@@ -1,12 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile/core/domain/failures/failures.dart';
-import 'package:mobile/features/authentication/domain/entities/auth_response_entity.dart';
-import 'package:mobile/features/authentication/domain/failures/auth_failures.dart';
-import 'package:mobile/features/authentication/domain/repositories/auth_token_storage_repository.dart';
-import 'package:mobile/features/authentication/domain/repositories/authentication_repository.dart';
-import 'package:mobile/features/authentication/domain/usecases/login_usecase.dart'; // Adjust path if needed
-import 'package:mobile/features/profile/domain/entities/user_entity.dart';
+import 'package:mobile/domain/entities/auth_response_entity.dart';
+import 'package:mobile/domain/entities/user_entity.dart';
+import 'package:mobile/domain/failures/auth_failures.dart';
+import 'package:mobile/domain/failures/failures.dart';
+import 'package:mobile/domain/repositories/auth_token_storage_repository.dart';
+import 'package:mobile/domain/repositories/authentication_repository.dart';
+import 'package:mobile/domain/usecases/login_usecase.dart'; // Adjust path if needed
 import 'package:mocktail/mocktail.dart';
 
 // Mock classes using Mocktail
@@ -46,7 +46,6 @@ void main() {
 
   group('LoginUseCase', () {
     test('should successfully log in and save tokens', () async {
-      
       // Arrange
       when(
         () => mockAuthenticationRepository.logIn(
