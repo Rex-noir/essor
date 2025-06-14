@@ -13,12 +13,11 @@ class RoutineDto with EquatableMixin {
   final String title;
   final DateTime startDate;
   final TimeOfDay startTime;
-  final List<int> repeatDays;
   final List<TaskDto> tasks;
   final ItemFrequency frequency;
   final List<DayOfWeek> weeklyDays;
   final List<int> monthlyDates;
-  final int repeatEvery;
+  final int interval;
   final bool isActive;
 
   RoutineDto({
@@ -26,12 +25,11 @@ class RoutineDto with EquatableMixin {
     required this.title,
     required this.startDate,
     required this.startTime,
-    required this.repeatDays,
     required this.tasks,
     required this.frequency,
     required this.weeklyDays,
     required this.monthlyDates,
-    required this.repeatEvery,
+    required this.interval,
     required this.isActive,
   });
 
@@ -45,7 +43,7 @@ class RoutineDto with EquatableMixin {
     ItemFrequency? frequency,
     List<DayOfWeek>? weeklyDays,
     List<int>? monthlyDates,
-    int? repeatEvery,
+    int? interval,
     bool? isActive,
   }) {
     return RoutineDto(
@@ -53,12 +51,11 @@ class RoutineDto with EquatableMixin {
       title: title ?? this.title,
       startDate: startDate ?? this.startDate,
       startTime: startTime ?? this.startTime,
-      repeatDays: repeatDays ?? this.repeatDays,
       tasks: tasks ?? this.tasks,
       frequency: frequency ?? this.frequency,
       weeklyDays: weeklyDays ?? this.weeklyDays,
       monthlyDates: monthlyDates ?? this.monthlyDates,
-      repeatEvery: repeatEvery ?? this.repeatEvery,
+      interval: interval ?? this.interval,
       isActive: isActive ?? this.isActive,
     );
   }
@@ -69,12 +66,11 @@ class RoutineDto with EquatableMixin {
       'title': title,
       'start_date': startDate.millisecondsSinceEpoch,
       'start_time': {'hour': startTime.hour, 'minute': startTime.minute},
-      'repeat_days': repeatDays,
       'habits': tasks.map((x) => x.toMap()).toList(),
       'frequency': frequency.index,
       'weekly_days': weeklyDays.map((x) => x.index).toList(),
       'monthly_dates': monthlyDates,
-      'repeat_every': repeatEvery,
+      'interval': interval,
       'is_active': isActive,
     };
   }
@@ -88,7 +84,6 @@ class RoutineDto with EquatableMixin {
         hour: map['start_time']['hour'] as int,
         minute: map['start_time']['minute'] as int,
       ),
-      repeatDays: List<int>.from(map['repeat_days']),
       tasks: List<TaskDto>.from(
         (map['habits'] as List).map(
           (x) => HabitDto.fromMap(x as Map<String, dynamic>),
@@ -99,7 +94,7 @@ class RoutineDto with EquatableMixin {
         (map['weekly_days'] as List).map((x) => DayOfWeek.values[x as int]),
       ),
       monthlyDates: List<int>.from(map['monthly_dates']),
-      repeatEvery: map['repeat_every'] as int,
+      interval: map['interval'] as int,
       isActive: map['is_active'] as bool,
     );
   }
@@ -115,12 +110,11 @@ class RoutineDto with EquatableMixin {
       title: title,
       startDate: startDate,
       startTime: startTime,
-      repeatDays: repeatDays,
       tasks: tasks.map((h) => h.toEntity()).toList(),
       frequency: frequency,
       weeklyDays: weeklyDays,
       monthlyDates: monthlyDates,
-      repeatEvery: repeatEvery,
+      interval: interval,
       isActive: isActive,
     );
   }
@@ -134,12 +128,11 @@ class RoutineDto with EquatableMixin {
     title,
     startDate,
     startTime,
-    repeatDays,
     tasks,
     frequency,
     weeklyDays,
     monthlyDates,
-    repeatEvery,
+    interval,
     isActive,
   ];
 }

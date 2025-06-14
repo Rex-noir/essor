@@ -7,18 +7,6 @@ class RoutineListItem extends StatelessWidget {
 
   const RoutineListItem({super.key, required this.routine});
 
-  String _repeatDaysLabel() {
-    if (routine.repeatDays.length == 7) return "Everyday";
-    if (routine.repeatDays.isEmpty) return "One-time";
-    return routine.repeatDays.map((d) => _weekdayAbbr(d)).join(', ');
-  }
-
-  String _weekdayAbbr(int day) {
-    // Dart weekday starts from Monday as 1
-    const names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return names[(day - 1) % 7];
-  }
-
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
@@ -61,7 +49,10 @@ class RoutineListItem extends StatelessWidget {
                   children: [
                     Text(routine.title, style: textTheme.titleMedium),
                     Text(
-                      _repeatDaysLabel(),
+                      getRoutineRepeatLabel(
+                        routine.frequency,
+                        routine.interval,
+                      ),
                       style: textTheme.bodyMedium?.copyWith(
                         color: color.onSurface.withValues(alpha: .6),
                       ),

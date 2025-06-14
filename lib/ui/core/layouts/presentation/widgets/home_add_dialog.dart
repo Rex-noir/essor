@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/ui/core/layouts/presentation/widgets/home_add_dialog_action.dart';
+import 'package:mobile/ui/new_routine/bloc/new_routine_bloc.dart';
 import 'package:mobile/ui/new_routine/screens/new_routine_screen.dart';
 
 class HomeAddDialog extends StatelessWidget {
@@ -46,7 +48,10 @@ class HomeAddDialog extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const NewRoutineScreen(),
+                        builder: (context) => BlocProvider(
+                          create: (_) => NewRoutineBloc(),
+                          child: const NewRoutineScreen(),
+                        ),
                       ),
                     );
                   },

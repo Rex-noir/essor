@@ -197,6 +197,7 @@ class _DailyListScreenState extends State<DailyListScreen>
                                 children: state.days.map((day) {
                                   return ListItemsPage(
                                     day: day.toIso8601String(),
+                                    key: ValueKey(day),
                                     items: state.items,
                                     isLoading: state.isLoading,
                                     scrollController: scrollController,

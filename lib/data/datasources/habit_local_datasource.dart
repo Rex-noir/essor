@@ -14,7 +14,7 @@ class HabitLocalDataSource extends HabitDataSource {
         description: 'Run every day',
         frequency: ItemFrequency.daily,
         startDate: DateTime(2025, 6, 1),
-        repeatEvery: 1,
+        interval: 1,
         isActive: true,
         iconIndex: 0, // Added
         type: ItemType.binary, // Added
@@ -25,7 +25,7 @@ class HabitLocalDataSource extends HabitDataSource {
         description: 'Meditate every 2 days',
         frequency: ItemFrequency.daily,
         startDate: DateTime(2025, 6, 1),
-        repeatEvery: 2,
+        interval: 2,
         isActive: true,
         iconIndex: 1, // Added
         type: ItemType.binary, // Added
@@ -36,7 +36,7 @@ class HabitLocalDataSource extends HabitDataSource {
         description: 'Drink water every 3 days',
         frequency: ItemFrequency.daily,
         startDate: DateTime(2025, 6, 1),
-        repeatEvery: 3,
+        interval: 3,
         isActive: true,
         iconIndex: 2, // Added
         type: ItemType.quantitative, // Example
@@ -49,7 +49,7 @@ class HabitLocalDataSource extends HabitDataSource {
         frequency: ItemFrequency.weekly,
         startDate: DateTime(2025, 6, 1),
         weeklyDays: [DayOfWeek.monday, DayOfWeek.friday],
-        repeatEvery: 1,
+        interval: 1,
         isActive: true,
         iconIndex: 3, // Added
         type: ItemType.binary, // Added
@@ -61,7 +61,7 @@ class HabitLocalDataSource extends HabitDataSource {
         frequency: ItemFrequency.weekly,
         startDate: DateTime(2025, 6, 1),
         weeklyDays: [DayOfWeek.tuesday, DayOfWeek.thursday],
-        repeatEvery: 1,
+        interval: 1,
         isActive: true,
         iconIndex: 4, // Added
         type: ItemType.binary, // Added
@@ -73,7 +73,7 @@ class HabitLocalDataSource extends HabitDataSource {
         frequency: ItemFrequency.weekly,
         startDate: DateTime(2025, 6, 1),
         weeklyDays: [DayOfWeek.sunday],
-        repeatEvery: 2,
+        interval: 2,
         isActive: true,
         iconIndex: 5, // Added
         type: ItemType.binary, // Added
@@ -85,7 +85,7 @@ class HabitLocalDataSource extends HabitDataSource {
         frequency: ItemFrequency.monthly,
         startDate: DateTime(2025, 6, 1),
         monthlyDates: [5, 20],
-        repeatEvery: 1,
+        interval: 1,
         isActive: true,
         iconIndex: 6, // Added
         type: ItemType.binary, // Added
@@ -97,7 +97,7 @@ class HabitLocalDataSource extends HabitDataSource {
         frequency: ItemFrequency.monthly,
         startDate: DateTime(2025, 6, 1),
         monthlyDates: [1, 15],
-        repeatEvery: 1,
+        interval: 1,
         isActive: true,
         iconIndex: 7, // Added
         type: ItemType.binary, // Added
@@ -108,7 +108,7 @@ class HabitLocalDataSource extends HabitDataSource {
         description: 'Read every 3 days',
         frequency: ItemFrequency.daily,
         startDate: DateTime(2025, 6, 1),
-        repeatEvery: 3,
+        interval: 3,
         isActive: true,
         iconIndex: 8, // Added
         type: ItemType.binary, // Added
@@ -120,7 +120,7 @@ class HabitLocalDataSource extends HabitDataSource {
         frequency: ItemFrequency.weekly,
         startDate: DateTime(2025, 6, 1),
         weeklyDays: [DayOfWeek.saturday],
-        repeatEvery: 1,
+        interval: 1,
         isActive: true,
         iconIndex: 9, // Added
         type: ItemType.binary, // Added
@@ -132,7 +132,7 @@ class HabitLocalDataSource extends HabitDataSource {
         frequency: ItemFrequency.weekly,
         startDate: DateTime(2025, 6, 1),
         weeklyDays: [DayOfWeek.thursday],
-        repeatEvery: 2,
+        interval: 2,
         isActive: true,
         iconIndex: 10, // Added
         type: ItemType.binary, // Added
@@ -144,7 +144,7 @@ class HabitLocalDataSource extends HabitDataSource {
         frequency: ItemFrequency.weekly,
         startDate: DateTime(2025, 6, 1),
         weeklyDays: [DayOfWeek.monday, DayOfWeek.wednesday, DayOfWeek.friday],
-        repeatEvery: 1,
+        interval: 1,
         isActive: true,
         iconIndex: 11, // Added
         type: ItemType.binary, // Added
@@ -155,7 +155,7 @@ class HabitLocalDataSource extends HabitDataSource {
         description: 'Prepare meals every 3 days',
         frequency: ItemFrequency.daily,
         startDate: DateTime(2025, 6, 1),
-        repeatEvery: 3,
+        interval: 3,
         isActive: true,
         iconIndex: 12, // Added
         type: ItemType.binary, // Added
@@ -167,7 +167,7 @@ class HabitLocalDataSource extends HabitDataSource {
         frequency: ItemFrequency.monthly,
         startDate: DateTime(2025, 6, 1),
         monthlyDates: [10],
-        repeatEvery: 1,
+        interval: 1,
         isActive: true,
         iconIndex: 13, // Added
         type: ItemType.binary, // Added
@@ -179,7 +179,7 @@ class HabitLocalDataSource extends HabitDataSource {
         frequency: ItemFrequency.monthly,
         startDate: DateTime(2025, 6, 1),
         monthlyDates: [30, 31], // For months with 30 or 31 days
-        repeatEvery: 1,
+        interval: 1,
         isActive: true,
         iconIndex: 14, // Added
         type: ItemType.binary, // Added

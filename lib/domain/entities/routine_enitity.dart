@@ -9,12 +9,11 @@ class RoutineEntity {
   final String title;
   final DateTime startDate;
   final TimeOfDay startTime;
-  final List<int> repeatDays;
   final List<TaskEntity> tasks;
   final ItemFrequency frequency;
   final List<DayOfWeek> weeklyDays;
   final List<int> monthlyDates;
-  final int repeatEvery;
+  final int interval;
   final bool isActive;
   final int iconIndex;
 
@@ -23,12 +22,11 @@ class RoutineEntity {
     required this.title,
     required this.startDate,
     required this.startTime,
-    required this.repeatDays,
     required this.tasks,
     required this.frequency,
     required this.weeklyDays,
     required this.monthlyDates,
-    required this.repeatEvery,
+    required this.interval,
     required this.isActive,
     this.iconIndex = 1,
   });
@@ -43,7 +41,7 @@ class RoutineEntity {
     ItemFrequency? frequency,
     List<DayOfWeek>? weeklyDays,
     List<int>? monthlyDates,
-    int? repeatEvery,
+    int? interval,
     bool? isActive,
     int? iconIndex,
   }) {
@@ -52,14 +50,24 @@ class RoutineEntity {
       title: title ?? this.title,
       startDate: startDate ?? this.startDate,
       startTime: startTime ?? this.startTime,
-      repeatDays: repeatDays ?? this.repeatDays,
       tasks: tasks ?? this.tasks,
       frequency: frequency ?? this.frequency,
       weeklyDays: weeklyDays ?? this.weeklyDays,
       monthlyDates: monthlyDates ?? this.monthlyDates,
-      repeatEvery: repeatEvery ?? this.repeatEvery,
+      interval: interval ?? this.interval,
       isActive: isActive ?? this.isActive,
       iconIndex: iconIndex ?? this.iconIndex,
     );
+  }
+}
+
+String getRoutineRepeatLabel(ItemFrequency frequency, int interval) {
+  switch (frequency) {
+    case ItemFrequency.daily:
+      return interval == 1 ? "Every day" : "Every $interval days";
+    case ItemFrequency.weekly:
+      return interval == 1 ? "Every week" : "Every $interval weeks";
+    case ItemFrequency.monthly:
+      return interval == 1 ? "Every month" : "Every $interval months";
   }
 }

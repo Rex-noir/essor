@@ -10,7 +10,7 @@ class HabitEntity extends ItemEntity {
   final DateTime startDate;
   final List<DayOfWeek> weeklyDays;
   final List<int> monthlyDates;
-  final int repeatEvery;
+  final int interval;
   final bool isActive;
 
   const HabitEntity({
@@ -26,7 +26,7 @@ class HabitEntity extends ItemEntity {
     required this.startDate,
     this.weeklyDays = const [],
     this.monthlyDates = const [],
-    this.repeatEvery = 1,
+    this.interval = 1,
     this.isActive = true,
   });
 
@@ -40,7 +40,7 @@ class HabitEntity extends ItemEntity {
     DateTime? startDate,
     List<DayOfWeek>? weeklyDays,
     List<int>? monthlyDates,
-    int? repeatEvery,
+    int? interval,
     bool? isActive,
   }) {
     return HabitEntity(
@@ -54,7 +54,7 @@ class HabitEntity extends ItemEntity {
       startDate: startDate ?? this.startDate,
       weeklyDays: weeklyDays ?? this.weeklyDays,
       monthlyDates: monthlyDates ?? this.monthlyDates,
-      repeatEvery: repeatEvery ?? this.repeatEvery,
+      interval: interval ?? this.interval,
       isActive: isActive ?? this.isActive,
     );
   }

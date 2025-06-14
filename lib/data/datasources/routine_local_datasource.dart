@@ -31,12 +31,11 @@ class RoutineLocalDataSource implements RoutineDataSource {
         title: 'Routine ${i + 1}',
         startDate: now,
         startTime: startTime,
-        repeatDays: [1, 3, 5], // e.g., Monday, Wednesday, Friday
         tasks: tasks,
         frequency: ItemFrequency.weekly,
         weeklyDays: [DayOfWeek.monday, DayOfWeek.wednesday],
         monthlyDates: [1, 15],
-        repeatEvery: 1,
+        interval: 1,
         isActive: true,
       );
     });

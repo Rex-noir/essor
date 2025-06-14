@@ -9,7 +9,7 @@ class HabitDto extends ItemEntity {
   final DateTime startDate;
   final List<DayOfWeek> weeklyDays;
   final List<int> monthlyDates;
-  final int repeatEvery;
+  final int interval;
   final bool isActive;
 
   const HabitDto({
@@ -23,7 +23,7 @@ class HabitDto extends ItemEntity {
     required this.startDate,
     this.weeklyDays = const [],
     this.monthlyDates = const [],
-    this.repeatEvery = 1,
+    this.interval = 1,
     this.isActive = true,
   });
 
@@ -38,7 +38,7 @@ class HabitDto extends ItemEntity {
     DateTime? startDate,
     List<DayOfWeek>? weeklyDays,
     List<int>? monthlyDates,
-    int? repeatEvery,
+    int? interval,
     bool? isActive,
   }) {
     return HabitDto(
@@ -52,7 +52,7 @@ class HabitDto extends ItemEntity {
       startDate: startDate ?? this.startDate,
       weeklyDays: weeklyDays ?? this.weeklyDays,
       monthlyDates: monthlyDates ?? this.monthlyDates,
-      repeatEvery: repeatEvery ?? this.repeatEvery,
+      interval: interval ?? this.interval,
       isActive: isActive ?? this.isActive,
     );
   }
@@ -69,7 +69,7 @@ class HabitDto extends ItemEntity {
       'start_date': startDate.millisecondsSinceEpoch,
       'weekly_days': weeklyDays.map((x) => x.index).toList(),
       'monthly_dates': monthlyDates,
-      'repeat_every': repeatEvery,
+      'interval': interval,
       'is_active': isActive,
     };
   }
@@ -88,7 +88,7 @@ class HabitDto extends ItemEntity {
         map['weekly_days'],
       ).map((x) => DayOfWeek.values[x]).toList(),
       monthlyDates: List<int>.from(map['monthly_dates']),
-      repeatEvery: map['repeat_every'],
+      interval: map['interval'],
       isActive: map['is_active'],
     );
   }
@@ -110,7 +110,7 @@ class HabitDto extends ItemEntity {
       startDate: startDate,
       weeklyDays: weeklyDays,
       monthlyDates: monthlyDates,
-      repeatEvery: repeatEvery,
+      interval: interval,
       isActive: isActive,
     );
   }
@@ -127,7 +127,7 @@ class HabitDto extends ItemEntity {
     startDate,
     weeklyDays,
     monthlyDates,
-    repeatEvery,
+    interval,
     isActive,
   ];
 }
