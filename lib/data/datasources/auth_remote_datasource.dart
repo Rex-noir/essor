@@ -4,17 +4,14 @@ import 'package:mobile/data/dtos/auth_response_dto.dart';
 
 class AuthRemoteDataSource {
   final Dio _dio;
-  final AppConfig _config;
 
-  AuthRemoteDataSource(this._dio, {required AppConfig config})
-    : _config = config;
-
+  AuthRemoteDataSource(this._dio);
   Future<AuthResponseDTO> logIn({
     required String email,
     required String password,
   }) async {
     final response = await _dio.post(
-      _config.logInEndpoint,
+      AppConfig.logInEndpoint,
       data: {'email': email, 'password': password},
     );
 
@@ -27,7 +24,7 @@ class AuthRemoteDataSource {
     required String deviceId,
   }) async {
     await _dio.post(
-      _config.logOutEndpoint,
+      AppConfig.logOutEndpoint,
       options: Options(
         headers: {"X-Refresh-Token": refreshToken, "Device-ID": deviceId},
       ),

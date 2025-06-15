@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile/config/app_config.dart';
 import 'package:mobile/data/datasources/auth_remote_datasource.dart';
 import 'package:mobile/data/datasources/profile_local_datasource.dart';
 import 'package:mobile/data/repositories/auth_token_storage_repository_impl.dart';
@@ -24,11 +23,9 @@ import 'package:mobile/ui/core/theme/util.dart';
 
 class App extends StatelessWidget {
   final AuthenticationStatus initialStatus;
-  final AppConfig appConfig;
   final bool isFirstTime;
   const App({
     required this.initialStatus,
-    required this.appConfig,
     required this.isFirstTime,
     super.key,
   });
@@ -49,11 +46,11 @@ class App extends StatelessWidget {
         RepositoryProvider(
           create: (context) {
             final dio = context.read<Dio>();
-            return AuthRemoteDataSource(dio, config: appConfig);
+            return AuthRemoteDataSource(dio);
           },
         ),
         RepositoryProvider<AuthTokenStorageRepository>(
-          create: (context) => AuthTokenStorageRepositoryImpl(appConfig),
+          create: (context) => AuthTokenStorageRepositoryImpl(),
         ),
         RepositoryProvider<AuthenticationRepository>(
           create: (context) {

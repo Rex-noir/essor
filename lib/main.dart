@@ -26,11 +26,5 @@ void main() async {
   }
 
   // final isFirstTime = true;
-  runApp(
-    App(
-      initialStatus: initialStatus,
-      appConfig: appConfig,
-      isFirstTime: isFirstTime,
-    ),
-  );
+  runApp(App(initialStatus: initialStatus, isFirstTime: isFirstTime));
 }
