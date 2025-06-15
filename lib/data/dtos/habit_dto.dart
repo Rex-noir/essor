@@ -11,14 +11,16 @@ class HabitDto extends ItemEntity {
   final List<int> monthlyDates;
   final int interval;
   final bool isActive;
+  final ItemType type;
+  final int? target;
 
   const HabitDto({
     required super.id,
     required super.title,
     super.description,
     required super.iconIndex,
-    required super.type,
-    super.target,
+    required this.type,
+    this.target,
     required this.frequency,
     required this.startDate,
     this.weeklyDays = const [],

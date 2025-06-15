@@ -1,55 +1,37 @@
-import 'package:flutter/material.dart';
-
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'item_entity.dart'; // assuming this file is named item_entity.dart
 
 class TaskEntity extends ItemEntity {
-  final DateTime startDate;
-  final TimeOfDay startTime;
   final bool isCompleted;
   final int importance;
+  final Duration duration;
 
   const TaskEntity({
     required super.id,
     required super.title,
     super.description,
-    required this.startDate,
-    required this.startTime,
     this.isCompleted = false,
     required this.importance,
-    super.unit,
-    super.duration,
-    required super.type,
-    super.target,
+    required this.duration,
     super.iconIndex = 0,
   });
 
+  @override
+  List<Object?> get props => super.props + [isCompleted, importance];
+
   TaskEntity copyWith({
-    String? id,
-    String? title,
-    String? description,
-    DateTime? startDate,
-    TimeOfDay? startTime,
     bool? isCompleted,
     int? importance,
-    int? iconIndex,
-    ItemType? type,
-    int? target,
+    Duration? duration,
+    String? id,
+    String? title,
   }) {
     return TaskEntity(
-      id: id ?? this.id,
       title: title ?? this.title,
-      description: description ?? this.description,
-      startDate: startDate ?? this.startDate,
-      startTime: startTime ?? this.startTime,
+      id: id ?? this.id,
       isCompleted: isCompleted ?? this.isCompleted,
       importance: importance ?? this.importance,
-      type: type ?? this.type,
-      target: target ?? this.target,
-      iconIndex: iconIndex ?? this.iconIndex,
+      duration: duration ?? this.duration,
     );
   }
-
-  @override
-  List<Object?> get props =>
-      super.props + [startDate, startTime, isCompleted, importance];
 }

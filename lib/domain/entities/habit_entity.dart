@@ -12,15 +12,18 @@ class HabitEntity extends ItemEntity {
   final List<int> monthlyDates;
   final int interval;
   final bool isActive;
+  final ItemType type;
+  final String? unit;
+  final int? target;
 
+  @override
   const HabitEntity({
     required super.id,
     required super.title,
     super.description,
-    super.duration,
-    required super.type,
-    super.unit,
-    super.target,
+    required this.type,
+    this.unit,
+    required this.target,
     required super.iconIndex,
     required this.frequency,
     required this.startDate,

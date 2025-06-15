@@ -90,3 +90,20 @@ String getRoutineRepeatLabel(ItemFrequency frequency, int interval) {
       return interval == 1 ? "Every month" : "Every $interval months";
   }
 }
+
+extension RoutineEnitityX on RoutineEntity {
+  RoutineEntity addTask(TaskEntity task) {
+    return copyWith(tasks: [...tasks, task]);
+  }
+
+  RoutineEntity removeTask(String taskId) {
+    return copyWith(tasks: tasks.where((t) => t.id != taskId).toList());
+  }
+
+  RoutineEntity updateTask(TaskEntity updatedTask) {
+    final updatedList = tasks
+        .map((t) => t.id == updatedTask.id ? updatedTask : t)
+        .toList();
+    return copyWith(tasks: updatedList);
+  }
+}
