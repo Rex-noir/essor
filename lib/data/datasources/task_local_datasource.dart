@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:mobile/data/dtos/task_dto.dart';
 import 'package:mobile/domain/datasources/task_datasource.dart';
-import 'package:mobile/domain/entities/item_entity.dart';
 
 class TaskLocalDataSource implements TaskDataSource {
   @override
@@ -14,10 +12,7 @@ class TaskLocalDataSource implements TaskDataSource {
         title: 'Morning Workout',
         description: '30 mins of cardio and strength training',
         iconIndex: 1,
-        type: ItemType.quantitative,
-        target: 1,
-        startDate: date,
-        startTime: const TimeOfDay(hour: 6, minute: 30),
+        duration: Duration(minutes: 30),
         isCompleted: false,
       ),
       TaskDto(
@@ -25,10 +20,7 @@ class TaskLocalDataSource implements TaskDataSource {
         title: 'Team Meeting',
         description: 'Sprint planning with the dev team',
         iconIndex: 2,
-        type: ItemType.binary,
-        target: null,
-        startDate: date,
-        startTime: const TimeOfDay(hour: 10, minute: 0),
+        duration: Duration(minutes: 10),
         isCompleted: true,
       ),
       TaskDto(
@@ -36,10 +28,7 @@ class TaskLocalDataSource implements TaskDataSource {
         title: 'Lunch with Sarah',
         description: 'Catch up over lunch at the new café',
         iconIndex: 3,
-        type: ItemType.binary,
-        target: null,
-        startDate: date,
-        startTime: const TimeOfDay(hour: 13, minute: 15),
+        duration: Duration(minutes: 14),
         isCompleted: false,
       ),
       TaskDto(
@@ -47,10 +36,7 @@ class TaskLocalDataSource implements TaskDataSource {
         title: 'Read a book',
         description: 'Finish reading 3 chapters of “Atomic Habits”',
         iconIndex: 4,
-        type: ItemType.quantitative,
-        target: 3,
-        startDate: date,
-        startTime: const TimeOfDay(hour: 20, minute: 0),
+        duration: Duration(minutes: 10),
         isCompleted: false,
       ),
     ];

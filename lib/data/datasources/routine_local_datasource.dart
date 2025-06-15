@@ -3,7 +3,6 @@ import 'package:mobile/data/dtos/routine_dto.dart';
 import 'package:mobile/data/dtos/task_dto.dart';
 import 'package:mobile/domain/datasources/routine_datasource.dart';
 import 'package:mobile/domain/entities/habit_entity.dart';
-import 'package:mobile/domain/entities/item_entity.dart';
 import 'package:mobile/domain/enums/day_of_week.dart'; // Import ItemType
 
 class RoutineLocalDataSource implements RoutineDataSource {
@@ -18,11 +17,9 @@ class RoutineLocalDataSource implements RoutineDataSource {
           id: 'task_${i}_$j', // Added id
           title: 'Task ${i + 1}.${j + 1}',
           description: 'Auto-generated task for routine ${i + 1}',
-          startDate: now,
-          startTime: TimeOfDay(hour: 8 + (j % 4), minute: 10 * j),
           isCompleted: j % 2 == 0,
           iconIndex: j,
-          type: ItemType.binary,
+          duration: Duration(minutes: j),
         );
       });
 
