@@ -59,6 +59,25 @@ class RoutineEntity {
       iconIndex: iconIndex ?? this.iconIndex,
     );
   }
+
+  @override
+  String toString() {
+    final startTimeFormatted =
+        '${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}';
+    return 'RoutineEntity('
+        'id: $id, '
+        'title: $title, '
+        'startDate: ${startDate.toIso8601String()}, '
+        'startTime: $startTimeFormatted, '
+        'tasks: ${tasks.map((t) => t.toString()).toList()}, '
+        'frequency: $frequency, '
+        'weeklyDays: ${weeklyDays.map((d) => d.name).toList()}, '
+        'monthlyDates: $monthlyDates, '
+        'interval: $interval, '
+        'isActive: $isActive, '
+        'iconIndex: $iconIndex'
+        ')';
+  }
 }
 
 String getRoutineRepeatLabel(ItemFrequency frequency, int interval) {
