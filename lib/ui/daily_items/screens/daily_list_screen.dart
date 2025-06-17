@@ -19,7 +19,7 @@ class _DailyListScreenState extends State<DailyListScreen>
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
 
-  Map<String, ScrollController> _scrollControllers = {};
+  final Map<String, ScrollController> _scrollControllers = {};
 
   // Add DraggableScrollableController for the expandable content
   late DraggableScrollableController _dragController;
