@@ -32,7 +32,6 @@ final class DailyListLoading extends DailyListState {}
 class HabitListLoaded extends DailyListState {
   final List<HabitEntity> habits;
   final List<RoutineEntity> routines;
-  final List<TaskEntity> tasks;
   final List<DateTime> days;
   final int selectedIndex;
   final bool isLoading;
@@ -43,7 +42,6 @@ class HabitListLoaded extends DailyListState {
     required this.selectedIndex,
     required this.routines,
     this.isLoading = false,
-    required this.tasks,
   });
 
   @override
@@ -53,7 +51,6 @@ class HabitListLoaded extends DailyListState {
     return [
       ...habits.map((h) => HabitItem(h)),
       ...routines.map((r) => RoutineItem(r)),
-      ...tasks.map((t) => TaskItem(t)),
     ];
   }
 
@@ -68,7 +65,6 @@ class HabitListLoaded extends DailyListState {
     return HabitListLoaded(
       habits: habits ?? this.habits,
       routines: routines ?? this.routines,
-      tasks: tasks ?? this.tasks,
       days: days ?? this.days,
       selectedIndex: selectedIndex ?? this.selectedIndex,
       isLoading: isLoading ?? this.isLoading,

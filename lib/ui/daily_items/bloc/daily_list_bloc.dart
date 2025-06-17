@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:mobile/utils/app_logger.dart';
 import 'package:mobile/domain/entities/habit_entity.dart';
 import 'package:mobile/domain/entities/routine_enitity.dart';
 import 'package:mobile/domain/entities/task_entity.dart';
 import 'package:mobile/domain/usecases/get_habits_for_date_usecase.dart';
 import 'package:mobile/domain/usecases/get_routines_for_date_usecase.dart';
 import 'package:mobile/domain/usecases/get_tasks_for_date_usecase.dart';
+import 'package:mobile/utils/app_logger.dart';
 
 part 'daily_list_event.dart';
 part 'daily_list_state.dart';
@@ -44,7 +44,6 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
       final selectedDate = currentState.days[newIndex];
       final habits = await getHabitsForDate.call(selectedDate);
       final routines = await getRoutinesForDate.call(selectedDate);
-      final tasks = await getTasksForDate.call(selectedDate);
 
       // Extend days if threshold reached
       List<DateTime> newDays = currentState.days;
@@ -67,7 +66,6 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
           habits: habits,
           routines: routines,
           days: newDays,
-          tasks: tasks,
           selectedIndex: updatedNewIndex,
           isLoading: false,
         ),
@@ -113,14 +111,12 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
       // Load habits for the initial selected day
       final habits = await getHabitsForDate.call(initialDays[initialIndex]);
       final routines = await getRoutinesForDate.call(initialDays[initialIndex]);
-      final tasks = await getTasksForDate(initialDays[initialIndex]);
 
       emit(
         HabitListLoaded(
           habits: habits,
           days: initialDays,
           routines: routines,
-          tasks: tasks,
           selectedIndex: initialIndex,
           isLoading: false,
         ),
