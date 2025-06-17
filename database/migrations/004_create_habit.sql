@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS habits (
     target_operator VARCHAR(10) CHECK (target_operator IN ('>=', '<=', '=')),
 
     frequency VARCHAR(20) DEFAULT 'daily' CHECK (frequency IN ('daily', 'weekly', 'monthly')),
-    start_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    start_date DATE NOT NULL,
     weekly_days INTEGER[] DEFAULT '{}',
     monthly_dates INTEGER[] DEFAULT '{}',
     interval INTEGER NOT NULL DEFAULT 1 CHECK (interval >= 1),
