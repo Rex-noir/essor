@@ -19,6 +19,9 @@ class _DailyListScreenState extends State<DailyListScreen>
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
 
+  static const minChildSize = 0.65;
+  static const maxChildSize = 1.0;
+
   final Map<String, ScrollController> _scrollControllers = {};
 
   // Add DraggableScrollableController for the expandable content
@@ -176,11 +179,11 @@ class _DailyListScreenState extends State<DailyListScreen>
             // Draggable content section
             DraggableScrollableSheet(
               controller: _dragController,
-              initialChildSize: 0.65,
-              minChildSize: 0.65,
-              maxChildSize: 1.0,
+              initialChildSize: minChildSize,
+              minChildSize: minChildSize,
+              maxChildSize: maxChildSize,
               snap: true,
-              snapSizes: const [0.65, 1.0],
+              snapSizes: const [minChildSize, maxChildSize],
               builder: (context, scrollController) {
                 return Container(
                   decoration: BoxDecoration(
