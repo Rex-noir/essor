@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS habit_templates(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    created_by uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     title varchar(100) NOT NULL,
     description text,
     habit_type varchar(20) NOT NULL CHECK (habit_type IN ('binary', 'quantitative')),
