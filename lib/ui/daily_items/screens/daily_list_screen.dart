@@ -19,6 +19,8 @@ class _DailyListScreenState extends State<DailyListScreen>
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
 
+  Map<String, ScrollController> _scrollControllers = {};
+
   // Add DraggableScrollableController for the expandable content
   late DraggableScrollableController _dragController;
   double _currentExtent = 0.6; // Initial height (60% of screen)
@@ -50,6 +52,11 @@ class _DailyListScreenState extends State<DailyListScreen>
     _fadeController.dispose();
     _dragController.removeListener(_onDragUpdate);
     _dragController.dispose();
+
+    for (var controller in _scrollControllers.values) {
+      controller.dispose();
+    }
+    _scrollControllers.clear();
     super.dispose();
   }
 
@@ -58,6 +65,13 @@ class _DailyListScreenState extends State<DailyListScreen>
       _currentExtent = _dragController.size;
       _isExpanded = _currentExtent > 0.8;
     });
+  }
+
+  ScrollController _getScrollController(String dayKey) {
+    if (!_scrollControllers.containsKey(dayKey)) {
+      _scrollControllers[dayKey] = ScrollController();
+    }
+    return _scrollControllers[dayKey]!;
   }
 
   void _toggleExpansion() {
@@ -195,12 +209,16 @@ class _DailyListScreenState extends State<DailyListScreen>
                             : TabBarView(
                                 controller: _tabController,
                                 children: state.days.map((day) {
+                                  final dayKey = day.toIso8601String();
+
                                   return ListItemsPage(
-                                    day: day.toIso8601String(),
+                                    day: dayKey,
                                     key: ValueKey(day),
                                     items: state.items,
                                     isLoading: state.isLoading,
-                                    scrollController: scrollController,
+                                    scrollController: _getScrollController(
+                                      dayKey,
+                                    ), // Use separate controller
                                     // Pass the scroll controller
                                     onRefresh: () {
                                       logger.info("Refresh called");
