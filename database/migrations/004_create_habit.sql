@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS habit_templates(
+CREATE TABLE IF NOT EXISTS habits(
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     title varchar(100) NOT NULL,
