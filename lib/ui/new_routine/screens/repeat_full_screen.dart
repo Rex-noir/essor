@@ -142,23 +142,23 @@ class _RepeatFullScreenState extends State<RepeatFullScreen>
 
   Widget _buildTabBar(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: TabBar(
-        controller: _tabController,
-        labelPadding: const EdgeInsets.symmetric(horizontal: 8),
-        dividerColor: Colors.transparent,
-        splashFactory: NoSplash.splashFactory,
-        indicatorColor: Colors.transparent,
-        padding: EdgeInsets.zero,
-        indicatorSize: TabBarIndicatorSize.label,
-        indicatorPadding: EdgeInsets.zero,
-        isScrollable: true,
-        tabAlignment: TabAlignment.center,
-        tabs: List.generate(ItemFrequency.values.length, (index) {
-          final type = ItemFrequency.values[index];
-          final isSelected = selectedFrequency == type;
-          return Container(
+    return TabBar(
+      controller: _tabController,
+      labelPadding: const EdgeInsets.symmetric(horizontal: 8),
+      dividerColor: Colors.transparent,
+      splashFactory: NoSplash.splashFactory,
+      indicatorColor: Colors.transparent,
+      overlayColor: WidgetStatePropertyAll(Colors.transparent),
+      padding: EdgeInsets.zero,
+      indicatorSize: TabBarIndicatorSize.label,
+      indicatorPadding: EdgeInsets.zero,
+      isScrollable: true,
+      tabAlignment: TabAlignment.center,
+      tabs: List.generate(ItemFrequency.values.length, (index) {
+        final type = ItemFrequency.values[index];
+        final isSelected = selectedFrequency == type;
+        return Material(
+          child: Container(
             width: 110,
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             decoration: BoxDecoration(
@@ -187,9 +187,9 @@ class _RepeatFullScreenState extends State<RepeatFullScreen>
                 fontSize: 14,
               ),
             ),
-          );
-        }),
-      ),
+          ),
+        );
+      }),
     );
   }
 
