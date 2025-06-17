@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile/domain/entities/routine_enitity.dart';
 import 'package:mobile/ui/new_routine/bloc/new_routine_bloc.dart';
 import 'package:mobile/ui/new_routine/widgets/repeat_section_card.dart';
+import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
+import 'package:mobile/ui/view_routine/screens/view_routine_screen.dart';
+import 'package:uuid/v4.dart';
 
 class NewRoutineScreen extends StatefulWidget {
   const NewRoutineScreen({super.key});
@@ -203,8 +207,33 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
               return ElevatedButton(
                 onPressed: isValid
                     ? () {
-                        // TODO: Implement save routine
-                        Navigator.of(context).pop();
+                        final bloc = context.read<NewRoutineBloc>();
+                        final title = _titleController.text.trim();
+
+                        final routine = RoutineEntity(
+                          id: UuidV4().generate(),
+                          title: title,
+                          startDate: bloc.state.startDate,
+                          startTime: bloc.state.startTime,
+                          tasks: [],
+                          frequency: bloc.state.selectedFrequency,
+                          weeklyDays: bloc.state.weeklyDays,
+                          monthlyDates: bloc.state.monthlyDates,
+                          interval: bloc.state.interval,
+                          isActive: true,
+                        );
+
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => BlocProvider(
+                              create: (_) =>
+                                  ViewRoutineBloc()
+                                    ..add(ViewRoutineStarted(routine)),
+                              child: ViewRoutineScreen(),
+                            ),
+                          ),
+                        );
                       }
                     : null,
                 style: ElevatedButton.styleFrom(
