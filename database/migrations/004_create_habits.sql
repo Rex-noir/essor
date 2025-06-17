@@ -1,7 +1,6 @@
 CREATE TABLE IF NOT EXISTS habits (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    category_id UUID REFERENCES habit_categories(id) ON DELETE SET NULL,
     name VARCHAR(100) NOT NULL,
     description TEXT,
 

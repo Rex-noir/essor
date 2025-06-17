@@ -27,17 +27,6 @@ type Habit struct {
 	SyncVersion    pgtype.Int8
 }
 
-type HabitCategory struct {
-	ID          pgtype.UUID
-	UserID      pgtype.UUID
-	Name        string
-	Color       pgtype.Text
-	CreatedAt   pgtype.Timestamptz
-	UpdatedAt   pgtype.Timestamptz
-	DeletedAt   pgtype.Timestamptz
-	SyncVersion pgtype.Int8
-}
-
 type HabitEntry struct {
 	ID          pgtype.UUID
 	HabitID     pgtype.UUID

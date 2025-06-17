@@ -11,10 +11,6 @@ CREATE TRIGGER update_habits_modtime
     BEFORE UPDATE ON habits
     FOR EACH ROW EXECUTE FUNCTION update_modified_column();
 
-CREATE TRIGGER update_categories_modtime
-    BEFORE UPDATE ON habit_categories
-    FOR EACH ROW EXECUTE FUNCTION update_modified_column();
-
 CREATE TRIGGER update_entries_modtime 
     BEFORE UPDATE ON habit_entries 
     FOR EACH ROW EXECUTE FUNCTION update_modified_column();
@@ -47,7 +43,6 @@ $$ LANGUAGE plpgsql;
 ---- create above / drop below ----
 
 DROP TRIGGER IF EXISTS update_habits_modtime ON habits;
-DROP TRIGGER IF EXISTS update_categories_modtime ON habit_categories;
 DROP TRIGGER IF EXISTS update_entries_modtime ON habit_entries;
 
 DROP FUNCTION IF EXISTS update_modified_column();
