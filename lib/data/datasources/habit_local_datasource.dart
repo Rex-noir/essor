@@ -2,7 +2,6 @@ import 'package:mobile/data/dtos/habit_dto.dart';
 import 'package:mobile/domain/datasources/habit_datasource.dart';
 import 'package:mobile/domain/entities/habit_entity.dart';
 import 'package:mobile/domain/entities/item_entity.dart';
-import 'package:mobile/domain/enums/day_of_week.dart'; // Import ItemType
 
 class HabitLocalDataSource extends HabitDataSource {
   @override
@@ -17,7 +16,7 @@ class HabitLocalDataSource extends HabitDataSource {
         interval: 1,
         isActive: true,
         iconIndex: 0, // Added
-        type: ItemType.binary, // Added
+        habitType: ItemType.binary, // Added
       ),
       HabitDto(
         id: '2',
@@ -28,7 +27,7 @@ class HabitLocalDataSource extends HabitDataSource {
         interval: 2,
         isActive: true,
         iconIndex: 1, // Added
-        type: ItemType.binary, // Added
+        habitType: ItemType.binary, // Added
       ),
       HabitDto(
         id: '3',
@@ -39,8 +38,8 @@ class HabitLocalDataSource extends HabitDataSource {
         interval: 3,
         isActive: true,
         iconIndex: 2, // Added
-        type: ItemType.quantitative, // Example
-        target: 8, // Example: 8 glasses of water
+        habitType: ItemType.quantitative, // Example
+        targetValue: 8, // Example: 8 glasses of water
       ),
       HabitDto(
         id: '4',
@@ -48,11 +47,11 @@ class HabitLocalDataSource extends HabitDataSource {
         description: 'Yoga on Mondays and Fridays',
         frequency: ItemFrequency.weekly,
         startDate: DateTime(2025, 6, 1),
-        weeklyDays: [DayOfWeek.monday, DayOfWeek.friday],
+        weeklyDays: [1, 5],
         interval: 1,
         isActive: true,
         iconIndex: 3, // Added
-        type: ItemType.binary, // Added
+        habitType: ItemType.binary, // Added
       ),
       HabitDto(
         id: '5',
@@ -60,11 +59,11 @@ class HabitLocalDataSource extends HabitDataSource {
         description: 'Journal on Tuesdays and Thursdays',
         frequency: ItemFrequency.weekly,
         startDate: DateTime(2025, 6, 1),
-        weeklyDays: [DayOfWeek.tuesday, DayOfWeek.thursday],
+        weeklyDays: [2, 4],
         interval: 1,
         isActive: true,
         iconIndex: 4, // Added
-        type: ItemType.binary, // Added
+        habitType: ItemType.binary, // Added
       ),
       HabitDto(
         id: '6',
@@ -72,11 +71,11 @@ class HabitLocalDataSource extends HabitDataSource {
         description: 'Call family every 2 weeks on Sunday',
         frequency: ItemFrequency.weekly,
         startDate: DateTime(2025, 6, 1),
-        weeklyDays: [DayOfWeek.sunday],
+        weeklyDays: [7],
         interval: 2,
         isActive: true,
         iconIndex: 5, // Added
-        type: ItemType.binary, // Added
+        habitType: ItemType.binary, // Added
       ),
       HabitDto(
         id: '7',
@@ -88,7 +87,7 @@ class HabitLocalDataSource extends HabitDataSource {
         interval: 1,
         isActive: true,
         iconIndex: 6, // Added
-        type: ItemType.binary, // Added
+        habitType: ItemType.binary, // Added
       ),
       HabitDto(
         id: '8',
@@ -100,7 +99,7 @@ class HabitLocalDataSource extends HabitDataSource {
         interval: 1,
         isActive: true,
         iconIndex: 7, // Added
-        type: ItemType.binary, // Added
+        habitType: ItemType.binary, // Added
       ),
       HabitDto(
         id: '9',
@@ -111,7 +110,7 @@ class HabitLocalDataSource extends HabitDataSource {
         interval: 3,
         isActive: true,
         iconIndex: 8, // Added
-        type: ItemType.binary, // Added
+        habitType: ItemType.binary, // Added
       ),
       HabitDto(
         id: '10',
@@ -119,11 +118,11 @@ class HabitLocalDataSource extends HabitDataSource {
         description: 'Gardening on Saturdays',
         frequency: ItemFrequency.weekly,
         startDate: DateTime(2025, 6, 1),
-        weeklyDays: [DayOfWeek.saturday],
+        weeklyDays: [6],
         interval: 1,
         isActive: true,
         iconIndex: 9, // Added
-        type: ItemType.binary, // Added
+        habitType: ItemType.binary, // Added
       ),
       HabitDto(
         id: '11',
@@ -131,11 +130,11 @@ class HabitLocalDataSource extends HabitDataSource {
         description: 'Every 2 weeks on Thursday',
         frequency: ItemFrequency.weekly,
         startDate: DateTime(2025, 6, 1),
-        weeklyDays: [DayOfWeek.thursday],
+        weeklyDays: [4],
         interval: 2,
         isActive: true,
         iconIndex: 10, // Added
-        type: ItemType.binary, // Added
+        habitType: ItemType.binary, // Added
       ),
       HabitDto(
         id: '12',
@@ -143,11 +142,11 @@ class HabitLocalDataSource extends HabitDataSource {
         description: 'Exercise on Mondays, Wednesdays, and Fridays',
         frequency: ItemFrequency.weekly,
         startDate: DateTime(2025, 6, 1),
-        weeklyDays: [DayOfWeek.monday, DayOfWeek.wednesday, DayOfWeek.friday],
+        weeklyDays: [1, 3, 5],
         interval: 1,
         isActive: true,
         iconIndex: 11, // Added
-        type: ItemType.binary, // Added
+        habitType: ItemType.binary, // Added
       ),
       HabitDto(
         id: '13',
@@ -158,7 +157,7 @@ class HabitLocalDataSource extends HabitDataSource {
         interval: 3,
         isActive: true,
         iconIndex: 12, // Added
-        type: ItemType.binary, // Added
+        habitType: ItemType.binary, // Added
       ),
       HabitDto(
         id: '14',
@@ -170,7 +169,7 @@ class HabitLocalDataSource extends HabitDataSource {
         interval: 1,
         isActive: true,
         iconIndex: 13, // Added
-        type: ItemType.binary, // Added
+        habitType: ItemType.binary, // Added
       ),
       HabitDto(
         id: '15',
@@ -182,7 +181,7 @@ class HabitLocalDataSource extends HabitDataSource {
         interval: 1,
         isActive: true,
         iconIndex: 14, // Added
-        type: ItemType.binary, // Added
+        habitType: ItemType.binary, // Added
       ),
     ];
     return Future.value(sampleHabits);

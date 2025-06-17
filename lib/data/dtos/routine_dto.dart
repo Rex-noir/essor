@@ -6,7 +6,6 @@ import 'package:mobile/data/dtos/habit_dto.dart';
 import 'package:mobile/data/dtos/task_dto.dart';
 import 'package:mobile/domain/entities/habit_entity.dart';
 import 'package:mobile/domain/entities/routine_enitity.dart';
-import 'package:mobile/domain/enums/day_of_week.dart';
 
 class RoutineDto with EquatableMixin {
   final String id;
@@ -15,7 +14,7 @@ class RoutineDto with EquatableMixin {
   final TimeOfDay startTime;
   final List<TaskDto> tasks;
   final ItemFrequency frequency;
-  final List<DayOfWeek> weeklyDays;
+  final List<int> weeklyDays;
   final List<int> monthlyDates;
   final int interval;
   final bool isActive;
@@ -41,7 +40,7 @@ class RoutineDto with EquatableMixin {
     List<int>? repeatDays,
     List<TaskDto>? tasks,
     ItemFrequency? frequency,
-    List<DayOfWeek>? weeklyDays,
+    List<int>? weeklyDays,
     List<int>? monthlyDates,
     int? interval,
     bool? isActive,
@@ -68,7 +67,7 @@ class RoutineDto with EquatableMixin {
       'start_time': {'hour': startTime.hour, 'minute': startTime.minute},
       'habits': tasks.map((x) => x.toMap()).toList(),
       'frequency': frequency.index,
-      'weekly_days': weeklyDays.map((x) => x.index).toList(),
+      'weekly_days': weeklyDays,
       'monthly_dates': monthlyDates,
       'interval': interval,
       'is_active': isActive,
@@ -90,9 +89,7 @@ class RoutineDto with EquatableMixin {
         ),
       ),
       frequency: ItemFrequency.values[map['frequency'] as int],
-      weeklyDays: List<DayOfWeek>.from(
-        (map['weekly_days'] as List).map((x) => DayOfWeek.values[x as int]),
-      ),
+      weeklyDays: List<int>.from(map['weekly_days']),
       monthlyDates: List<int>.from(map['monthly_dates']),
       interval: map['interval'] as int,
       isActive: map['is_active'] as bool,

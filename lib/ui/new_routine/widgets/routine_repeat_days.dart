@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/domain/enums/day_of_week.dart';
+import 'package:mobile/extensions/int_extensions.dart';
 
 class RoutineRepeatDays extends StatelessWidget {
-  final void Function(Set<DayOfWeek>)? onSelectionChanged;
-  final Set<DayOfWeek> selectedDays;
+  final void Function(Set<int>)? onSelectionChanged;
+  final Set<int> selectedDays;
 
   const RoutineRepeatDays({
     super.key,
@@ -22,7 +22,7 @@ class RoutineRepeatDays extends StatelessWidget {
         alignment: WrapAlignment.center,
         spacing: 8,
         runSpacing: 8,
-        children: DayOfWeek.values.map((day) {
+        children: selectedDays.map((day) {
           final isSelected = selectedDays.contains(day);
 
           final backgroundColor = isSelected
@@ -37,7 +37,7 @@ class RoutineRepeatDays extends StatelessWidget {
 
           return GestureDetector(
             onTap: () {
-              final updated = Set<DayOfWeek>.from(selectedDays);
+              final updated = Set<int>.from(selectedDays);
               if (isSelected) {
                 updated.remove(day);
               } else {
@@ -53,7 +53,7 @@ class RoutineRepeatDays extends StatelessWidget {
                 border: Border.all(color: borderColor),
               ),
               child: Text(
-                day.shortName,
+                day.shortWeekdayName,
                 style: textTheme.labelMedium?.copyWith(
                   color: foregroundColor,
                   fontWeight: FontWeight.w600,

@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/domain/entities/habit_entity.dart';
 import 'package:mobile/domain/entities/task_entity.dart';
-import 'package:mobile/domain/enums/day_of_week.dart';
+import 'package:mobile/extensions/int_extensions.dart';
 
 class RoutineEntity {
   final String id;
@@ -11,7 +11,7 @@ class RoutineEntity {
   final TimeOfDay startTime;
   final List<TaskEntity> tasks;
   final ItemFrequency frequency;
-  final List<DayOfWeek> weeklyDays;
+  final List<int> weeklyDays;
   final List<int> monthlyDates;
   final int interval;
   final bool isActive;
@@ -39,7 +39,7 @@ class RoutineEntity {
     List<int>? repeatDays,
     List<TaskEntity>? tasks,
     ItemFrequency? frequency,
-    List<DayOfWeek>? weeklyDays,
+    List<int>? weeklyDays,
     List<int>? monthlyDates,
     int? interval,
     bool? isActive,
@@ -71,7 +71,7 @@ class RoutineEntity {
         'startTime: $startTimeFormatted, '
         'tasks: ${tasks.map((t) => t.toString()).toList()}, '
         'frequency: $frequency, '
-        'weeklyDays: ${weeklyDays.map((d) => d.name).toList()}, '
+        'weeklyDays: ${weeklyDays.map((d) => d.shortWeekdayName).toList()}, '
         'monthlyDates: $monthlyDates, '
         'interval: $interval, '
         'isActive: $isActive, '

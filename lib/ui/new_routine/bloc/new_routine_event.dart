@@ -24,7 +24,7 @@ class UpdateIntervalNewRoutineEvent extends NewRoutineEvent {
 }
 
 class UpdateWeeklyDaysNewRoutineEvent extends NewRoutineEvent {
-  final List<DayOfWeek> weeklyDays;
+  final List<int> weeklyDays;
   const UpdateWeeklyDaysNewRoutineEvent(this.weeklyDays);
 
   @override

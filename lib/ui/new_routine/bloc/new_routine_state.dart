@@ -4,7 +4,7 @@ part of 'new_routine_bloc.dart';
 class NewRoutineState extends Equatable {
   final ItemFrequency selectedFrequency;
   final int interval;
-  final List<DayOfWeek> weeklyDays;
+  final List<int> weeklyDays;
   final DateTime startDate;
   final List<int> monthlyDates;
   final TimeOfDay startTime;
@@ -39,7 +39,7 @@ class NewRoutineState extends Equatable {
   NewRoutineState copyWith({
     ItemFrequency? selectedFrequency,
     int? interval,
-    List<DayOfWeek>? weeklyDays,
+    List<int>? weeklyDays,
     TimeOfDay? startTime,
     DateTime? startDate,
     List<int>? monthlyDates,

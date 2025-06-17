@@ -3,7 +3,6 @@ import 'package:mobile/data/dtos/routine_dto.dart';
 import 'package:mobile/data/dtos/task_dto.dart';
 import 'package:mobile/domain/datasources/routine_datasource.dart';
 import 'package:mobile/domain/entities/habit_entity.dart';
-import 'package:mobile/domain/enums/day_of_week.dart'; // Import ItemType
 
 class RoutineLocalDataSource implements RoutineDataSource {
   @override
@@ -30,7 +29,7 @@ class RoutineLocalDataSource implements RoutineDataSource {
         startTime: startTime,
         tasks: tasks,
         frequency: ItemFrequency.weekly,
-        weeklyDays: [DayOfWeek.monday, DayOfWeek.wednesday],
+        weeklyDays: [1, 3],
         monthlyDates: [1, 15],
         interval: 1,
         isActive: true,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/domain/entities/habit_entity.dart';
-import 'package:mobile/domain/enums/day_of_week.dart';
 import 'package:mobile/ui/new_routine/widgets/repeat_wheeltab_section.dart';
 import 'package:mobile/ui/new_routine/widgets/routine_repeat_days.dart';
 import 'package:mobile/utils/app_logger.dart';
@@ -21,7 +20,7 @@ extension RepeatTypeExtension on ItemFrequency {
 class RepeatSettingsResult {
   final ItemFrequency frequency;
   final int interval;
-  final List<DayOfWeek> weeklyDays;
+  final List<int> weeklyDays;
 
   RepeatSettingsResult({
     required this.frequency,
@@ -33,7 +32,7 @@ class RepeatSettingsResult {
 class RepeatFullScreen extends StatefulWidget {
   final ItemFrequency initialFrequency;
   final int initialInterval;
-  final List<DayOfWeek> initialWeeklyDays;
+  final List<int> initialWeeklyDays;
 
   const RepeatFullScreen({
     super.key,
@@ -51,7 +50,7 @@ class _RepeatFullScreenState extends State<RepeatFullScreen>
   late TabController _tabController;
   late ItemFrequency selectedFrequency;
   late int interval;
-  late Set<DayOfWeek> selectedDays;
+  late Set<int> selectedDays;
 
   final logger = AppLogger.tag("RepeatFullScreen");
   @override

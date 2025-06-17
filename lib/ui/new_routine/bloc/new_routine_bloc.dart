@@ -4,7 +4,6 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/domain/entities/habit_entity.dart';
-import 'package:mobile/domain/enums/day_of_week.dart';
 
 part 'new_routine_event.dart';
 part 'new_routine_state.dart';
