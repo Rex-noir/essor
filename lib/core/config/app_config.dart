@@ -1,5 +1,5 @@
-import 'package:mobile/config/base_config.dart';
-import 'package:mobile/config/dev_config.dart';
+import 'package:mobile/core/config/base_config.dart';
+import 'package:mobile/core/config/dev_config.dart';
 
 class AppConfig {
   static final BaseConfig _config =

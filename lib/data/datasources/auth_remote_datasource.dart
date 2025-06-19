@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:mobile/config/app_config.dart';
+import 'package:mobile/core/config/app_config.dart';
 import 'package:mobile/data/dtos/auth_response_dto.dart';
 
 class AuthRemoteDataSource {

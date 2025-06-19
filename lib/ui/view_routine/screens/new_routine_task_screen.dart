@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/config/app_config.dart';
-import 'package:mobile/config/app_icons.dart';
+import 'package:mobile/core/config/app_config.dart';
+import 'package:mobile/core/config/app_icons.dart';
 import 'package:mobile/domain/entities/task_entity.dart';
-import 'package:mobile/ui/core/widgets/show_icon_picker.dart';
+import 'package:mobile/core/widgets/show_icon_picker.dart';
 import 'package:mobile/ui/view_routine/widgets/routine_task_duration.dart';
 import 'package:mobile/ui/view_routine/widgets/routine_task_title.dart';
 import 'package:uuid/v4.dart';

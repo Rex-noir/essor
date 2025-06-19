@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/extensions/int_extensions.dart';
+import 'package:mobile/core/extensions/int_extensions.dart';
 
 class RoutineRepeatDays extends StatelessWidget {
   final void Function(Set<int>)? onSelectionChanged;

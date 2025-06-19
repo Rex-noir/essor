@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/domain/entities/habit_entity.dart';
 import 'package:mobile/domain/entities/task_entity.dart';
-import 'package:mobile/extensions/int_extensions.dart';
+import 'package:mobile/core/extensions/int_extensions.dart';
 
 class RoutineEntity {
   final String id;

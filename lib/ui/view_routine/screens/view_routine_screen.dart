@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile/config/app_icons.dart';
+import 'package:mobile/core/config/app_icons.dart';
 import 'package:mobile/domain/entities/task_entity.dart';
 import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
 import 'package:mobile/ui/view_routine/screens/new_routine_task_screen.dart';

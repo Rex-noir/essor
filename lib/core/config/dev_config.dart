@@ -1,4 +1,4 @@
-import 'package:mobile/config/base_config.dart';
+import 'package:mobile/core/config/base_config.dart';
 
 class DevConfig implements BaseConfig {
   @override

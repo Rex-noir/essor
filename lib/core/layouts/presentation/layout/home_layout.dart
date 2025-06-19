@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/ui/home/screens/home_screen.dart';
-import 'package:mobile/ui/core/layouts/presentation/widgets/home_add_dialog.dart';
+import 'package:mobile/core/layouts/presentation/widgets/home_add_dialog.dart';
 
 class HomeLayout extends StatefulWidget {
   const HomeLayout({super.key});

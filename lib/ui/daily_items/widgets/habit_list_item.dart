@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/config/app_icons.dart';
+import 'package:mobile/core/config/app_icons.dart';
 import 'package:mobile/domain/entities/habit_entity.dart';
 
 class HabitListItem extends StatelessWidget {

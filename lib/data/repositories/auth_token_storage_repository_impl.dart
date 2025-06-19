@@ -1,4 +1,4 @@
-import 'package:mobile/config/app_config.dart';
+import 'package:mobile/core/config/app_config.dart';
 import 'package:mobile/domain/repositories/auth_token_storage_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

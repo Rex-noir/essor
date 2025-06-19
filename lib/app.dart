@@ -14,12 +14,12 @@ import 'package:mobile/domain/repositories/profile_repository.dart';
 import 'package:mobile/domain/usecases/get_profile_usecase.dart';
 import 'package:mobile/domain/usecases/login_usecase.dart';
 import 'package:mobile/domain/usecases/logout_usecase.dart';
-import 'package:mobile/network/api_client.dart';
+import 'package:mobile/core/network/api_client.dart';
 import 'package:mobile/ui/authentication/login/login_screen.dart';
 import 'package:mobile/ui/authentication/shared/bloc/authentication_bloc.dart';
-import 'package:mobile/ui/core/layouts/presentation/layout/home_layout.dart';
-import 'package:mobile/ui/core/theme/theme.dart';
-import 'package:mobile/ui/core/theme/util.dart';
+import 'package:mobile/core/layouts/presentation/layout/home_layout.dart';
+import 'package:mobile/core/theme/theme.dart';
+import 'package:mobile/core/theme/util.dart';
 
 class App extends StatelessWidget {
   final AuthenticationStatus initialStatus;

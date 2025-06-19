@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/app.dart';
-import 'package:mobile/config/dev_config.dart';
+import 'package:mobile/core/config/dev_config.dart';
 import 'package:mobile/domain/enums/authentication_status.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
