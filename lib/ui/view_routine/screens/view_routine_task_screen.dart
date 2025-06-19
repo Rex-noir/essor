@@ -83,7 +83,7 @@ class _ViewRoutineTaskScreen extends State<ViewRoutineTaskScreen> {
                 }
               },
               label: const Text("Save"),
-              icon: Icon(Icons.add),
+              icon: Icon(Icons.save),
             ),
           ),
         ],
