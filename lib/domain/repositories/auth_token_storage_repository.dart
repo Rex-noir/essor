@@ -1,7 +1,7 @@
 abstract class AuthTokenStorageRepository {
-  String? get accessToken;
-  String? get refreshToken;
-  String? get deviceId;
+  Future<String?> get accessToken;
+  Future<String?> get refreshToken;
+  Future<String?> get deviceId;
 
   Future<void> saveTokens({
     required String accessToken,

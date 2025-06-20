@@ -1,4 +1,4 @@
-import 'package:mobile/domain/entities/task_entity.dart';
+import 'package:mobile/domain/models/task_model.dart';
 import 'package:mobile/domain/repositories/task_repository.dart';
 
 class GetTasksForDateUsecase {
@@ -6,7 +6,7 @@ class GetTasksForDateUsecase {
 
   GetTasksForDateUsecase(this.repository);
 
-  Future<List<TaskEntity>> call(DateTime date) {
+  Future<List<TaskModel>> call(DateTime date) {
     return repository.fetchTasksforDate(date);
   }
 }

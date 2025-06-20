@@ -40,8 +40,10 @@ void main() {
       // Arrange: Set up mock responses for token retrieval and logout
       when(
         () => mockAuthTokenStorageRepository.accessToken,
-      ).thenReturn(tAccessToken);
-      when(() => mockAuthTokenStorageRepository.deviceId).thenReturn(tDeviceId);
+      ).thenAnswer((_) async => tAccessToken);
+      when(
+        () => mockAuthTokenStorageRepository.deviceId,
+      ).thenAnswer((_) async => tDeviceId);
       when(
         () => mockAuthenticationRepository.logOut(
           refreshToken:
@@ -75,10 +77,10 @@ void main() {
       setUp(() {
         when(
           () => mockAuthTokenStorageRepository.accessToken,
-        ).thenReturn(tAccessToken);
+        ).thenAnswer((_) async => tAccessToken);
         when(
           () => mockAuthTokenStorageRepository.deviceId,
-        ).thenReturn(tDeviceId);
+        ).thenAnswer((_) async => tDeviceId);
         when(
           () => mockAuthTokenStorageRepository.clearTokens(),
         ).thenAnswer((_) async => Future.value());
@@ -271,10 +273,10 @@ void main() {
         );
         when(
           () => mockAuthTokenStorageRepository.accessToken,
-        ).thenReturn(tAccessToken);
+        ).thenAnswer((_) async => tAccessToken);
         when(
           () => mockAuthTokenStorageRepository.deviceId,
-        ).thenReturn(tDeviceId);
+        ).thenAnswer((_) async => tDeviceId);
         when(
           () => mockAuthenticationRepository.logOut(
             refreshToken: any(named: 'refreshToken'),
@@ -317,7 +319,7 @@ void main() {
       ).thenThrow(Exception('Failed to get access token'));
       when(
         () => mockAuthTokenStorageRepository.deviceId,
-      ).thenReturn(tDeviceId); // This might still be called
+      ).thenAnswer((_) async => tDeviceId);
       when(
         () => mockAuthTokenStorageRepository.clearTokens(),
       ).thenAnswer((_) async => Future.value());

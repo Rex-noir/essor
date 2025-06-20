@@ -8,15 +8,16 @@ sealed class ViewRoutineEvent extends Equatable {
 }
 
 class ViewRoutineStarted extends ViewRoutineEvent {
-  final RoutineEntity routine;
-  const ViewRoutineStarted(this.routine);
+  final RoutineModel routine;
+  final List<TaskModel> tasks;
+  const ViewRoutineStarted(this.routine, this.tasks);
 
   @override
-  List<Object> get props => [routine];
+  List<Object> get props => [routine, tasks];
 }
 
 class ViewRoutineNewTaskAdded extends ViewRoutineEvent {
-  final TaskEntity task;
+  final TaskModel task;
   const ViewRoutineNewTaskAdded(this.task);
 
   @override
@@ -24,7 +25,7 @@ class ViewRoutineNewTaskAdded extends ViewRoutineEvent {
 }
 
 class ViewRoutineTaskUpdated extends ViewRoutineEvent {
-  final TaskEntity task;
+  final TaskModel task;
   const ViewRoutineTaskUpdated(this.task);
 
   @override
@@ -32,7 +33,7 @@ class ViewRoutineTaskUpdated extends ViewRoutineEvent {
 }
 
 class ViewRoutineTaskRemoved extends ViewRoutineEvent {
-  final TaskEntity task;
+  final TaskModel task;
   const ViewRoutineTaskRemoved(this.task);
 
   @override

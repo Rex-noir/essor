@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/domain/entities/habit_entity.dart';
+import 'package:mobile/domain/enums/item_frequency.dart';
 
 part 'new_routine_event.dart';
 part 'new_routine_state.dart';

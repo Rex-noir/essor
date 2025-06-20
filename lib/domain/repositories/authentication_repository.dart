@@ -1,8 +1,8 @@
-import 'package:mobile/domain/entities/auth_response_entity.dart';
 import 'package:mobile/domain/enums/authentication_status.dart';
+import 'package:mobile/domain/models/auth_response_entity.dart';
 
 abstract class AuthenticationRepository {
-  Future<AuthResponseEntity> logIn({
+  Future<AutheResponseModel> logIn({
     required String email,
     required String password,
   });

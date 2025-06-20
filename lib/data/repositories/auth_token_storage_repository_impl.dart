@@ -3,28 +3,27 @@ import 'package:mobile/domain/repositories/auth_token_storage_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthTokenStorageRepositoryImpl extends AuthTokenStorageRepository {
-  SharedPreferences? _prefs;
+  final SharedPreferencesAsync? _prefs;
 
-  AuthTokenStorageRepositoryImpl();
-
-  Future<void> init() async {
-    _prefs = await SharedPreferences.getInstance();
-  }
+  AuthTokenStorageRepositoryImpl(this._prefs);
 
   @override
   Future<void> clearTokens() async {
     if (_prefs == null) throw Exception('Not initialized');
-    await _prefs!.remove(AppConfig.accessTokenKey);
-    await _prefs!.remove(AppConfig.refreshTokenKey);
-    await _prefs!.remove(AppConfig.deviceIdKey);
+    await _prefs.remove(AppConfig.accessTokenKey);
+    await _prefs.remove(AppConfig.refreshTokenKey);
+    await _prefs.remove(AppConfig.deviceIdKey);
   }
 
   @override
-  String? get accessToken => _prefs?.getString(AppConfig.accessTokenKey);
+  Future<String?> get accessToken async =>
+      await _prefs?.getString(AppConfig.accessTokenKey);
   @override
-  String? get refreshToken => _prefs?.getString(AppConfig.refreshTokenKey);
+  Future<String?> get refreshToken async =>
+      await _prefs?.getString(AppConfig.refreshTokenKey);
   @override
-  String? get deviceId => _prefs?.getString(AppConfig.deviceIdKey);
+  Future<String?> get deviceId async =>
+      await _prefs?.getString(AppConfig.deviceIdKey);
 
   @override
   Future<void> saveTokens({
@@ -33,8 +32,8 @@ class AuthTokenStorageRepositoryImpl extends AuthTokenStorageRepository {
     required String deviceId,
   }) async {
     if (_prefs == null) throw Exception('Not initialized');
-    await _prefs!.setString(AppConfig.accessTokenKey, accessToken);
-    await _prefs!.setString(AppConfig.refreshTokenKey, refreshToken);
-    await _prefs!.setString(AppConfig.deviceIdKey, deviceId);
+    await _prefs.setString(AppConfig.accessTokenKey, accessToken);
+    await _prefs.setString(AppConfig.refreshTokenKey, refreshToken);
+    await _prefs.setString(AppConfig.deviceIdKey, deviceId);
   }
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/core/config/app_icons.dart';
-import 'package:mobile/domain/entities/routine_enitity.dart';
+import 'package:mobile/domain/models/routine_model.dart';
+import 'package:mobile/utils/item_util.dart';
 
 class RoutineListItem extends StatelessWidget {
-  final RoutineEntity routine;
+  final RoutineModel routine;
 
   const RoutineListItem({super.key, required this.routine});
 
@@ -49,7 +50,7 @@ class RoutineListItem extends StatelessWidget {
                   children: [
                     Text(routine.title, style: textTheme.titleMedium),
                     Text(
-                      getRoutineRepeatLabel(
+                      getFrequencyIntervalLabel(
                         routine.frequency,
                         routine.interval,
                       ),

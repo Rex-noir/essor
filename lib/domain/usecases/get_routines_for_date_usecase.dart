@@ -1,4 +1,4 @@
-import 'package:mobile/domain/entities/routine_enitity.dart';
+import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/domain/repositories/routine_repository.dart';
 
 class GetRoutinesForDateUsecase {
@@ -6,7 +6,7 @@ class GetRoutinesForDateUsecase {
 
   GetRoutinesForDateUsecase(this._routineRepository);
 
-  Future<List<RoutineEntity>> call(DateTime date) {
+  Future<List<RoutineModel>> call(DateTime date) {
     return _routineRepository.fetchRoutinesForDate(date);
   }
 }

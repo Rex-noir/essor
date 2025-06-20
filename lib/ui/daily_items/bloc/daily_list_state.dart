@@ -11,17 +11,17 @@ sealed class DailyListState extends Equatable {
 abstract class DailyItem {}
 
 class HabitItem extends DailyItem {
-  final HabitEntity habit;
+  final HabitModel habit;
   HabitItem(this.habit);
 }
 
 class RoutineItem extends DailyItem {
-  final RoutineEntity routine;
+  final RoutineModel routine;
   RoutineItem(this.routine);
 }
 
 class TaskItem extends DailyItem {
-  final TaskEntity task;
+  final TaskModel task;
   TaskItem(this.task);
 }
 
@@ -30,8 +30,8 @@ final class HabitListInitial extends DailyListState {}
 final class DailyListLoading extends DailyListState {}
 
 class HabitListLoaded extends DailyListState {
-  final List<HabitEntity> habits;
-  final List<RoutineEntity> routines;
+  final List<HabitModel> habits;
+  final List<RoutineModel> routines;
   final List<DateTime> days;
   final int selectedIndex;
   final bool isLoading;
@@ -55,9 +55,9 @@ class HabitListLoaded extends DailyListState {
   }
 
   HabitListLoaded copyWith({
-    List<HabitEntity>? habits,
-    List<RoutineEntity>? routines,
-    List<TaskEntity>? tasks,
+    List<HabitModel>? habits,
+    List<RoutineModel>? routines,
+    List<TaskModel>? tasks,
     List<DateTime>? days,
     int? selectedIndex,
     bool? isLoading,

@@ -1,5 +1,4 @@
-
-import 'package:mobile/domain/entities/user_entity.dart';
+import 'package:mobile/domain/models/user_model.dart';
 import 'package:mobile/domain/repositories/profile_repository.dart';
 
 class GetProfileUseCase {
@@ -7,7 +6,7 @@ class GetProfileUseCase {
 
   GetProfileUseCase(this._profileRepository);
 
-  Future<UserEntity> call() async {
+  Future<UserModel> call() async {
     return await _profileRepository.getUser();
   }
 }

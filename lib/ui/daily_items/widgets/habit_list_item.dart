@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/core/config/app_icons.dart';
-import 'package:mobile/domain/entities/habit_entity.dart';
+import 'package:mobile/domain/models/habit_model.dart';
 
 class HabitListItem extends StatelessWidget {
-  final HabitEntity habit;
+  final HabitModel habit;
 
   const HabitListItem({required this.habit, super.key});
 

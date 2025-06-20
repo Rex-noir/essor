@@ -14,11 +14,19 @@ class ViewRoutineInitial extends ViewRoutineState {
 }
 
 class ViewRoutineLoaded extends ViewRoutineState {
-  final RoutineEntity routine;
-  const ViewRoutineLoaded({required this.routine});
+  final RoutineModel routine;
+  final List<TaskModel> tasks;
+  const ViewRoutineLoaded({required this.routine, required this.tasks});
 
   @override
-  List<Object?> get props => [routine];
+  List<Object?> get props => [routine, tasks];
+
+  ViewRoutineLoaded copyWith({RoutineModel? routine, List<TaskModel>? tasks}) {
+    return ViewRoutineLoaded(
+      routine: routine ?? this.routine,
+      tasks: tasks ?? this.tasks,
+    );
+  }
 }
 
 class ViewRoutineError extends ViewRoutineState {

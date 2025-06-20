@@ -1,5 +1,5 @@
-import 'package:mobile/domain/entities/routine_enitity.dart';
+import 'package:mobile/domain/models/routine_model.dart';
 
 abstract class RoutineRepository {
-  Future<List<RoutineEntity>> fetchRoutinesForDate(DateTime date);
+  Future<List<RoutineModel>> fetchRoutinesForDate(DateTime date);
 }

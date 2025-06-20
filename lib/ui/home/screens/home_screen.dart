@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile/data/datasources/habit_local_datasource.dart';
-import 'package:mobile/data/datasources/routine_local_datasource.dart';
-import 'package:mobile/data/datasources/task_local_datasource.dart';
 import 'package:mobile/data/repositories/habit_repository_impl.dart';
 import 'package:mobile/data/repositories/routine_repository_impl.dart';
-import 'package:mobile/data/repositories/task_repository_impl.dart';
+import 'package:mobile/database/daos/habits_dao.dart';
+import 'package:mobile/database/daos/routines_dao.dart';
+import 'package:mobile/database/database.dart';
 import 'package:mobile/domain/usecases/get_habits_for_date_usecase.dart';
 import 'package:mobile/domain/usecases/get_routines_for_date_usecase.dart';
-import 'package:mobile/domain/usecases/get_tasks_for_date_usecase.dart';
 import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
 import 'package:mobile/ui/daily_items/screens/daily_list_screen.dart';
 import 'package:mobile/ui/home/widgets/home_greeting.dart';
@@ -51,12 +49,12 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _initializeBloc() {
+    final database = context.read<AppDatabase>();
     _dailyListBloc = DailyListBloc(
-      GetHabitsForDateUsecase(HabitRepositoryImpl(HabitLocalDataSource())),
-      GetRoutinesForDateUsecase(
-        RoutineRepositoryImpl(RoutineLocalDataSource()),
+      GetHabitsForDateUsecase(
+        HabitRepositoryImpl(habitsDao: HabitsDao(database)),
       ),
-      GetTasksForDateUsecase(TaskRepositoryImpl(TaskLocalDataSource())),
+      GetRoutinesForDateUsecase(RoutineRepositoryImpl(RoutinesDao(database))),
     )..add(DailyListInitialize());
   }
 

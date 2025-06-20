@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile/domain/entities/auth_response_entity.dart';
-import 'package:mobile/domain/entities/user_entity.dart';
 import 'package:mobile/domain/failures/auth_failures.dart';
 import 'package:mobile/domain/failures/failures.dart';
+import 'package:mobile/domain/models/auth_response_entity.dart';
+import 'package:mobile/domain/models/user_model.dart';
 import 'package:mobile/domain/repositories/auth_token_storage_repository.dart';
 import 'package:mobile/domain/repositories/authentication_repository.dart';
 import 'package:mobile/domain/usecases/login_usecase.dart'; // Adjust path if needed
@@ -32,16 +32,17 @@ void main() {
 
   const String tEmail = 'test@example.com';
   const String tPassword = 'password123';
-  final UserEntity tUserEntity = UserEntity(
+  final UserModel tUserModel = UserModel(
     id: '1',
     email: tEmail,
     name: "name",
+    avatarUrl: null,
   );
-  final AuthResponseEntity tLoginResponseEntity = AuthResponseEntity(
+  final AutheResponseModel tLoginResponseEntity = AutheResponseModel(
     accessToken: 'some_access_token',
     refreshToken: 'some_refresh_token',
     deviceId: 'some_device_id',
-    data: tUserEntity,
+    data: tUserModel,
   );
 
   group('LoginUseCase', () {
@@ -69,7 +70,7 @@ void main() {
       );
 
       // Assert
-      expect(result, tUserEntity);
+      expect(result, tUserModel);
       verify(
         () => mockAuthenticationRepository.logIn(
           email: tEmail,

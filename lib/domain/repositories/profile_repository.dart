@@ -1,8 +1,8 @@
-import 'package:mobile/domain/entities/profile_change_password_params.dart';
-import 'package:mobile/domain/entities/user_entity.dart';
+import 'package:mobile/domain/models/profile_change_password_params.dart';
+import 'package:mobile/domain/models/user_model.dart';
 
 abstract class ProfileRepository {
-  Future<UserEntity> getUser();
-  Future<UserEntity> updateUser(UserEntity user);
-  Future<UserEntity> changePassword(ProfileChangePasswordParams params);
+  Future<UserModel> getUser();
+  Future<UserModel> updateUser(UserModel user);
+  Future<UserModel> changePassword(ProfileChangePasswordParams params);
 }

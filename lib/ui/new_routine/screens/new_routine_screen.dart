@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile/domain/entities/routine_enitity.dart';
+import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/ui/new_routine/bloc/new_routine_bloc.dart';
 import 'package:mobile/ui/new_routine/widgets/repeat_section_card.dart';
 import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
@@ -210,17 +210,21 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
                         final bloc = context.read<NewRoutineBloc>();
                         final title = _titleController.text.trim();
 
-                        final routine = RoutineEntity(
+                        final routine = RoutineModel(
                           id: UuidV4().generate(),
                           title: title,
                           startDate: bloc.state.startDate,
                           startTime: bloc.state.startTime,
-                          tasks: [],
                           frequency: bloc.state.selectedFrequency,
                           weeklyDays: bloc.state.weeklyDays,
                           monthlyDates: bloc.state.monthlyDates,
                           interval: bloc.state.interval,
-                          isActive: true,
+                          createdAt: DateTime.now(),
+                          updatedAt: DateTime.now(),
+                          deletedAt: null,
+                          iconIndex: 1,
+                          isShared: false,
+                          syncVersion: 1,
                         );
 
                         Navigator.pushReplacement(
@@ -229,7 +233,7 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
                             builder: (_) => BlocProvider(
                               create: (_) =>
                                   ViewRoutineBloc()
-                                    ..add(ViewRoutineStarted(routine)),
+                                    ..add(ViewRoutineStarted(routine, [])),
                               child: ViewRoutineScreen(),
                             ),
                           ),

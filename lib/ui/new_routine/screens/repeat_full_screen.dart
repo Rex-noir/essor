@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/domain/entities/habit_entity.dart';
+import 'package:mobile/domain/enums/item_frequency.dart';
 import 'package:mobile/ui/new_routine/widgets/repeat_wheeltab_section.dart';
 import 'package:mobile/ui/new_routine/widgets/routine_repeat_days.dart';
 import 'package:mobile/utils/app_logger.dart';

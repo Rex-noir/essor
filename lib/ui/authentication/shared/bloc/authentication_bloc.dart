@@ -3,9 +3,9 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:mobile/domain/entities/user_entity.dart';
 import 'package:mobile/domain/failures/failures.dart';
 import 'package:mobile/domain/enums/authentication_status.dart';
+import 'package:mobile/domain/models/user_model.dart';
 import 'package:mobile/domain/usecases/get_profile_usecase.dart';
 import 'package:mobile/domain/usecases/login_usecase.dart';
 import 'package:mobile/domain/usecases/logout_usecase.dart';

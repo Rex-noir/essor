@@ -1,37 +1,35 @@
-// data/repositories/authentication_repository_impl.dart
 import 'dart:async';
 
-// Your data providers, models, entities, and repository interface
 import 'package:mobile/data/datasources/auth_remote_datasource.dart';
-import 'package:mobile/domain/entities/auth_response_entity.dart';
 import 'package:mobile/domain/enums/authentication_status.dart';
+import 'package:mobile/domain/models/auth_response_entity.dart';
 import 'package:mobile/domain/repositories/authentication_repository.dart';
 
-// Import your core and auth-specific failures
 class AuthenticationRepositoryImpl implements AuthenticationRepository {
-  final AuthRemoteDataSource _remoteDataProvider;
-
-  final StreamController<AuthenticationStatus> _controller =
-      StreamController<AuthenticationStatus>();
+  final AuthRemoteDatasource remoteDataProvider;
+  final StreamController<AuthenticationStatus> _controller;
+  AuthenticationStatus _currentStatus;
 
   AuthenticationRepositoryImpl({
-    required AuthRemoteDataSource remoteDataProvider,
+    required this.remoteDataProvider,
     required AuthenticationStatus initialStatus,
-  }) : _remoteDataProvider = remoteDataProvider {
-    _controller.add(initialStatus);
+  }) : _currentStatus = initialStatus,
+       _controller = StreamController<AuthenticationStatus>.broadcast();
+
+  @override
+  Stream<AuthenticationStatus> get status async* {
+    yield _currentStatus;
+    yield* _controller.stream;
   }
 
   @override
-  Future<AuthResponseEntity> logIn({
+  Future<AutheResponseModel> logIn({
     required String email,
     required String password,
   }) async {
-    final response = await _remoteDataProvider.logIn(
-      email: email,
-      password: password,
-    );
-    _controller.add(AuthenticationStatus.authenticated);
+    final response = await remoteDataProvider.login(email, password);
 
+    _setStatus(AuthenticationStatus.authenticated);
     return response.toEntity();
   }
 
@@ -40,34 +38,31 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
     required String? refreshToken,
     required String? deviceId,
   }) async {
-    _controller.add(AuthenticationStatus.unauthenticated);
-    if (refreshToken != null && deviceId != null) {
-      await _remoteDataProvider.logOut(
-        refreshToken: refreshToken,
-        deviceId: deviceId,
-      );
+    try {
+      await remoteDataProvider.logout(refreshToken!, deviceId!);
+    } catch (_) {
+      // Swallow logout API failures; still clear status locally.
+    }
+    _setStatus(AuthenticationStatus.unauthenticated);
+  }
+
+  @override
+  void forceUnauthenticated({
+    required String? refreshToken,
+    required String? deviceId,
+  }) {
+    _setStatus(AuthenticationStatus.unauthenticated);
+  }
+
+  void _setStatus(AuthenticationStatus newStatus) {
+    if (_currentStatus != newStatus) {
+      _currentStatus = newStatus;
+      _controller.add(newStatus);
     }
   }
 
   @override
   void dispose() {
     _controller.close();
-  }
-
-  @override
-  Stream<AuthenticationStatus> get status => _controller.stream;
-
-  @override
-  void forceUnauthenticated({
-    required String? refreshToken,
-    required String? deviceId,
-  }) async {
-    _controller.add(AuthenticationStatus.unauthenticated);
-    if (refreshToken != null && deviceId != null) {
-      await _remoteDataProvider.logOut(
-        refreshToken: refreshToken,
-        deviceId: deviceId,
-      );
-    }
   }
 }

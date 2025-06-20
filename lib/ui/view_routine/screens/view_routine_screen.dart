@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/config/app_icons.dart';
-import 'package:mobile/domain/entities/task_entity.dart';
+import 'package:mobile/domain/models/task_model.dart';
 import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
 import 'package:mobile/ui/view_routine/screens/new_routine_task_screen.dart';
 import 'package:mobile/ui/view_routine/screens/view_routine_task_screen.dart';
@@ -20,14 +20,14 @@ class ViewRoutineScreen extends StatelessWidget {
         if (state is ViewRoutineLoaded) {
           final routine = state.routine;
           final theme = Theme.of(context);
-          final tasks = routine.tasks;
+          final tasks = state.tasks;
 
           return Scaffold(
             appBar: AppBar(),
             floatingActionButton: OutlinedButton.icon(
               onPressed: () async {
                 final bloc = context.read<ViewRoutineBloc>();
-                final newTask = await Navigator.push<TaskEntity>(
+                final newTask = await Navigator.push<TaskModel>(
                   context,
                   MaterialPageRoute(
                     builder: (_) => const NewRoutineTaskScreen(),
@@ -174,7 +174,7 @@ class ViewRoutineScreen extends StatelessWidget {
                                     final updatedTask =
                                         await Navigator.of(
                                           context,
-                                        ).push<TaskEntity>(
+                                        ).push<TaskModel>(
                                           MaterialPageRoute(
                                             builder: (_) =>
                                                 ViewRoutineTaskScreen(

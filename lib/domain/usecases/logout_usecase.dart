@@ -15,8 +15,8 @@ class LogoutUseCase {
 
   Future<void> call() async {
     try {
-      final refreshToken = _authTokenStorageRepository.accessToken;
-      final deviceId = _authTokenStorageRepository.deviceId;
+      final refreshToken = await _authTokenStorageRepository.accessToken;
+      final deviceId = await _authTokenStorageRepository.deviceId;
 
       await _authenticationRepository.logOut(
         refreshToken: refreshToken,

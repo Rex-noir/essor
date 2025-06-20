@@ -3,7 +3,7 @@ part of 'authentication_bloc.dart';
 class AuthenticationState extends Equatable {
   // enum
   final AuthenticationStatus status;
-  final UserEntity? user;
+  final UserModel? user;
   const AuthenticationState(this.status, this.user);
 
   @override
@@ -11,7 +11,7 @@ class AuthenticationState extends Equatable {
 
   AuthenticationState copyWith({
     AuthenticationStatus? status,
-    UserEntity? user,
+    UserModel? user,
   }) {
     return AuthenticationState(status ?? this.status, user ?? this.user);
   }

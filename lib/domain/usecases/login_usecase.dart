@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:mobile/domain/entities/user_entity.dart';
 import 'package:mobile/domain/failures/auth_failures.dart';
 import 'package:mobile/domain/failures/failures.dart';
+import 'package:mobile/domain/models/user_model.dart';
 import 'package:mobile/domain/repositories/auth_token_storage_repository.dart';
 import 'package:mobile/domain/repositories/authentication_repository.dart';
 
@@ -15,7 +15,7 @@ class LoginUseCase {
   }) : _authTokenStorageRepository = authTokenStorageRepository,
        _authenticationRepository = authenticationRepository;
 
-  Future<UserEntity> logIn({
+  Future<UserModel> logIn({
     required String email,
     required String password,
   }) async {

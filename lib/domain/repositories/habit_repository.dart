@@ -1,5 +1,5 @@
-import 'package:mobile/domain/entities/habit_entity.dart';
+import 'package:mobile/domain/models/habit_model.dart';
 
-abstract class HabitListRepository {
-  Future<List<HabitEntity>> fetchHabitsForDate(DateTime date);
+abstract class HabitRepository {
+  Future<List<HabitModel>> fetchHabitsForDate(DateTime date);
 }

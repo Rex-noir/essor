@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/core/config/app_icons.dart';
-import 'package:mobile/domain/entities/task_entity.dart';
 import 'package:mobile/core/widgets/show_icon_picker.dart';
+import 'package:mobile/domain/models/task_model.dart';
 import 'package:mobile/ui/view_routine/widgets/routine_task_duration.dart';
 import 'package:mobile/ui/view_routine/widgets/routine_task_title.dart';
 
 class ViewRoutineTaskScreen extends StatefulWidget {
-  final TaskEntity task;
+  final TaskModel task;
   const ViewRoutineTaskScreen({required this.task, super.key});
 
   @override
@@ -27,7 +27,7 @@ class _ViewRoutineTaskScreen extends State<ViewRoutineTaskScreen> {
   }
 
   _onSave() {
-    final TaskEntity entity = TaskEntity(
+    final TaskModel entity = TaskModel(
       duration: duration,
       id: widget.task.id,
       title: _titleController.text,

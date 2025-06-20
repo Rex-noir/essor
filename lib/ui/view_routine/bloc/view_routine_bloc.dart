@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:mobile/domain/entities/routine_enitity.dart';
-import 'package:mobile/domain/entities/task_entity.dart';
+import 'package:mobile/domain/models/routine_model.dart';
+import 'package:mobile/domain/models/task_model.dart';
 
 part 'view_routine_event.dart';
 part 'view_routine_state.dart';
@@ -13,14 +13,14 @@ class ViewRoutineBloc extends Bloc<ViewRoutineEvent, ViewRoutineState> {
     on<ViewRoutineStarted>(_onViewRoutineStarted);
     on<ViewRoutineTaskUpdated>(_onViewRoutineTaskUpdated);
     on<ViewRoutineNewTaskAdded>(_onNewTaskAdded);
-    on<ViewRoutineTaskRemoved>(_onViewRoutineRemoved);
+    on<ViewRoutineTaskRemoved>(_onViewRoutineTaskRemoved);
   }
 
   FutureOr<void> _onViewRoutineStarted(
     ViewRoutineStarted event,
     Emitter<ViewRoutineState> emit,
   ) {
-    emit(ViewRoutineLoaded(routine: event.routine));
+    emit(ViewRoutineLoaded(routine: event.routine, tasks: event.tasks));
 
     // If wanted load the routine once more form the api server
   }
@@ -33,8 +33,8 @@ class ViewRoutineBloc extends Bloc<ViewRoutineEvent, ViewRoutineState> {
       return;
     }
     final currentState = state as ViewRoutineLoaded;
-    final newRoutine = currentState.routine.addTask(event.task);
-    emit(ViewRoutineLoaded(routine: newRoutine));
+    final newTask = [...currentState.tasks, event.task];
+    emit(currentState.copyWith(tasks: newTask));
   }
 
   _onViewRoutineTaskUpdated(
@@ -47,11 +47,16 @@ class ViewRoutineBloc extends Bloc<ViewRoutineEvent, ViewRoutineState> {
 
     final currentState = state as ViewRoutineLoaded;
 
-    final newRoutine = currentState.routine.updateTask(event.task);
-    emit(ViewRoutineLoaded(routine: newRoutine));
+    final newTasks = currentState.tasks.map((task) {
+      if (task.id == event.task.id) {
+        return event.task;
+      }
+      return task;
+    }).toList();
+    emit(currentState.copyWith(tasks: newTasks));
   }
 
-  _onViewRoutineRemoved(
+  _onViewRoutineTaskRemoved(
     ViewRoutineTaskRemoved event,
     Emitter<ViewRoutineState> emit,
   ) {
@@ -60,8 +65,9 @@ class ViewRoutineBloc extends Bloc<ViewRoutineEvent, ViewRoutineState> {
     }
 
     final currentState = state as ViewRoutineLoaded;
-
-    final newRoutine = currentState.routine.removeTask(event.task.id);
-    emit(ViewRoutineLoaded(routine: newRoutine));
+    final newTasks = currentState.tasks
+        .where((task) => task.id != event.task.id)
+        .toList();
+    emit(currentState.copyWith(tasks: newTasks));
   }
 }

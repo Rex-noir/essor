@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile/domain/entities/habit_entity.dart';
-import 'package:mobile/domain/entities/routine_enitity.dart';
+import 'package:mobile/domain/enums/item_frequency.dart';
 import 'package:mobile/ui/new_routine/bloc/new_routine_bloc.dart';
 import 'package:mobile/ui/new_routine/screens/repeat_full_screen.dart';
 import 'package:mobile/ui/new_routine/widgets/routine_repeat_days.dart';
+import 'package:mobile/utils/item_util.dart';
 
 class RepeatSectionCard extends StatelessWidget {
   const RepeatSectionCard({super.key});
@@ -139,7 +139,7 @@ class RepeatSectionCard extends StatelessWidget {
                           previous.interval != current.interval,
                       builder: (context, state) {
                         return Text(
-                          getRoutineRepeatLabel(
+                          getFrequencyIntervalLabel(
                             bloc.state.selectedFrequency,
                             bloc.state.interval,
                           ),
