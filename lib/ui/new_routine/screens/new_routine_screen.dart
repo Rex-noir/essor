@@ -274,20 +274,22 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow.withOpacity(0.1),
+            color: theme.colorScheme.shadow.withValues(alpha: .1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
+        border: Border.all(
+          color: theme.colorScheme.outline.withValues(alpha: 0.1),
+        ),
       ),
       child: Material(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
-          hoverColor: theme.colorScheme.primary.withOpacity(0.04),
-          splashColor: theme.colorScheme.primary.withOpacity(0.08),
+          hoverColor: theme.colorScheme.primary.withValues(alpha: .04),
+          splashColor: theme.colorScheme.primary.withValues(alpha:.08),
           onTap: () async {
             final bloc = context.read<NewRoutineBloc>();
             final TimeOfDay? picked = await showTimePicker(
@@ -306,7 +308,7 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.1),
+                    color: theme.colorScheme.primary.withValues(alpha:.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(

@@ -5,11 +5,13 @@ import 'package:mobile/data/repositories/routine_repository_impl.dart';
 import 'package:mobile/database/daos/routines_dao.dart';
 import 'package:mobile/database/database.dart';
 import 'package:mobile/domain/usecases/create_new_routine_usecase.dart';
+import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
 import 'package:mobile/ui/new_routine/bloc/new_routine_bloc.dart';
 import 'package:mobile/ui/new_routine/screens/new_routine_screen.dart';
+import 'package:mobile/utils/app_logger.dart';
 
 class HomeAddDialog extends StatelessWidget {
-  const HomeAddDialog({
+  HomeAddDialog({
     super.key,
     required AnimationController rotationController,
     required ValueNotifier<bool> isSheetOpen,
@@ -18,10 +20,13 @@ class HomeAddDialog extends StatelessWidget {
 
   final AnimationController _rotationController;
   final ValueNotifier<bool> _isSheetOpen;
+  final logger = TaggedLogger("HomeAddDialog");
 
   @override
   Widget build(BuildContext context) {
     final appDatabase = context.read<AppDatabase>();
+    final bloc = context.read<DailyListBloc>();
+    logger.info("Building HomeAddDialog, ${bloc.toString()}");
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {},

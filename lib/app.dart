@@ -9,7 +9,11 @@ import 'package:mobile/data/datasources/auth_local_datasource.dart';
 import 'package:mobile/data/datasources/auth_remote_datasource.dart';
 import 'package:mobile/data/repositories/auth_token_storage_repository_impl.dart';
 import 'package:mobile/data/repositories/authentication_repository_impl.dart';
+import 'package:mobile/data/repositories/habit_repository_impl.dart';
 import 'package:mobile/data/repositories/profile_repository_impl.dart';
+import 'package:mobile/data/repositories/routine_repository_impl.dart';
+import 'package:mobile/database/daos/habits_dao.dart';
+import 'package:mobile/database/daos/routines_dao.dart';
 import 'package:mobile/database/database.dart';
 import 'package:mobile/domain/enums/authentication_status.dart';
 import 'package:flutter/material.dart';
@@ -17,11 +21,14 @@ import 'package:mobile/core/config/app_config.dart';
 import 'package:mobile/domain/repositories/auth_token_storage_repository.dart';
 import 'package:mobile/domain/repositories/authentication_repository.dart';
 import 'package:mobile/domain/repositories/profile_repository.dart';
+import 'package:mobile/domain/usecases/get_habits_for_date_usecase.dart';
 import 'package:mobile/domain/usecases/get_profile_usecase.dart';
+import 'package:mobile/domain/usecases/get_routines_for_date_usecase.dart';
 import 'package:mobile/domain/usecases/login_usecase.dart';
 import 'package:mobile/domain/usecases/logout_usecase.dart';
 import 'package:mobile/ui/authentication/login/login_screen.dart';
 import 'package:mobile/ui/authentication/shared/bloc/authentication_bloc.dart';
+import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class App extends StatefulWidget {
@@ -99,23 +106,41 @@ class _AppState extends State<App> {
           dispose: (db) => db.close(),
         ),
       ],
-      child: BlocProvider(
-        lazy: false,
-        create: (context) => AuthenticationBloc(
-          logInUseCase: LoginUseCase(
-            authTokenStorageRepository: tokenRepo,
-            authenticationRepository: authRepo,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            lazy: false,
+            create: (context) => AuthenticationBloc(
+              logInUseCase: LoginUseCase(
+                authTokenStorageRepository: tokenRepo,
+                authenticationRepository: authRepo,
+              ),
+              logOutUseCase: LogoutUseCase(
+                authTokenStorageRepository: context
+                    .read<AuthTokenStorageRepository>(),
+                authenticationRepository: context
+                    .read<AuthenticationRepository>(),
+              ),
+              getProfileUseCase: GetProfileUseCase(
+                context.read<ProfileRepository>(),
+              ),
+              authenticationStatus: authRepo.status,
+            )..add(AuthenticationSubscriptionRequested()),
           ),
-          logOutUseCase: LogoutUseCase(
-            authTokenStorageRepository: context
-                .read<AuthTokenStorageRepository>(),
-            authenticationRepository: context.read<AuthenticationRepository>(),
+          BlocProvider(
+            lazy: false,
+            create: (context) => DailyListBloc(
+              GetHabitsForDateUsecase(
+                HabitRepositoryImpl(
+                  habitsDao: HabitsDao(context.read<AppDatabase>()),
+                ),
+              ),
+              GetRoutinesForDateUsecase(
+                RoutineRepositoryImpl(RoutinesDao(context.read<AppDatabase>())),
+              ),
+            )..add(DailyListInitialize()),
           ),
-          getProfileUseCase: GetProfileUseCase(
-            context.read<ProfileRepository>(),
-          ),
-          authenticationStatus: authRepo.status,
-        )..add(AuthenticationSubscriptionRequested()),
+        ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'My App',

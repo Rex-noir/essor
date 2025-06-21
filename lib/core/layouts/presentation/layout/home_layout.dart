@@ -1,4 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile/data/repositories/habit_repository_impl.dart';
+import 'package:mobile/data/repositories/routine_repository_impl.dart';
+import 'package:mobile/database/daos/habits_dao.dart';
+import 'package:mobile/database/daos/routines_dao.dart';
+import 'package:mobile/database/database.dart';
+import 'package:mobile/domain/usecases/get_habits_for_date_usecase.dart';
+import 'package:mobile/domain/usecases/get_routines_for_date_usecase.dart';
+import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
 import 'package:mobile/ui/home/screens/home_screen.dart';
 import 'package:mobile/core/layouts/presentation/widgets/home_add_dialog.dart';
 
@@ -34,127 +43,136 @@ class _HomeLayoutState extends State<HomeLayout> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final database = context
+        .read<AppDatabase>(); // assuming parent provides this
 
-    return Scaffold(
-      extendBody: true,
-      body: SafeArea(
-        child: IndexedStack(index: _selectedIndex, children: [HomeScreen()]),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: ValueListenableBuilder(
-        valueListenable: _isSheetOpen,
-        builder: (context, isOpen, _) {
-          return AnimatedPadding(
-            duration: const Duration(milliseconds: 300),
-            padding: EdgeInsets.only(bottom: 16),
-            child: Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                Container(
-                  height: 64,
-                  margin: const EdgeInsets.symmetric(horizontal: 80),
-                  decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHighest.withValues(
-                      alpha: .95,
+    return BlocProvider(
+      create: (_) => DailyListBloc(
+        GetHabitsForDateUsecase(
+          HabitRepositoryImpl(habitsDao: HabitsDao(database)),
+        ),
+        GetRoutinesForDateUsecase(RoutineRepositoryImpl(RoutinesDao(database))),
+      )..add(DailyListInitialize()),
+      child: Scaffold(
+        extendBody: true,
+        body: SafeArea(
+          child: IndexedStack(index: _selectedIndex, children: [HomeScreen()]),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: ValueListenableBuilder(
+          valueListenable: _isSheetOpen,
+          builder: (context, isOpen, _) {
+            return AnimatedPadding(
+              duration: const Duration(milliseconds: 300),
+              padding: EdgeInsets.only(bottom: 16),
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  Container(
+                    height: 64,
+                    margin: const EdgeInsets.symmetric(horizontal: 80),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerHighest.withValues(
+                        alpha: .95,
+                      ),
+                      borderRadius: BorderRadius.circular(64),
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.shadowColor.withValues(alpha: .1),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    borderRadius: BorderRadius.circular(64),
-                    boxShadow: [
-                      BoxShadow(
-                        color: theme.shadowColor.withValues(alpha: .1),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildNavItem(
+                          icon: Icons.home_filled,
+                          index: 0,
+                          colorScheme: colorScheme,
+                        ),
+                        const SizedBox(width: 56),
+                        _buildNavItem(
+                          icon: Icons.person_2_sharp,
+                          index: 3,
+                          colorScheme: colorScheme,
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildNavItem(
-                        icon: Icons.home_filled,
-                        index: 0,
-                        colorScheme: colorScheme,
-                      ),
-                      const SizedBox(width: 56),
-                      _buildNavItem(
-                        icon: Icons.person_2_sharp,
-                        index: 3,
-                        colorScheme: colorScheme,
-                      ),
-                    ],
-                  ),
-                ),
 
-                Positioned(
-                  child: GestureDetector(
-                    onTap: () {
-                      if (_isSheetOpen.value) {
-                        Navigator.of(context).pop();
-                        _isSheetOpen.value = false;
-                      } else {
-                        _isSheetOpen.value = true;
-
-                        showDialog(
-                          context: context,
-                          useSafeArea: true,
-                          builder: (context) {
-                            return HomeAddDialog(
-                              rotationController: _rotationController,
-                              isSheetOpen: _isSheetOpen,
-                            );
-                          },
-                        ).whenComplete(() {
+                  Positioned(
+                    child: GestureDetector(
+                      onTap: () {
+                        if (_isSheetOpen.value) {
+                          Navigator.of(context).pop();
                           _isSheetOpen.value = false;
-                        });
-                      }
-                    },
-                    child: Container(
-                      height: 72,
-                      width: 72,
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary,
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: colorScheme.primary.withValues(alpha: .35),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: AnimatedBuilder(
-                        animation: _rotationController,
-                        builder: (context, child) {
-                          return Transform.rotate(
-                            angle:
-                                _rotationController.value *
-                                0.7854, // 45 degrees in radians
-                            child: child,
-                          );
-                        },
+                        } else {
+                          _isSheetOpen.value = true;
+                          showDialog(
+                            context: context,
+                            useSafeArea: true,
+                            builder: (dialogContext) {
+                              return HomeAddDialog(
+                                rotationController: _rotationController,
+                                isSheetOpen: _isSheetOpen,
+                              );
+                            },
+                          ).whenComplete(() {
+                            _isSheetOpen.value = false;
+                          });
+                        }
+                      },
+                      child: Container(
+                        height: 72,
+                        width: 72,
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary,
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: colorScheme.primary.withValues(alpha: .35),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
                         child: AnimatedBuilder(
                           animation: _rotationController,
                           builder: (context, child) {
                             return Transform.rotate(
                               angle:
                                   _rotationController.value *
-                                  0.7854, // 45 degrees
+                                  0.7854, // 45 degrees in radians
                               child: child,
                             );
                           },
-                          child: Icon(
-                            Icons.add,
-                            size: 36,
-                            color: colorScheme.onPrimary,
+                          child: AnimatedBuilder(
+                            animation: _rotationController,
+                            builder: (context, child) {
+                              return Transform.rotate(
+                                angle:
+                                    _rotationController.value *
+                                    0.7854, // 45 degrees
+                                child: child,
+                              );
+                            },
+                            child: Icon(
+                              Icons.add,
+                              size: 36,
+                              color: colorScheme.onPrimary,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

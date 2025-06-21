@@ -1,13 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile/data/repositories/habit_repository_impl.dart';
-import 'package:mobile/data/repositories/routine_repository_impl.dart';
-import 'package:mobile/database/daos/habits_dao.dart';
-import 'package:mobile/database/daos/routines_dao.dart';
-import 'package:mobile/database/database.dart';
-import 'package:mobile/domain/usecases/get_habits_for_date_usecase.dart';
-import 'package:mobile/domain/usecases/get_routines_for_date_usecase.dart';
-import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
+
 import 'package:mobile/ui/daily_items/screens/daily_list_screen.dart';
 import 'package:mobile/ui/home/widgets/home_greeting.dart';
 
@@ -22,7 +14,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late final TabController _tabController;
-  late final DailyListBloc _dailyListBloc;
 
   // Tab configuration
   static const int _initialTabIndex = 0;
@@ -36,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     _initializeControllers();
-    _initializeBloc();
     _tabAnimationListener();
   }
 
@@ -46,16 +36,6 @@ class _HomeScreenState extends State<HomeScreen>
       length: _tabCount,
       vsync: this,
     );
-  }
-
-  void _initializeBloc() {
-    final database = context.read<AppDatabase>();
-    _dailyListBloc = DailyListBloc(
-      GetHabitsForDateUsecase(
-        HabitRepositoryImpl(habitsDao: HabitsDao(database)),
-      ),
-      GetRoutinesForDateUsecase(RoutineRepositoryImpl(RoutinesDao(database))),
-    )..add(DailyListInitialize());
   }
 
   void _tabAnimationListener() {
@@ -79,7 +59,6 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void dispose() {
     _tabController.dispose();
-    _dailyListBloc.close();
     super.dispose();
   }
 
@@ -90,12 +69,7 @@ class _HomeScreenState extends State<HomeScreen>
     return Column(
       children: [
         _HomeHeader(tabController: _tabController),
-        Expanded(
-          child: _TabContent(
-            tabController: _tabController,
-            dailyListBloc: _dailyListBloc,
-          ),
-        ),
+        Expanded(child: _TabContent(tabController: _tabController)),
       ],
     );
   }
@@ -272,22 +246,16 @@ class _AnimatedTab extends StatelessWidget {
 }
 
 class _TabContent extends StatelessWidget {
-  const _TabContent({required this.tabController, required this.dailyListBloc});
+  const _TabContent({required this.tabController});
 
   final TabController tabController;
-  final DailyListBloc dailyListBloc;
 
   @override
   Widget build(BuildContext context) {
     return TabBarView(
       controller: tabController,
       children: [
-        _KeepAliveTab(
-          child: BlocProvider.value(
-            value: dailyListBloc,
-            child: const DailyListScreen(),
-          ),
-        ),
+        _KeepAliveTab(child: const DailyListScreen()),
         const _KeepAliveTab(child: _ExploreTab()),
       ],
     );
