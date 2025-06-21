@@ -136,7 +136,7 @@ class _DailyListScreenState extends State<DailyListScreen>
 
     return BlocConsumer<DailyListBloc, DailyListState>(
       listener: (context, state) {
-        if (state is HabitListLoaded) {
+        if (state is DailyListLoaded) {
           _updateTabController(state.days.length, state.selectedIndex);
         }
       },
@@ -207,7 +207,7 @@ class _DailyListScreenState extends State<DailyListScreen>
 
                       // Content section
                       Expanded(
-                        child: state is! HabitListLoaded
+                        child: state is! DailyListLoaded
                             ? const Center(child: CircularProgressIndicator())
                             : TabBarView(
                                 controller: _tabController,
@@ -286,7 +286,7 @@ class _DailyListScreenState extends State<DailyListScreen>
                             color: colorScheme.onSurface,
                           ),
                         ),
-                        if (state is HabitListLoaded)
+                        if (state is DailyListLoaded)
                           Text(
                             DateFormat.yMMMMEEEEd().format(
                               state.days[_currentTabIndex],
@@ -326,7 +326,7 @@ class _DailyListScreenState extends State<DailyListScreen>
             ),
           ),
           const SizedBox(height: 4),
-          if (state is HabitListLoaded)
+          if (state is DailyListLoaded)
             FadeTransition(
               opacity: _fadeAnimation,
               child: Text(
@@ -349,7 +349,7 @@ class _DailyListScreenState extends State<DailyListScreen>
   }
 
   Widget _buildTabSection(BuildContext context, DailyListState state) {
-    if (state is! HabitListLoaded) {
+    if (state is! DailyListLoaded) {
       return Container(
         height: 110,
         padding: const EdgeInsets.symmetric(vertical: 16),

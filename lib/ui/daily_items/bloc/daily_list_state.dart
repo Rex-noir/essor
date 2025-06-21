@@ -25,18 +25,18 @@ class TaskItem extends DailyItem {
   TaskItem(this.task);
 }
 
-final class HabitListInitial extends DailyListState {}
+final class DailyListInitial extends DailyListState {}
 
 final class DailyListLoading extends DailyListState {}
 
-class HabitListLoaded extends DailyListState {
+class DailyListLoaded extends DailyListState {
   final List<HabitModel> habits;
   final List<RoutineModel> routines;
   final List<DateTime> days;
   final int selectedIndex;
   final bool isLoading;
 
-  const HabitListLoaded({
+  const DailyListLoaded({
     required this.habits,
     required this.days,
     required this.selectedIndex,
@@ -54,7 +54,9 @@ class HabitListLoaded extends DailyListState {
     ];
   }
 
-  HabitListLoaded copyWith({
+  DateTime get selectedDate => days[selectedIndex];
+
+  DailyListLoaded copyWith({
     List<HabitModel>? habits,
     List<RoutineModel>? routines,
     List<TaskModel>? tasks,
@@ -62,7 +64,7 @@ class HabitListLoaded extends DailyListState {
     int? selectedIndex,
     bool? isLoading,
   }) {
-    return HabitListLoaded(
+    return DailyListLoaded(
       habits: habits ?? this.habits,
       routines: routines ?? this.routines,
       days: days ?? this.days,
@@ -72,10 +74,10 @@ class HabitListLoaded extends DailyListState {
   }
 }
 
-class HabitListError extends DailyListState {
+class DailyListError extends DailyListState {
   final String message;
 
-  const HabitListError(this.message);
+  const DailyListError(this.message);
 
   @override
   List<Object?> get props => [message];

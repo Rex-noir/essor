@@ -15,4 +15,11 @@ final class DailyListDateChanged extends DailyListEvent {
   List<Object> get props => [newIndex];
 }
 
+final class DailyListRefreshRequested extends DailyListEvent {
+  const DailyListRefreshRequested();
+
+  @override
+  List<Object?> get props => [];
+}
+
 class DailyListInitialize extends DailyListEvent {}
