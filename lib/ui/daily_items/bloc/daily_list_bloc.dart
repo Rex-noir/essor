@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/domain/models/habit_model.dart';
 import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/domain/models/task_model.dart';
@@ -77,13 +78,13 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
 
     if (direction < 0) {
       final prepend = List.generate(daysToAdd, (i) {
-        return (existingList.first.subtract(Duration(days: i + 1)));
+        return (existingList.first.subtract(Duration(days: i + 1)).dateOnly);
       }).reversed.toList();
 
       newList = [...prepend, ...existingList];
     } else {
       final append = List.generate(daysToAdd, (i) {
-        return (existingList.last.add(Duration(days: i + 1)));
+        return (existingList.last.add(Duration(days: i + 1)).dateOnly);
       });
 
       newList = [...existingList, ...append];
@@ -97,10 +98,10 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
   ) async {
     emit(DailyListLoading());
 
-    final today = DateTime.now();
+    final today = DateTime.now().dateOnly;
     final initialDays = List.generate(
       initialDaysEachSide * 2 + 1,
-      (i) => today.subtract(Duration(days: initialDaysEachSide - i)),
+      (i) => today.subtract(Duration(days: initialDaysEachSide - i)).dateOnly,
     );
     final initialIndex = initialDaysEachSide;
     try {
@@ -130,18 +131,26 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
     if (state is! DailyListLoaded) {
       return;
     }
+    logger.debug("Refreshing daily list");
     final currentState = state as DailyListLoaded;
 
     emit(DailyListLoading());
     try {
-      final selectedDate = currentState.days[currentState.selectedIndex];
+      final selectedDate =
+          (event.date ?? currentState.days[currentState.selectedIndex])
+              .dateOnly;
       final refreshedHabits = await getHabitsForDate.call(selectedDate);
       final refreshedRoutines = await getRoutinesForDate.call(selectedDate);
 
+      logger.debug("refreshed habits: $refreshedHabits");
+      logger.debug("refreshed routines: $refreshedRoutines");
+
       emit(
-        currentState.copyWith(
+        DailyListLoaded(
           habits: refreshedHabits,
           routines: refreshedRoutines,
+          days: currentState.days,
+          selectedIndex: currentState.selectedIndex,
           isLoading: false,
         ),
       );

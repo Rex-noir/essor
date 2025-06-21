@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/domain/models/routine_model.dart';
+import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
 import 'package:mobile/ui/new_routine/bloc/new_routine_bloc.dart';
 import 'package:mobile/ui/new_routine/widgets/repeat_section_card.dart';
 import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
@@ -228,7 +229,14 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
                           syncVersion: 1,
                         );
 
-                        bloc.add(NewRoutineCreateEvent(routine));
+                        context.read<NewRoutineBloc>().add(
+                          NewRoutineCreateEvent(routine),
+                        );
+                        context.read<DailyListBloc>().add(
+                          DailyListRefreshRequested(
+                            date: bloc.state.startDate.dateOnly,
+                          ),
+                        );
 
                         Navigator.pushReplacement(
                           context,
@@ -289,7 +297,7 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           hoverColor: theme.colorScheme.primary.withValues(alpha: .04),
-          splashColor: theme.colorScheme.primary.withValues(alpha:.08),
+          splashColor: theme.colorScheme.primary.withValues(alpha: .08),
           onTap: () async {
             final bloc = context.read<NewRoutineBloc>();
             final TimeOfDay? picked = await showTimePicker(
@@ -308,7 +316,7 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withValues(alpha:.1),
+                    color: theme.colorScheme.primary.withValues(alpha: .1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(

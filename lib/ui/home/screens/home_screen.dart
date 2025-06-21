@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen>
   int activeIndex = 0;
 
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => false;
 
   @override
   void initState() {

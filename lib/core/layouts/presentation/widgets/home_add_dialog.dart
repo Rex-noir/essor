@@ -53,9 +53,9 @@ class HomeAddDialog extends StatelessWidget {
                   subtitle: "Stay consistent!",
                   icon: Icons.add,
                   backgroundColor: Colors.green.shade50,
-                  onTap: () {
+                  onTap: () async {
                     Navigator.of(context).pop();
-                    Navigator.push(
+                    final newRoutine = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => BlocProvider(
@@ -68,6 +68,8 @@ class HomeAddDialog extends StatelessWidget {
                         ),
                       ),
                     );
+
+                    logger.debug('New routine created: $newRoutine');
                   },
                 ),
               ],

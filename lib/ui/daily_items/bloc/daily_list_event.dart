@@ -16,7 +16,8 @@ final class DailyListDateChanged extends DailyListEvent {
 }
 
 final class DailyListRefreshRequested extends DailyListEvent {
-  const DailyListRefreshRequested();
+  final DateTime? date;
+  const DailyListRefreshRequested({this.date});
 
   @override
   List<Object?> get props => [];

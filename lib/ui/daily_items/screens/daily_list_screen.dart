@@ -143,7 +143,6 @@ class _DailyListScreenState extends State<DailyListScreen>
       builder: (context, state) {
         return Stack(
           children: [
-            // Background with header and tabs
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
