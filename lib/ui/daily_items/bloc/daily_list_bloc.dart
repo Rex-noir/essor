@@ -22,17 +22,18 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
   static const int daysToAdd = 10;
 
   DailyListBloc(this.getHabitsForDate, this.getRoutinesForDate)
-    : super(HabitListInitial()) {
+    : super(DailyListInitial()) {
     on<DailyListDateChanged>(_onDateChanged);
     on<DailyListInitialize>(_onInitialize);
+    on<DailyListRefreshRequested>(_onDailyListRefreshRequested);
   }
 
   FutureOr<void> _onDateChanged(
     DailyListDateChanged event,
     Emitter<DailyListState> emit,
   ) async {
-    if (state is! HabitListLoaded) return;
-    final currentState = state as HabitListLoaded;
+    if (state is! DailyListLoaded) return;
+    final currentState = state as DailyListLoaded;
     emit(currentState.copyWith(isLoading: true));
     try {
       final newIndex = event.newIndex;
@@ -57,7 +58,7 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
       );
 
       emit(
-        HabitListLoaded(
+        DailyListLoaded(
           habits: habits,
           routines: routines,
           days: newDays,
@@ -67,7 +68,7 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
       );
     } catch (e) {
       logger.error("Failed to load habits", e);
-      emit(HabitListError("Failed to load habits"));
+      emit(DailyListError("Failed to load habits"));
     }
   }
 
@@ -108,7 +109,7 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
       final routines = await getRoutinesForDate.call(initialDays[initialIndex]);
 
       emit(
-        HabitListLoaded(
+        DailyListLoaded(
           habits: habits,
           days: initialDays,
           routines: routines,
@@ -118,7 +119,35 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
       );
     } catch (e) {
       logger.error("Failed to load initial habits", e);
-      emit(HabitListError("Failed to load initial habits"));
+      emit(DailyListError("Failed to load initial habits"));
+    }
+  }
+
+  _onDailyListRefreshRequested(
+    DailyListRefreshRequested event,
+    Emitter<DailyListState> emit,
+  ) async {
+    if (state is! DailyListLoaded) {
+      return;
+    }
+    final currentState = state as DailyListLoaded;
+
+    emit(DailyListLoading());
+    try {
+      final selectedDate = currentState.days[currentState.selectedIndex];
+      final refreshedHabits = await getHabitsForDate.call(selectedDate);
+      final refreshedRoutines = await getRoutinesForDate.call(selectedDate);
+
+      emit(
+        currentState.copyWith(
+          habits: refreshedHabits,
+          routines: refreshedRoutines,
+          isLoading: false,
+        ),
+      );
+    } catch (e) {
+      logger.error("Failed to refresh daily list", e);
+      emit(DailyListError("Failed to refresh daily list"));
     }
   }
 }
