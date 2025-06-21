@@ -3,19 +3,28 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/data/dto/routine_dto.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
+import 'package:mobile/domain/models/routine_model.dart';
+import 'package:mobile/domain/usecases/create_new_routine_usecase.dart';
+import 'package:mobile/utils/app_logger.dart';
 
 part 'new_routine_event.dart';
 part 'new_routine_state.dart';
 
 class NewRoutineBloc extends Bloc<NewRoutineEvent, NewRoutineState> {
-  NewRoutineBloc() : super(NewRoutineState.initial()) {
+  final CreateNewRoutineUsecase createNewRoutineUsecase;
+  final TaggedLogger logger = TaggedLogger("NewRoutineBloc");
+
+  NewRoutineBloc({required this.createNewRoutineUsecase})
+    : super(NewRoutineState.initial()) {
     on<ChangeFrequencyNewRoutineEvent>(_onChangeFrequency);
     on<UpdateIntervalNewRoutineEvent>(_onUpdateInterval);
     on<UpdateWeeklyDaysNewRoutineEvent>(_onUpdateWeekyDays);
     on<UpdateMonthlyDatesNewRoutineEvent>(_onMonthlyDates);
     on<UpdateStartDateNewRoutineEvent>(_onUpdateStartDate);
     on<UpdateStartTimeNewRoutineEvent>(_onStartTimeUpdate);
+    on<NewRoutineCreateEvent>(_onNewRoutineCreate);
   }
 
   FutureOr<void> _onChangeFrequency(
@@ -58,5 +67,14 @@ class NewRoutineBloc extends Bloc<NewRoutineEvent, NewRoutineState> {
     Emitter<NewRoutineState> emit,
   ) {
     emit(state.copyWith(startTime: event.startTime));
+  }
+
+  Future<void> _onNewRoutineCreate(
+    NewRoutineCreateEvent event,
+    Emitter<NewRoutineState> emit,
+  ) async {
+    final newroutine = await createNewRoutineUsecase.call(event.routine);
+    final routineDto = RoutineDto.fromModel(newroutine);
+    logger.debug("New routine created $routineDto");
   }
 }

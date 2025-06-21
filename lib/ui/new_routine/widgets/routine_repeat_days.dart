@@ -22,7 +22,7 @@ class RoutineRepeatDays extends StatelessWidget {
         alignment: WrapAlignment.center,
         spacing: 8,
         runSpacing: 8,
-        children: selectedDays.map((day) {
+        children: List.generate(7, (i) => i + 1).map((day) {
           final isSelected = selectedDays.contains(day);
 
           final backgroundColor = isSelected
@@ -46,7 +46,7 @@ class RoutineRepeatDays extends StatelessWidget {
               onSelectionChanged?.call(updated);
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
               decoration: BoxDecoration(
                 color: backgroundColor,
                 borderRadius: BorderRadius.circular(20),

@@ -22,19 +22,6 @@ class $RoutinesTableTable extends RoutinesTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
-  @override
-  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
-    'user_id',
-    aliasedName,
-    false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 36,
-      maxTextLength: 36,
-    ),
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
@@ -194,7 +181,6 @@ class $RoutinesTableTable extends RoutinesTable
   @override
   List<GeneratedColumn> get $columns => [
     id,
-    userId,
     title,
     description,
     startDate,
@@ -226,14 +212,6 @@ class $RoutinesTableTable extends RoutinesTable
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
       context.missing(_idMeta);
-    }
-    if (data.containsKey('user_id')) {
-      context.handle(
-        _userIdMeta,
-        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_userIdMeta);
     }
     if (data.containsKey('title')) {
       context.handle(
@@ -317,10 +295,6 @@ class $RoutinesTableTable extends RoutinesTable
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
-      )!,
-      userId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}user_id'],
       )!,
       title: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -406,7 +380,6 @@ class $RoutinesTableTable extends RoutinesTable
 
 class Routine extends DataClass implements Insertable<Routine> {
   final String id;
-  final String userId;
   final String title;
   final String? description;
   final DateTime startDate;
@@ -423,7 +396,6 @@ class Routine extends DataClass implements Insertable<Routine> {
   final int syncVersion;
   const Routine({
     required this.id,
-    required this.userId,
     required this.title,
     this.description,
     required this.startDate,
@@ -443,7 +415,6 @@ class Routine extends DataClass implements Insertable<Routine> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    map['user_id'] = Variable<String>(userId);
     map['title'] = Variable<String>(title);
     if (!nullToAbsent || description != null) {
       map['description'] = Variable<String>(description);
@@ -481,10 +452,9 @@ class Routine extends DataClass implements Insertable<Routine> {
     return map;
   }
 
-  RoutinesTableCompanion toCompanion(bool nullToAbsent) {
-    return RoutinesTableCompanion(
+  RoutineCompanion toCompanion(bool nullToAbsent) {
+    return RoutineCompanion(
       id: Value(id),
-      userId: Value(userId),
       title: Value(title),
       description: description == null && nullToAbsent
           ? const Value.absent()
@@ -513,7 +483,6 @@ class Routine extends DataClass implements Insertable<Routine> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Routine(
       id: serializer.fromJson<String>(json['id']),
-      userId: serializer.fromJson<String>(json['userId']),
       title: serializer.fromJson<String>(json['title']),
       description: serializer.fromJson<String?>(json['description']),
       startDate: serializer.fromJson<DateTime>(json['startDate']),
@@ -535,7 +504,6 @@ class Routine extends DataClass implements Insertable<Routine> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'userId': serializer.toJson<String>(userId),
       'title': serializer.toJson<String>(title),
       'description': serializer.toJson<String?>(description),
       'startDate': serializer.toJson<DateTime>(startDate),
@@ -555,7 +523,6 @@ class Routine extends DataClass implements Insertable<Routine> {
 
   Routine copyWith({
     String? id,
-    String? userId,
     String? title,
     Value<String?> description = const Value.absent(),
     DateTime? startDate,
@@ -572,7 +539,6 @@ class Routine extends DataClass implements Insertable<Routine> {
     int? syncVersion,
   }) => Routine(
     id: id ?? this.id,
-    userId: userId ?? this.userId,
     title: title ?? this.title,
     description: description.present ? description.value : this.description,
     startDate: startDate ?? this.startDate,
@@ -588,10 +554,9 @@ class Routine extends DataClass implements Insertable<Routine> {
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
     syncVersion: syncVersion ?? this.syncVersion,
   );
-  Routine copyWithCompanion(RoutinesTableCompanion data) {
+  Routine copyWithCompanion(RoutineCompanion data) {
     return Routine(
       id: data.id.present ? data.id.value : this.id,
-      userId: data.userId.present ? data.userId.value : this.userId,
       title: data.title.present ? data.title.value : this.title,
       description: data.description.present
           ? data.description.value
@@ -621,7 +586,6 @@ class Routine extends DataClass implements Insertable<Routine> {
   String toString() {
     return (StringBuffer('Routine(')
           ..write('id: $id, ')
-          ..write('userId: $userId, ')
           ..write('title: $title, ')
           ..write('description: $description, ')
           ..write('startDate: $startDate, ')
@@ -643,7 +607,6 @@ class Routine extends DataClass implements Insertable<Routine> {
   @override
   int get hashCode => Object.hash(
     id,
-    userId,
     title,
     description,
     startDate,
@@ -664,7 +627,6 @@ class Routine extends DataClass implements Insertable<Routine> {
       identical(this, other) ||
       (other is Routine &&
           other.id == this.id &&
-          other.userId == this.userId &&
           other.title == this.title &&
           other.description == this.description &&
           other.startDate == this.startDate &&
@@ -681,9 +643,8 @@ class Routine extends DataClass implements Insertable<Routine> {
           other.syncVersion == this.syncVersion);
 }
 
-class RoutinesTableCompanion extends UpdateCompanion<Routine> {
+class RoutineCompanion extends UpdateCompanion<Routine> {
   final Value<String> id;
-  final Value<String> userId;
   final Value<String> title;
   final Value<String?> description;
   final Value<DateTime> startDate;
@@ -699,9 +660,8 @@ class RoutinesTableCompanion extends UpdateCompanion<Routine> {
   final Value<DateTime?> deletedAt;
   final Value<int> syncVersion;
   final Value<int> rowid;
-  const RoutinesTableCompanion({
+  const RoutineCompanion({
     this.id = const Value.absent(),
-    this.userId = const Value.absent(),
     this.title = const Value.absent(),
     this.description = const Value.absent(),
     this.startDate = const Value.absent(),
@@ -718,9 +678,8 @@ class RoutinesTableCompanion extends UpdateCompanion<Routine> {
     this.syncVersion = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  RoutinesTableCompanion.insert({
+  RoutineCompanion.insert({
     required String id,
-    required String userId,
     required String title,
     this.description = const Value.absent(),
     required DateTime startDate,
@@ -737,14 +696,12 @@ class RoutinesTableCompanion extends UpdateCompanion<Routine> {
     this.syncVersion = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
-       userId = Value(userId),
        title = Value(title),
        startDate = Value(startDate),
        startTime = Value(startTime),
        frequency = Value(frequency);
   static Insertable<Routine> custom({
     Expression<String>? id,
-    Expression<String>? userId,
     Expression<String>? title,
     Expression<String>? description,
     Expression<DateTime>? startDate,
@@ -763,7 +720,6 @@ class RoutinesTableCompanion extends UpdateCompanion<Routine> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (userId != null) 'user_id': userId,
       if (title != null) 'title': title,
       if (description != null) 'description': description,
       if (startDate != null) 'start_date': startDate,
@@ -782,9 +738,8 @@ class RoutinesTableCompanion extends UpdateCompanion<Routine> {
     });
   }
 
-  RoutinesTableCompanion copyWith({
+  RoutineCompanion copyWith({
     Value<String>? id,
-    Value<String>? userId,
     Value<String>? title,
     Value<String?>? description,
     Value<DateTime>? startDate,
@@ -801,9 +756,8 @@ class RoutinesTableCompanion extends UpdateCompanion<Routine> {
     Value<int>? syncVersion,
     Value<int>? rowid,
   }) {
-    return RoutinesTableCompanion(
+    return RoutineCompanion(
       id: id ?? this.id,
-      userId: userId ?? this.userId,
       title: title ?? this.title,
       description: description ?? this.description,
       startDate: startDate ?? this.startDate,
@@ -827,9 +781,6 @@ class RoutinesTableCompanion extends UpdateCompanion<Routine> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<String>(id.value);
-    }
-    if (userId.present) {
-      map['user_id'] = Variable<String>(userId.value);
     }
     if (title.present) {
       map['title'] = Variable<String>(title.value);
@@ -889,9 +840,8 @@ class RoutinesTableCompanion extends UpdateCompanion<Routine> {
 
   @override
   String toString() {
-    return (StringBuffer('RoutinesTableCompanion(')
+    return (StringBuffer('RoutineCompanion(')
           ..write('id: $id, ')
-          ..write('userId: $userId, ')
           ..write('title: $title, ')
           ..write('description: $description, ')
           ..write('startDate: $startDate, ')
@@ -2418,9 +2368,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 }
 
 typedef $$RoutinesTableTableCreateCompanionBuilder =
-    RoutinesTableCompanion Function({
+    RoutineCompanion Function({
       required String id,
-      required String userId,
       required String title,
       Value<String?> description,
       required DateTime startDate,
@@ -2438,9 +2387,8 @@ typedef $$RoutinesTableTableCreateCompanionBuilder =
       Value<int> rowid,
     });
 typedef $$RoutinesTableTableUpdateCompanionBuilder =
-    RoutinesTableCompanion Function({
+    RoutineCompanion Function({
       Value<String> id,
-      Value<String> userId,
       Value<String> title,
       Value<String?> description,
       Value<DateTime> startDate,
@@ -2469,11 +2417,6 @@ class $$RoutinesTableTableFilterComposer
   });
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get userId => $composableBuilder(
-    column: $table.userId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2566,11 +2509,6 @@ class $$RoutinesTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get userId => $composableBuilder(
-    column: $table.userId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get title => $composableBuilder(
     column: $table.title,
     builder: (column) => ColumnOrderings(column),
@@ -2653,9 +2591,6 @@ class $$RoutinesTableTableAnnotationComposer
   });
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get userId =>
-      $composableBuilder(column: $table.userId, builder: (column) => column);
 
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
@@ -2742,7 +2677,6 @@ class $$RoutinesTableTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
-                Value<String> userId = const Value.absent(),
                 Value<String> title = const Value.absent(),
                 Value<String?> description = const Value.absent(),
                 Value<DateTime> startDate = const Value.absent(),
@@ -2758,9 +2692,8 @@ class $$RoutinesTableTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> syncVersion = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => RoutinesTableCompanion(
+              }) => RoutineCompanion(
                 id: id,
-                userId: userId,
                 title: title,
                 description: description,
                 startDate: startDate,
@@ -2780,7 +2713,6 @@ class $$RoutinesTableTableTableManager
           createCompanionCallback:
               ({
                 required String id,
-                required String userId,
                 required String title,
                 Value<String?> description = const Value.absent(),
                 required DateTime startDate,
@@ -2796,9 +2728,8 @@ class $$RoutinesTableTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> syncVersion = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => RoutinesTableCompanion.insert(
+              }) => RoutineCompanion.insert(
                 id: id,
-                userId: userId,
                 title: title,
                 description: description,
                 startDate: startDate,

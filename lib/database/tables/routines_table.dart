@@ -5,10 +5,9 @@ import 'package:mobile/database/converters/time_of_day_converter.dart';
 import 'package:mobile/database/database.dart';
 import 'package:mobile/domain/models/routine_model.dart';
 
-@DataClassName("Routine")
+@DataClassName("Routine", companion: "RoutineCompanion")
 class RoutinesTable extends Table {
   TextColumn get id => text().withLength(min: 36, max: 36)();
-  TextColumn get userId => text().withLength(min: 36, max: 36)();
   TextColumn get title => text().withLength(max: 255)();
   TextColumn get description => text().nullable()();
   DateTimeColumn get startDate => dateTime()();

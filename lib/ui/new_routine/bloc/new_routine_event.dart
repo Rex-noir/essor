@@ -54,3 +54,11 @@ class UpdateStartTimeNewRoutineEvent extends NewRoutineEvent {
   @override
   List<Object> get props => [startTime];
 }
+
+class NewRoutineCreateEvent extends NewRoutineEvent {
+  final RoutineModel routine;
+  const NewRoutineCreateEvent(this.routine);
+
+  @override
+  List<Object> get props => [routine];
+}

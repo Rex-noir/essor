@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/layouts/presentation/widgets/home_add_dialog_action.dart';
+import 'package:mobile/data/repositories/routine_repository_impl.dart';
+import 'package:mobile/database/daos/routines_dao.dart';
+import 'package:mobile/database/database.dart';
+import 'package:mobile/domain/usecases/create_new_routine_usecase.dart';
 import 'package:mobile/ui/new_routine/bloc/new_routine_bloc.dart';
 import 'package:mobile/ui/new_routine/screens/new_routine_screen.dart';
 
@@ -17,6 +21,7 @@ class HomeAddDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appDatabase = context.read<AppDatabase>();
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {},
@@ -49,7 +54,11 @@ class HomeAddDialog extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => BlocProvider(
-                          create: (_) => NewRoutineBloc(),
+                          create: (_) => NewRoutineBloc(
+                            createNewRoutineUsecase: CreateNewRoutineUsecase(
+                              RoutineRepositoryImpl(RoutinesDao(appDatabase)),
+                            ),
+                          ),
                           child: const NewRoutineScreen(),
                         ),
                       ),

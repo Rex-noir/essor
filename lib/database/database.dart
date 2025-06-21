@@ -23,7 +23,7 @@ part 'database.g.dart';
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
-  static QueryExecutor _openConnection({bool reset = true}) {
+  static QueryExecutor _openConnection({bool reset = false}) {
     final logger = AppLogger.tag("AppDatabase");
     return LazyDatabase(() async {
       final dir = await getApplicationSupportDirectory();

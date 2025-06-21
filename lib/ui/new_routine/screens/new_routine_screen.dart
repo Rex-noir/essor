@@ -227,6 +227,8 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
                           syncVersion: 1,
                         );
 
+                        bloc.add(NewRoutineCreateEvent(routine));
+
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
