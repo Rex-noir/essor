@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/ui/new_routine/bloc/new_routine_bloc.dart';
 import 'package:mobile/ui/new_routine/widgets/repeat_section_card.dart';
@@ -213,7 +214,7 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
                         final routine = RoutineModel(
                           id: UuidV4().generate(),
                           title: title,
-                          startDate: bloc.state.startDate,
+                          startDate: bloc.state.startDate.dateOnly,
                           startTime: bloc.state.startTime,
                           frequency: bloc.state.selectedFrequency,
                           weeklyDays: bloc.state.weeklyDays,
