@@ -7,17 +7,23 @@ class NewRoutineState extends Equatable {
   final DateTime startDate;
   final List<int> monthlyDates;
   final TimeOfDay startTime;
+  final String title;
+  final int iconIndex;
 
   const NewRoutineState({
     required this.selectedFrequency,
     required this.interval,
     required this.weeklyDays,
+    required this.iconIndex,
+    required this.title,
     required this.startTime,
     required this.startDate,
     required this.monthlyDates,
   });
 
   factory NewRoutineState.initial() => NewRoutineState(
+    title: '',
+    iconIndex: 1,
     selectedFrequency: ItemFrequency.daily,
     startTime: TimeOfDay(hour: 8, minute: 00),
     interval: 2,
@@ -28,6 +34,8 @@ class NewRoutineState extends Equatable {
 
   @override
   List<Object> get props => [
+    title,
+    iconIndex,
     selectedFrequency,
     interval,
     weeklyDays,
@@ -35,8 +43,9 @@ class NewRoutineState extends Equatable {
     monthlyDates,
     startTime,
   ];
-
   NewRoutineState copyWith({
+    String? title,
+    int? iconIndex,
     ItemFrequency? selectedFrequency,
     int? interval,
     List<int>? weeklyDays,
@@ -45,6 +54,8 @@ class NewRoutineState extends Equatable {
     List<int>? monthlyDates,
   }) {
     return NewRoutineState(
+      title: title ?? this.title,
+      iconIndex: iconIndex ?? this.iconIndex,
       selectedFrequency: selectedFrequency ?? this.selectedFrequency,
       interval: interval ?? this.interval,
       weeklyDays: weeklyDays ?? this.weeklyDays,

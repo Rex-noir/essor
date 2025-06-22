@@ -7,7 +7,7 @@ sealed class NewRoutineEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class ChangeFrequencyNewRoutineEvent extends NewRoutineEvent {
+final class ChangeFrequencyNewRoutineEvent extends NewRoutineEvent {
   final ItemFrequency frequency;
   const ChangeFrequencyNewRoutineEvent(this.frequency);
 
@@ -15,7 +15,7 @@ class ChangeFrequencyNewRoutineEvent extends NewRoutineEvent {
   List<Object> get props => [frequency];
 }
 
-class UpdateIntervalNewRoutineEvent extends NewRoutineEvent {
+final class UpdateIntervalNewRoutineEvent extends NewRoutineEvent {
   final int interval;
   const UpdateIntervalNewRoutineEvent(this.interval);
 
@@ -23,7 +23,7 @@ class UpdateIntervalNewRoutineEvent extends NewRoutineEvent {
   List<Object> get props => [interval];
 }
 
-class UpdateWeeklyDaysNewRoutineEvent extends NewRoutineEvent {
+final class UpdateWeeklyDaysNewRoutineEvent extends NewRoutineEvent {
   final List<int> weeklyDays;
   const UpdateWeeklyDaysNewRoutineEvent(this.weeklyDays);
 
@@ -31,7 +31,7 @@ class UpdateWeeklyDaysNewRoutineEvent extends NewRoutineEvent {
   List<Object> get props => [weeklyDays];
 }
 
-class UpdateMonthlyDatesNewRoutineEvent extends NewRoutineEvent {
+final class UpdateMonthlyDatesNewRoutineEvent extends NewRoutineEvent {
   final List<int> monthlyDates;
   const UpdateMonthlyDatesNewRoutineEvent(this.monthlyDates);
 
@@ -39,7 +39,7 @@ class UpdateMonthlyDatesNewRoutineEvent extends NewRoutineEvent {
   List<Object> get props => [monthlyDates];
 }
 
-class UpdateStartDateNewRoutineEvent extends NewRoutineEvent {
+final class UpdateStartDateNewRoutineEvent extends NewRoutineEvent {
   final DateTime startDate;
   const UpdateStartDateNewRoutineEvent(this.startDate);
 
@@ -47,7 +47,7 @@ class UpdateStartDateNewRoutineEvent extends NewRoutineEvent {
   List<Object> get props => [startDate];
 }
 
-class UpdateStartTimeNewRoutineEvent extends NewRoutineEvent {
+final class UpdateStartTimeNewRoutineEvent extends NewRoutineEvent {
   final TimeOfDay startTime;
   const UpdateStartTimeNewRoutineEvent(this.startTime);
 
@@ -55,10 +55,27 @@ class UpdateStartTimeNewRoutineEvent extends NewRoutineEvent {
   List<Object> get props => [startTime];
 }
 
-class NewRoutineCreateEvent extends NewRoutineEvent {
-  final RoutineModel routine;
-  const NewRoutineCreateEvent(this.routine);
+final class NewRoutineTitleChanged extends NewRoutineEvent {
+  final String title;
+  const NewRoutineTitleChanged(this.title);
+}
+
+final class NewRoutineIconChanged extends NewRoutineEvent {
+  final int iconIndex;
+  const NewRoutineIconChanged(this.iconIndex);
+}
+
+final class CreateRoutineRequested extends NewRoutineEvent {
+  final DailyListBloc dailyListBloc;
+  final Function(RoutineModel, DateTime) navigateToViewRoutine;
+
+  const CreateRoutineRequested({
+    required this.dailyListBloc,
+    required this.navigateToViewRoutine,
+  });
 
   @override
-  List<Object> get props => [routine];
+  List<Object> get props => [dailyListBloc, navigateToViewRoutine];
 }
+
+final class NewRoutineSubmitted extends NewRoutineEvent {}

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/config/app_icons.dart';
-import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/core/widgets/show_icon_picker.dart';
 import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/domain/repositories/task_repository.dart';
@@ -13,31 +12,34 @@ import 'package:mobile/ui/new_routine/bloc/new_routine_bloc.dart';
 import 'package:mobile/ui/new_routine/widgets/repeat_section_card.dart';
 import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
 import 'package:mobile/ui/view_routine/screens/view_routine_screen.dart';
-import 'package:uuid/v4.dart';
 
-class NewRoutineScreen extends StatefulWidget {
+class NewRoutineScreen extends StatelessWidget {
   const NewRoutineScreen({super.key});
 
-  @override
-  State<NewRoutineScreen> createState() => _NewRoutineScreenState();
-}
-
-class _NewRoutineScreenState extends State<NewRoutineScreen>
-    with SingleTickerProviderStateMixin {
-  late TextEditingController _titleController;
-  late int _iconIndex;
-
-  @override
-  void initState() {
-    super.initState();
-    _titleController = TextEditingController();
-    _iconIndex = 1;
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    super.dispose();
+  void _navigateToViewRoutine(
+    BuildContext context,
+    RoutineModel routine,
+    DateTime routineDate,
+  ) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (_) => ViewRoutineBloc(
+            getTasksWithEntryUsecase: GetTasksWithEntryUsecase(
+              context.read<TaskRepository>(),
+            ),
+            createNewTaskUsecase: CreateNewTaskUsecase(
+              context.read<TaskRepository>(),
+            ),
+            updateTaskWithEntryUsecase: UpdateTaskWithEntryUsecase(
+              context.read<TaskRepository>(),
+            ),
+          )..add(ViewRoutineStarted(routine, routineDate)),
+          child: ViewRoutineScreen(),
+        ),
+      ),
+    );
   }
 
   @override
@@ -106,45 +108,51 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
   }
 
   Widget _buildHeader(BuildContext context) {
-    return Column(
-      children: [
-        Center(
-          child: IconButton(
-            icon: Icon(AppIcons.icons[_iconIndex]),
-            iconSize: 36,
-            padding: const EdgeInsets.all(32),
-            style: ButtonStyle(
-              backgroundColor: WidgetStatePropertyAll(
-                Theme.of(context).colorScheme.surfaceContainerHighest,
-              ),
-              shape: WidgetStatePropertyAll(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return BlocBuilder<NewRoutineBloc, NewRoutineState>(
+      buildWhen: (previous, current) => previous.iconIndex != current.iconIndex,
+      builder: (context, state) {
+        return Column(
+          children: [
+            Center(
+              child: IconButton(
+                icon: Icon(AppIcons.icons[state.iconIndex]),
+                iconSize: 36,
+                padding: const EdgeInsets.all(32),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(
+                    Theme.of(context).colorScheme.surfaceContainerHighest,
+                  ),
+                  shape: WidgetStatePropertyAll(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                ),
+                onPressed: () async {
+                  final bloc = context.read<NewRoutineBloc>();
+                  final icon = await showIconPicker(
+                    context,
+                    AppIcons.categorizedIcons,
+                  );
+
+                  if (icon != null) {
+                    bloc.add(NewRoutineIconChanged(icon));
+                  }
+                },
               ),
             ),
-            onPressed: () async {
-              final icon = await showIconPicker(
-                context,
-                AppIcons.categorizedIcons,
-              );
-
-              if (icon != null) {
-                setState(() {
-                  _iconIndex = icon;
-                });
-              }
-            },
-          ),
-        ),
-        const SizedBox(height: 32),
-        Text(
-          "Build consistent habits that stick",
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(
-              context,
-            ).colorScheme.onSurface.withValues(alpha: 0.7),
-          ),
-        ),
-      ],
+            const SizedBox(height: 32),
+            Text(
+              "Build consistent habits that stick",
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: .7),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -157,26 +165,37 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
           color: theme.colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
-      child: TextField(
-        controller: _titleController,
-        decoration: InputDecoration(
-          hintText: 'Enter routine name...',
-          hintStyle: TextStyle(
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-          ),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.all(20),
-          prefixIcon: Icon(
-            Icons.edit_outlined,
-            color: theme.colorScheme.primary,
-          ),
-        ),
-        style: theme.textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w500,
-        ),
-        textAlign: TextAlign.left,
-        autofocus: false,
-        textCapitalization: TextCapitalization.words,
+      child: BlocBuilder<NewRoutineBloc, NewRoutineState>(
+        buildWhen: (previous, current) => previous.title != current.title,
+        builder: (context, state) {
+          return TextField(
+            controller: TextEditingController(text: state.title)
+              ..selection = TextSelection.fromPosition(
+                TextPosition(offset: state.title.length),
+              ),
+            onChanged: (value) => context.read<NewRoutineBloc>().add(
+              NewRoutineTitleChanged(value),
+            ),
+            decoration: InputDecoration(
+              hintText: 'Enter routine name...',
+              hintStyle: TextStyle(
+                color: theme.colorScheme.onSurface.withValues(alpha: .5),
+              ),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.all(20),
+              prefixIcon: Icon(
+                Icons.edit_outlined,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.left,
+            autofocus: false,
+            textCapitalization: TextCapitalization.words,
+          );
+        },
       ),
     );
   }
@@ -193,14 +212,14 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
                 borderRadius: BorderRadius.circular(16),
               ),
               side: BorderSide(
-                color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                color: theme.colorScheme.outline.withValues(alpha: .3),
               ),
             ),
             child: Text(
               "Cancel",
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: .7),
               ),
             ),
           ),
@@ -208,66 +227,23 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
         const SizedBox(width: 16),
         Expanded(
           flex: 2,
-          child: ValueListenableBuilder<TextEditingValue>(
-            valueListenable: _titleController,
-            builder: (context, value, _) {
-              final isValid = value.text.trim().isNotEmpty;
+          child: BlocBuilder<NewRoutineBloc, NewRoutineState>(
+            buildWhen: (previous, current) => previous.title != current.title,
+            builder: (context, state) {
+              final isValid = state.title.trim().isNotEmpty;
 
               return ElevatedButton(
                 onPressed: isValid
                     ? () {
-                        final bloc = context.read<NewRoutineBloc>();
-                        final title = _titleController.text.trim();
-
-                        final routine = RoutineModel(
-                          id: UuidV4().generate(),
-                          title: title,
-                          startDate: bloc.state.startDate.dateOnly,
-                          startTime: bloc.state.startTime,
-                          frequency: bloc.state.selectedFrequency,
-                          weeklyDays: bloc.state.weeklyDays,
-                          monthlyDates: bloc.state.monthlyDates,
-                          interval: bloc.state.interval,
-                          createdAt: DateTime.now(),
-                          updatedAt: DateTime.now(),
-                          deletedAt: null,
-                          iconIndex: _iconIndex,
-                          isShared: false,
-                          syncVersion: 1,
-                        );
-
                         context.read<NewRoutineBloc>().add(
-                          NewRoutineCreateEvent(routine),
-                        );
-                        context.read<DailyListBloc>().add(
-                          DailyListRefreshRequested(
-                            date: bloc.state.startDate.dateOnly,
-                          ),
-                        );
-                        final routineDate =
-                            (context.read<DailyListBloc>().state
-                                    as DailyListLoaded)
-                                .selectedDate;
-
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => BlocProvider(
-                              create: (_) => ViewRoutineBloc(
-                                getTasksWithEntryUsecase:
-                                    GetTasksWithEntryUsecase(
-                                      context.read<TaskRepository>(),
-                                    ),
-                                createNewTaskUsecase: CreateNewTaskUsecase(
-                                  context.read<TaskRepository>(),
+                          CreateRoutineRequested(
+                            dailyListBloc: context.read<DailyListBloc>(),
+                            navigateToViewRoutine: (routine, routineDate) =>
+                                _navigateToViewRoutine(
+                                  context,
+                                  routine,
+                                  routineDate,
                                 ),
-                                updateTaskWithEntryUsecase:
-                                    UpdateTaskWithEntryUsecase(
-                                      context.read<TaskRepository>(),
-                                    ),
-                              )..add(ViewRoutineStarted(routine, routineDate)),
-                              child: ViewRoutineScreen(),
-                            ),
                           ),
                         );
                       }
@@ -282,7 +258,7 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
                   elevation: 0,
                   shadowColor: Colors.transparent,
                 ),
-                child: Text(
+                child: const Text(
                   "Create Routine",
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                 ),
