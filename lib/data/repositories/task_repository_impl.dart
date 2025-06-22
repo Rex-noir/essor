@@ -1,6 +1,7 @@
-import 'package:mobile/data/dto/routine_dto.dart';
+import 'package:drift/drift.dart';
 import 'package:mobile/data/dto/task_with_entry_dto.dart';
 import 'package:mobile/database/daos/tasks_dao.dart';
+import 'package:mobile/database/database.dart';
 import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/domain/models/task_model.dart';
 import 'package:mobile/domain/models/task_with_entry_model.dart';
@@ -15,7 +16,7 @@ class TaskRepositoryImpl implements TaskRepository {
     DateTime date,
   ) async {
     final datas = await tasksDao.fetchTasksWithEntry(
-      RoutineDto.fromModel(routine),
+      RoutineCompanion(id: Value(routine.id)),
       date,
     );
     return datas.map((dt) => dt.toModel()).toList();

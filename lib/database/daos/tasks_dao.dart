@@ -1,6 +1,5 @@
 import 'package:drift/drift.dart';
 import 'package:mobile/core/extensions/date_extensions.dart';
-import 'package:mobile/data/dto/routine_dto.dart';
 import 'package:mobile/data/dto/task_with_entry_dto.dart';
 import 'package:mobile/database/database.dart';
 import 'package:mobile/database/tables/task_entries_table.dart';
@@ -14,7 +13,7 @@ class TasksDao extends DatabaseAccessor<AppDatabase> with _$TasksDaoMixin {
   TasksDao(super.attachedDatabase);
 
   Future<List<TaskWithEntryDto>> fetchTasksWithEntry(
-    RoutineDto routine,
+    RoutineCompanion routine,
     DateTime date,
   ) async {
     final query = select(tasksTable).join([
@@ -31,7 +30,7 @@ class TasksDao extends DatabaseAccessor<AppDatabase> with _$TasksDaoMixin {
     ]);
 
     // Filter tasks by the routineId
-    query.where(tasksTable.routineId.equals(routine.id));
+    query.where(tasksTable.routineId.equals(routine.id.value));
 
     // Execute the query
     final result = await query.get();

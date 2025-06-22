@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/data/dto/routine_dto.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
 import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/domain/usecases/create_new_routine_usecase.dart';
@@ -73,8 +72,6 @@ class NewRoutineBloc extends Bloc<NewRoutineEvent, NewRoutineState> {
     NewRoutineCreateEvent event,
     Emitter<NewRoutineState> emit,
   ) async {
-    final newroutine = await createNewRoutineUsecase.call(event.routine);
-    final routineDto = RoutineDto.fromModel(newroutine);
-    logger.debug("New routine created $routineDto");
+    await createNewRoutineUsecase.call(event.routine);
   }
 }
