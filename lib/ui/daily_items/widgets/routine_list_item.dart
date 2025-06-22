@@ -9,7 +9,6 @@ import 'package:mobile/domain/usecases/update_task_with_entry_usecase.dart';
 import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
 import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
 import 'package:mobile/ui/view_routine/screens/view_routine_screen.dart';
-import 'package:mobile/utils/app_logger.dart';
 import 'package:mobile/utils/item_util.dart';
 
 class RoutineListItem extends StatelessWidget {
@@ -31,7 +30,7 @@ class RoutineListItem extends StatelessWidget {
     final routineColor = Colors
         .lightBlueAccent; // Consider getting this from the theme or routine data
 
-    final logger = TaggedLogger("RoutineListItem");
+    // final logger = TaggedLogger("RoutineListItem");
 
     return Card(
       // The shape of the Card defines the clip behavior for the InkWell
