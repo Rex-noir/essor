@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/ui/home/screens/home_screen.dart';
 import 'package:mobile/core/layouts/presentation/widgets/home_add_dialog.dart';
+import 'package:mobile/ui/home/screens/home_screen.dart';
 import 'package:mobile/utils/app_logger.dart';
 
 class HomeLayout extends StatefulWidget {
@@ -101,7 +101,6 @@ class _HomeLayoutState extends State<HomeLayout> with TickerProviderStateMixin {
                           builder: (dialogContext) {
                             return HomeAddDialog(
                               rotationController: _rotationController,
-                              isSheetOpen: _isSheetOpen,
                             );
                           },
                         ).whenComplete(() {

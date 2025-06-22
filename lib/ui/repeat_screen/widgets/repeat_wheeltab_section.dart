@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile/ui/new_routine/bloc/new_routine_bloc.dart';
 import 'package:wheel_picker/wheel_picker.dart';
 
 class RepeatWheeltabSection extends StatelessWidget {
@@ -11,6 +9,8 @@ class RepeatWheeltabSection extends StatelessWidget {
   final String Function(int) labelBuilder;
   final void Function(int) onChanged;
   final double height;
+  final DateTime startDate; // Added startDate as a parameter
+  final ValueChanged<DateTime> onStartDateChanged; // Callback for date changes
 
   const RepeatWheeltabSection({
     super.key,
@@ -20,12 +20,13 @@ class RepeatWheeltabSection extends StatelessWidget {
     required this.labelBuilder,
     required this.onChanged,
     this.height = 300,
+    required this.startDate, // Make startDate required
+    required this.onStartDateChanged, // Make onStartDateChanged required
   });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final bloc = context.read<NewRoutineBloc>();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -83,7 +84,9 @@ class RepeatWheeltabSection extends StatelessWidget {
                   right: 0,
                   child: Container(
                     height: 2,
-                    color: colorScheme.primary.withValues(alpha: 0.3),
+                    color: colorScheme.primary.withOpacity(
+                      0.3,
+                    ), // Corrected to use withOpacity instead of withValues
                   ),
                 ),
               ],
@@ -93,17 +96,17 @@ class RepeatWheeltabSection extends StatelessWidget {
             onPressed: () async {
               final newDate = await showDatePicker(
                 context: context,
-                initialDate: bloc.state.startDate,
+                initialDate: startDate, // Use the passed startDate
                 firstDate: DateTime.now(),
                 lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
               );
               if (newDate != null) {
-                bloc.add(UpdateStartDateNewRoutineEvent(newDate));
+                onStartDateChanged(newDate); // Call the callback
               }
             },
             icon: const Icon(Icons.calendar_today, size: 18),
             label: Text(
-              'Start: ${DateFormat('MMM d, y').format(bloc.state.startDate)}',
+              'Start: ${DateFormat('MMM d, y').format(startDate)}', // Use the passed startDate
               style: const TextStyle(fontSize: 14),
             ),
             style: OutlinedButton.styleFrom(

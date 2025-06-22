@@ -2,44 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/config/app_icons.dart';
 import 'package:mobile/core/widgets/show_icon_picker.dart';
+import 'package:mobile/domain/enums/item_frequency.dart';
 import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/domain/repositories/task_repository.dart';
 import 'package:mobile/domain/usecases/create_new_task_usecase.dart';
 import 'package:mobile/domain/usecases/get_tasks_with_entry_usecase.dart';
 import 'package:mobile/domain/usecases/update_task_with_entry_usecase.dart';
 import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
-import 'package:mobile/ui/new_routine/bloc/new_routine_bloc.dart';
-import 'package:mobile/ui/new_routine/widgets/repeat_section_card.dart';
+import 'package:mobile/ui/routine_form/bloc/routine_form_bloc.dart';
+import 'package:mobile/ui/routine_form/widgets/repeat_section_card.dart';
 import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
 import 'package:mobile/ui/view_routine/screens/view_routine_screen.dart';
 
-class NewRoutineScreen extends StatelessWidget {
-  const NewRoutineScreen({super.key});
+class RoutineFormScreen extends StatelessWidget {
+  const RoutineFormScreen({super.key});
 
-  void _navigateToViewRoutine(
-    BuildContext context,
-    RoutineModel routine,
-    DateTime routineDate,
-  ) {
-    Navigator.pushReplacement(
+  void onRoutineSubmit({
+    required BuildContext context,
+    required RoutineModel routine,
+  }) async {
+    final taskRepo = context.read<TaskRepository>();
+    final bloc = context.read<DailyListBloc>();
+
+    await Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => BlocProvider(
-          create: (_) => ViewRoutineBloc(
-            getTasksWithEntryUsecase: GetTasksWithEntryUsecase(
-              context.read<TaskRepository>(),
-            ),
-            createNewTaskUsecase: CreateNewTaskUsecase(
-              context.read<TaskRepository>(),
-            ),
-            updateTaskWithEntryUsecase: UpdateTaskWithEntryUsecase(
-              context.read<TaskRepository>(),
-            ),
-          )..add(ViewRoutineStarted(routine, routineDate)),
+        builder: (_) => BlocProvider<ViewRoutineBloc>(
+          create: (context) => ViewRoutineBloc(
+            getTasksWithEntryUsecase: GetTasksWithEntryUsecase(taskRepo),
+            createNewTaskUsecase: CreateNewTaskUsecase(taskRepo),
+            updateTaskWithEntryUsecase: UpdateTaskWithEntryUsecase(taskRepo),
+          )..add(ViewRoutineStarted(routine, routine.startDate)),
           child: ViewRoutineScreen(),
         ),
       ),
     );
+    bloc.add(DailyListRefreshRequested());
   }
 
   @override
@@ -59,7 +57,7 @@ class NewRoutineScreen extends StatelessWidget {
             const SizedBox(height: 32),
             _buildTitleInput(context, theme),
             const SizedBox(height: 32),
-            RepeatSectionCard(),
+            _buildRepeatCard(context),
             const SizedBox(height: 24),
             _buildTimeOfDayPicker(context),
             const SizedBox(height: 24),
@@ -67,6 +65,40 @@ class NewRoutineScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  _buildRepeatCard(BuildContext context) {
+    return BlocBuilder<RoutineFormBloc, RoutineFormState>(
+      builder: (context, state) {
+        return RepeatSectionCard(
+          selectedFrequency: state.selectedFrequency,
+          interval: state.interval,
+          weeklyDays: state.weeklyDays,
+          startDate: state.startDate,
+          onRepeatSettingsChanged:
+              ({
+                required ItemFrequency frequency,
+                required int interval,
+                required List<int> weeklyDays,
+              }) {
+                context.read<RoutineFormBloc>().add(
+                  RoutineFormFrequencyUpated(frequency),
+                );
+                context.read<RoutineFormBloc>().add(
+                  RoutineFormIntervalUpdated(interval),
+                );
+                context.read<RoutineFormBloc>().add(
+                  RoutineFormWeeklyDaysUpdated(weeklyDays),
+                );
+              },
+          onWeeklyDaysChanged: (selectedDays) {
+            context.read<RoutineFormBloc>().add(
+              RoutineFormWeeklyDaysUpdated(selectedDays),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -108,7 +140,7 @@ class NewRoutineScreen extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
-    return BlocBuilder<NewRoutineBloc, NewRoutineState>(
+    return BlocBuilder<RoutineFormBloc, RoutineFormState>(
       buildWhen: (previous, current) => previous.iconIndex != current.iconIndex,
       builder: (context, state) {
         return Column(
@@ -129,14 +161,14 @@ class NewRoutineScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () async {
-                  final bloc = context.read<NewRoutineBloc>();
+                  final bloc = context.read<RoutineFormBloc>();
                   final icon = await showIconPicker(
                     context,
                     AppIcons.categorizedIcons,
                   );
 
                   if (icon != null) {
-                    bloc.add(NewRoutineIconChanged(icon));
+                    bloc.add(RoutineFormIconUpdated(icon));
                   }
                 },
               ),
@@ -165,7 +197,7 @@ class NewRoutineScreen extends StatelessWidget {
           color: theme.colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
-      child: BlocBuilder<NewRoutineBloc, NewRoutineState>(
+      child: BlocBuilder<RoutineFormBloc, RoutineFormState>(
         buildWhen: (previous, current) => previous.title != current.title,
         builder: (context, state) {
           return TextField(
@@ -173,8 +205,8 @@ class NewRoutineScreen extends StatelessWidget {
               ..selection = TextSelection.fromPosition(
                 TextPosition(offset: state.title.length),
               ),
-            onChanged: (value) => context.read<NewRoutineBloc>().add(
-              NewRoutineTitleChanged(value),
+            onChanged: (value) => context.read<RoutineFormBloc>().add(
+              RoutineFormTitileUpdated(value),
             ),
             decoration: InputDecoration(
               hintText: 'Enter routine name...',
@@ -227,7 +259,7 @@ class NewRoutineScreen extends StatelessWidget {
         const SizedBox(width: 16),
         Expanded(
           flex: 2,
-          child: BlocBuilder<NewRoutineBloc, NewRoutineState>(
+          child: BlocBuilder<RoutineFormBloc, RoutineFormState>(
             buildWhen: (previous, current) => previous.title != current.title,
             builder: (context, state) {
               final isValid = state.title.trim().isNotEmpty;
@@ -235,15 +267,14 @@ class NewRoutineScreen extends StatelessWidget {
               return ElevatedButton(
                 onPressed: isValid
                     ? () {
-                        context.read<NewRoutineBloc>().add(
-                          CreateRoutineRequested(
-                            dailyListBloc: context.read<DailyListBloc>(),
-                            navigateToViewRoutine: (routine, routineDate) =>
-                                _navigateToViewRoutine(
-                                  context,
-                                  routine,
-                                  routineDate,
-                                ),
+                        context.read<RoutineFormBloc>().add(
+                          RoutineFormSubmitRequested(
+                            onSubmit: ({required RoutineModel routine}) {
+                              onRoutineSubmit(
+                                context: context,
+                                routine: routine,
+                              );
+                            },
                           ),
                         );
                       }
@@ -296,14 +327,14 @@ class NewRoutineScreen extends StatelessWidget {
           hoverColor: theme.colorScheme.primary.withValues(alpha: .04),
           splashColor: theme.colorScheme.primary.withValues(alpha: .08),
           onTap: () async {
-            final bloc = context.read<NewRoutineBloc>();
+            final bloc = context.read<RoutineFormBloc>();
             final TimeOfDay? picked = await showTimePicker(
               context: context,
               initialTime: TimeOfDay.now(),
             );
 
             if (picked != null) {
-              bloc.add(UpdateStartTimeNewRoutineEvent(picked));
+              bloc.add(RoutineFormStartTimeUpdated(picked));
             }
           },
           child: Padding(
@@ -334,7 +365,7 @@ class NewRoutineScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 2),
-                      BlocBuilder<NewRoutineBloc, NewRoutineState>(
+                      BlocBuilder<RoutineFormBloc, RoutineFormState>(
                         builder: (context, state) {
                           return Text(
                             MaterialLocalizations.of(context).formatTimeOfDay(

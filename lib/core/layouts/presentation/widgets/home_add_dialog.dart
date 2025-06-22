@@ -1,30 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/layouts/presentation/widgets/home_add_dialog_action.dart';
-
 import 'package:mobile/domain/repositories/routine_repository.dart';
 import 'package:mobile/domain/usecases/create_new_routine_usecase.dart';
-import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
-import 'package:mobile/ui/new_routine/bloc/new_routine_bloc.dart';
-import 'package:mobile/ui/new_routine/screens/new_routine_screen.dart';
+import 'package:mobile/ui/routine_form/bloc/routine_form_bloc.dart';
+import 'package:mobile/ui/routine_form/screen/routine_form_screen.dart';
 import 'package:mobile/utils/app_logger.dart';
 
 class HomeAddDialog extends StatelessWidget {
-  HomeAddDialog({
-    super.key,
-    required AnimationController rotationController,
-    required ValueNotifier<bool> isSheetOpen,
-  }) : _rotationController = rotationController,
-       _isSheetOpen = isSheetOpen;
+  HomeAddDialog({super.key, required AnimationController rotationController})
+    : _rotationController = rotationController;
 
   final AnimationController _rotationController;
-  final ValueNotifier<bool> _isSheetOpen;
   final logger = TaggedLogger("HomeAddDialog");
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<DailyListBloc>();
-    logger.info("Building HomeAddDialog, ${bloc.toString()}");
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {},
@@ -52,22 +43,23 @@ class HomeAddDialog extends StatelessWidget {
                   icon: Icons.add,
                   backgroundColor: Colors.green.shade50,
                   onTap: () async {
-                    Navigator.of(context).pop();
-                    final newRoutine = await Navigator.push(
+                    Navigator.pop(context);
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => BlocProvider(
-                          create: (_) => NewRoutineBloc(
+                          create: (_) => RoutineFormBloc(
+                            existingRoutine: null,
                             createNewRoutineUsecase: CreateNewRoutineUsecase(
                               context.read<RoutineRepository>(),
                             ),
                           ),
-                          child: const NewRoutineScreen(),
+                          child: RoutineFormScreen(),
                         ),
                       ),
-                    );
-
-                    logger.debug('New routine created: $newRoutine');
+                    ).whenComplete(() {
+                      _rotationController.reverse();
+                    });
                   },
                 ),
               ],
@@ -81,7 +73,6 @@ class HomeAddDialog extends StatelessWidget {
               onTap: () {
                 Navigator.of(context).pop();
                 _rotationController.reverse(); // Reverse animation
-                _isSheetOpen.value = false;
               },
               child: Container(
                 height: 72,

@@ -33,7 +33,6 @@ class ViewRoutineBloc extends Bloc<ViewRoutineEvent, ViewRoutineState> {
     ViewRoutineStarted event,
     Emitter<ViewRoutineState> emit,
   ) async {
-    // TODO : Fetch tasks for the routine
     final tasks = await getTasksWithEntryUsecase.call(
       event.routine,
       event.date,

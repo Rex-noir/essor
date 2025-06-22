@@ -1,13 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
-import 'package:mobile/ui/new_routine/bloc/new_routine_bloc.dart';
-import 'package:mobile/ui/new_routine/screens/repeat_full_screen.dart';
-import 'package:mobile/ui/new_routine/widgets/routine_repeat_days.dart';
-import 'package:mobile/utils/item_util.dart';
+import 'package:mobile/ui/routine_form/widgets/routine_repeat_days.dart';
+import 'package:mobile/ui/repeat_screen/screen/repeat_full_screen.dart'; // Ensure this import is correct
+import 'package:mobile/utils/item_util.dart'; // Ensure this import is correct
+
+// Define a type for the callback when repeat settings change
+typedef OnRepeatSettingsChanged =
+    void Function({
+      required ItemFrequency frequency,
+      required int interval,
+      required List<int> weeklyDays,
+    });
 
 class RepeatSectionCard extends StatelessWidget {
-  const RepeatSectionCard({super.key});
+  final ItemFrequency selectedFrequency;
+  final int interval;
+  final List<int> weeklyDays;
+  final DateTime startDate;
+  final OnRepeatSettingsChanged onRepeatSettingsChanged;
+  final ValueChanged<List<int>> onWeeklyDaysChanged;
+
+  const RepeatSectionCard({
+    super.key,
+    required this.selectedFrequency,
+    required this.interval,
+    required this.weeklyDays,
+    required this.startDate,
+    required this.onRepeatSettingsChanged,
+    required this.onWeeklyDaysChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,21 +43,27 @@ class RepeatSectionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow.withValues(alpha: 0.1),
+            color: theme.colorScheme.shadow.withValues(
+              alpha: .1,
+            ), // Use withOpacity
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
         border: Border.all(
-          color: theme.colorScheme.outline.withValues(alpha: 0.1),
+          color: theme.colorScheme.outline.withValues(
+            alpha: 0.1,
+          ), // Use withOpacity
         ),
       ),
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 8,
+        // Removed `spacing` as it's not a direct property of Column.
+        // If you need spacing between children, use SizedBox or Gap.
         children: [
           _buildRepeatHeader(context, theme),
+          const SizedBox(height: 8), // Added SizedBox for spacing
           _buildRepeatContent(context, theme),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -78,29 +105,28 @@ class RepeatSectionCard extends StatelessWidget {
   }
 
   Widget _buildRepeatHeader(BuildContext context, ThemeData theme) {
-    final bloc = context.read<NewRoutineBloc>();
-
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: () async {
+          // Navigate to RepeatFullScreen and expect a result
           final returned = await Navigator.push<RepeatSettingsResult>(
             context,
             MaterialPageRoute(
-              builder: (_) => BlocProvider.value(
-                value: bloc,
-                child: RepeatFullScreen(
-                  initialFrequency: bloc.state.selectedFrequency,
-                  initialInterval: bloc.state.interval,
-                  initialWeeklyDays: bloc.state.weeklyDays,
-                ),
+              builder: (_) => RepeatFullScreen(
+                initialFrequency: selectedFrequency,
+                initialInterval: interval,
+                initialWeeklyDays: weeklyDays,
+                initialStartDate: startDate,
               ),
             ),
           );
           if (returned != null) {
-            bloc.add(ChangeFrequencyNewRoutineEvent(returned.frequency));
-            bloc.add(UpdateIntervalNewRoutineEvent(returned.interval));
-            bloc.add(UpdateWeeklyDaysNewRoutineEvent(returned.weeklyDays));
+            onRepeatSettingsChanged(
+              frequency: returned.frequency,
+              interval: returned.interval,
+              weeklyDays: returned.weeklyDays,
+            );
           }
         },
         borderRadius: BorderRadius.circular(20),
@@ -111,7 +137,9 @@ class RepeatSectionCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                  color: theme.colorScheme.primary.withOpacity(
+                    0.1,
+                  ), // Use withOpacity
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -132,30 +160,24 @@ class RepeatSectionCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 2),
-                    BlocBuilder<NewRoutineBloc, NewRoutineState>(
-                      buildWhen: (previous, current) =>
-                          previous.selectedFrequency !=
-                              current.selectedFrequency ||
-                          previous.interval != current.interval,
-                      builder: (context, state) {
-                        return Text(
-                          getFrequencyIntervalLabel(
-                            bloc.state.selectedFrequency,
-                            bloc.state.interval,
-                          ),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        );
-                      },
+                    Text(
+                      getFrequencyIntervalLabel(
+                        selectedFrequency, // Use parameter
+                        interval, // Use parameter
+                      ),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
               ),
               Icon(
                 Icons.chevron_right_rounded,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                color: theme.colorScheme.onSurface.withValues(
+                  alpha: 0.6,
+                ), // Use withOpacity
               ),
             ],
           ),
@@ -165,41 +187,39 @@ class RepeatSectionCard extends StatelessWidget {
   }
 
   Widget _buildRepeatContent(BuildContext context, ThemeData theme) {
-    return BlocBuilder<NewRoutineBloc, NewRoutineState>(
-      buildWhen: (previous, current) =>
-          previous.weeklyDays != current.weeklyDays ||
-          previous.selectedFrequency != current.selectedFrequency,
-      builder: (context, state) {
-        if (state.selectedFrequency == ItemFrequency.daily) {
-          return const SizedBox.shrink();
-        }
+    // This part now uses the parameters directly.
+    if (selectedFrequency == ItemFrequency.daily) {
+      return const SizedBox.shrink();
+    }
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Divider(
-              color: theme.colorScheme.outline.withValues(alpha: 0.3),
-              height: 1,
-            ),
-            const SizedBox(height: 20),
-            Text(
-              "Select Days",
-              style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-              ),
-            ),
-            const SizedBox(height: 12),
-            RoutineRepeatDays(
-              selectedDays: state.weeklyDays.toSet(),
-              onSelectionChanged: (selectedDays) => context
-                  .read<NewRoutineBloc>()
-                  .add(UpdateWeeklyDaysNewRoutineEvent(selectedDays.toList())),
-            ),
-            const SizedBox(height: 16),
-          ],
-        );
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Divider(
+          color: theme.colorScheme.outline.withValues(
+            alpha: 0.3,
+          ), // Use withOpacity
+          height: 1,
+        ),
+        const SizedBox(height: 20),
+        Text(
+          "Select Days",
+          style: theme.textTheme.labelLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.onSurface.withValues(
+              alpha: 0.8,
+            ), // Use withOpacity
+          ),
+        ),
+        const SizedBox(height: 12),
+        RoutineRepeatDays(
+          selectedDays: weeklyDays.toSet(), // Use parameter
+          onSelectionChanged: (selectedDays) {
+            onWeeklyDaysChanged(selectedDays.toList()); // Use callback
+          },
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 }

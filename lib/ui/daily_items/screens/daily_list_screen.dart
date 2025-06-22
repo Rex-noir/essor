@@ -33,7 +33,7 @@ class _DailyListScreenState extends State<DailyListScreen>
   void initState() {
     super.initState();
     _tabController = TabController(
-      length: DailyListBloc.initialDaysEachSide * 2,
+      length: DailyListBloc.initialDaysEachSide * 2 + 1,
       vsync: this,
     );
     _fadeController = AnimationController(

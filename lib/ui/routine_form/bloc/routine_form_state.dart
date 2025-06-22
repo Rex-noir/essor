@@ -1,6 +1,7 @@
-part of 'new_routine_bloc.dart';
+part of 'routine_form_bloc.dart';
 
-class NewRoutineState extends Equatable {
+
+class RoutineFormState extends Equatable {
   final ItemFrequency selectedFrequency;
   final int interval;
   final List<int> weeklyDays;
@@ -10,7 +11,7 @@ class NewRoutineState extends Equatable {
   final String title;
   final int iconIndex;
 
-  const NewRoutineState({
+  const RoutineFormState({
     required this.selectedFrequency,
     required this.interval,
     required this.weeklyDays,
@@ -21,7 +22,7 @@ class NewRoutineState extends Equatable {
     required this.monthlyDates,
   });
 
-  factory NewRoutineState.initial() => NewRoutineState(
+  factory RoutineFormState.initial() => RoutineFormState(
     title: '',
     iconIndex: 1,
     selectedFrequency: ItemFrequency.daily,
@@ -43,7 +44,7 @@ class NewRoutineState extends Equatable {
     monthlyDates,
     startTime,
   ];
-  NewRoutineState copyWith({
+  RoutineFormState copyWith({
     String? title,
     int? iconIndex,
     ItemFrequency? selectedFrequency,
@@ -53,7 +54,7 @@ class NewRoutineState extends Equatable {
     DateTime? startDate,
     List<int>? monthlyDates,
   }) {
-    return NewRoutineState(
+    return RoutineFormState(
       title: title ?? this.title,
       iconIndex: iconIndex ?? this.iconIndex,
       selectedFrequency: selectedFrequency ?? this.selectedFrequency,

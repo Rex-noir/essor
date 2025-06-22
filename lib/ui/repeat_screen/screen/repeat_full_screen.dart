@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
-import 'package:mobile/ui/new_routine/widgets/repeat_wheeltab_section.dart';
-import 'package:mobile/ui/new_routine/widgets/routine_repeat_days.dart';
+import 'package:mobile/ui/repeat_screen/widgets/repeat_wheeltab_section.dart';
+import 'package:mobile/ui/routine_form/widgets/routine_repeat_days.dart';
 import 'package:mobile/utils/app_logger.dart';
 
 extension RepeatTypeExtension on ItemFrequency {
@@ -21,11 +21,13 @@ class RepeatSettingsResult {
   final ItemFrequency frequency;
   final int interval;
   final List<int> weeklyDays;
+  final DateTime startDate;
 
   RepeatSettingsResult({
     required this.frequency,
     required this.interval,
     required this.weeklyDays,
+    required this.startDate,
   });
 }
 
@@ -33,11 +35,13 @@ class RepeatFullScreen extends StatefulWidget {
   final ItemFrequency initialFrequency;
   final int initialInterval;
   final List<int> initialWeeklyDays;
+  final DateTime initialStartDate;
 
   const RepeatFullScreen({
     super.key,
     required this.initialFrequency,
     required this.initialInterval,
+    required this.initialStartDate,
     required this.initialWeeklyDays,
   });
 
@@ -51,6 +55,7 @@ class _RepeatFullScreenState extends State<RepeatFullScreen>
   late ItemFrequency selectedFrequency;
   late int interval;
   late Set<int> selectedDays;
+  late DateTime startDate;
 
   final logger = AppLogger.tag("RepeatFullScreen");
   @override
@@ -59,6 +64,7 @@ class _RepeatFullScreenState extends State<RepeatFullScreen>
     selectedFrequency = widget.initialFrequency;
     interval = widget.initialInterval;
     selectedDays = widget.initialWeeklyDays.toSet();
+    startDate = widget.initialStartDate;
 
     _tabController = TabController(
       length: ItemFrequency.values.length,
@@ -85,6 +91,7 @@ class _RepeatFullScreenState extends State<RepeatFullScreen>
     Navigator.pop(
       context,
       RepeatSettingsResult(
+        startDate: startDate,
         frequency: selectedFrequency,
         interval: interval,
         weeklyDays: selectedDays.toList(),
@@ -201,6 +208,8 @@ class _RepeatFullScreenState extends State<RepeatFullScreen>
     return RepeatWheeltabSection(
       title: 'Repeat Frequency',
       intervals: intervals,
+      startDate: startDate,
+      onStartDateChanged: (value) => setState(() => startDate = value),
       selectedIndex: intervals.indexOf(interval),
       labelBuilder: (val) => 'Every $val days',
       onChanged: (i) => setState(() => interval = intervals[i]),
@@ -241,6 +250,12 @@ class _RepeatFullScreenState extends State<RepeatFullScreen>
             intervals: intervals,
             selectedIndex: intervals.indexOf(interval),
             labelBuilder: (val) => val == 1 ? 'Every week' : 'Every $val weeks',
+            onStartDateChanged: (newDate) {
+              setState(() {
+                startDate = newDate;
+              });
+            },
+            startDate: startDate,
             onChanged: (i) => setState(() => interval = intervals[i]),
             height: 200,
           ),
