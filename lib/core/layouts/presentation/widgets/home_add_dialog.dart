@@ -4,7 +4,7 @@ import 'package:mobile/core/layouts/presentation/widgets/home_add_dialog_action.
 import 'package:mobile/domain/repositories/routine_repository.dart';
 import 'package:mobile/domain/usecases/create_new_routine_usecase.dart';
 import 'package:mobile/ui/routine_form/bloc/routine_form_bloc.dart';
-import 'package:mobile/ui/routine_form/screen/routine_form_screen.dart';
+import 'package:mobile/ui/routine_form/screens/routine_form_screen.dart';
 import 'package:mobile/utils/app_logger.dart';
 
 class HomeAddDialog extends StatelessWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
-import 'package:mobile/ui/repeat_screen/widgets/repeat_wheeltab_section.dart';
+import 'package:mobile/ui/routine_form/widgets/repeat_wheeltab_section.dart';
 import 'package:mobile/ui/routine_form/widgets/routine_repeat_days.dart';
 import 'package:mobile/utils/app_logger.dart';
 

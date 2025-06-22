@@ -6,7 +6,7 @@ import 'package:mobile/domain/models/task_with_entry_model.dart';
 import 'package:mobile/domain/repositories/routine_repository.dart';
 import 'package:mobile/domain/usecases/create_new_routine_usecase.dart';
 import 'package:mobile/ui/routine_form/bloc/routine_form_bloc.dart';
-import 'package:mobile/ui/routine_form/screen/routine_form_screen.dart';
+import 'package:mobile/ui/routine_form/screens/routine_form_screen.dart';
 import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
 import 'package:mobile/ui/view_routine/screens/new_routine_task_screen.dart';
 import 'package:mobile/ui/view_routine/screens/view_routine_task_screen.dart';
