@@ -7,6 +7,11 @@ sealed class RoutineFormEvent extends Equatable {
   List<Object> get props => [];
 }
 
+final class RoutineFormInitial extends RoutineFormEvent {
+  final RoutineModel? existingModel;
+  const RoutineFormInitial(this.existingModel);
+}
+
 final class RoutineFormFrequencyUpated extends RoutineFormEvent {
   final ItemFrequency frequency;
   const RoutineFormFrequencyUpated(this.frequency);

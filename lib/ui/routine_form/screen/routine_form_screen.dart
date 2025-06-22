@@ -289,8 +289,10 @@ class RoutineFormScreen extends StatelessWidget {
                   elevation: 0,
                   shadowColor: Colors.transparent,
                 ),
-                child: const Text(
-                  "Create Routine",
+                child: Text(
+                  state.mode == RoutineFormMode.create
+                      ? "Create Routine"
+                      : "Update Routine",
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                 ),
               );

@@ -49,11 +49,10 @@ class HomeAddDialog extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => BlocProvider(
                           create: (_) => RoutineFormBloc(
-                            existingRoutine: null,
                             createNewRoutineUsecase: CreateNewRoutineUsecase(
                               context.read<RoutineRepository>(),
                             ),
-                          ),
+                          )..add(RoutineFormInitial(null)),
                           child: RoutineFormScreen(),
                         ),
                       ),

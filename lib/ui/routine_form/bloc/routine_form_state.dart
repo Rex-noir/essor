@@ -1,5 +1,6 @@
 part of 'routine_form_bloc.dart';
 
+enum RoutineFormMode { create, edit }
 
 class RoutineFormState extends Equatable {
   final ItemFrequency selectedFrequency;
@@ -10,6 +11,8 @@ class RoutineFormState extends Equatable {
   final TimeOfDay startTime;
   final String title;
   final int iconIndex;
+  final RoutineFormMode? mode;
+  final String? id;
 
   const RoutineFormState({
     required this.selectedFrequency,
@@ -20,9 +23,11 @@ class RoutineFormState extends Equatable {
     required this.startTime,
     required this.startDate,
     required this.monthlyDates,
+    this.id,
+    this.mode = RoutineFormMode.create,
   });
 
-  factory RoutineFormState.initial() => RoutineFormState(
+  factory RoutineFormState.empty() => RoutineFormState(
     title: '',
     iconIndex: 1,
     selectedFrequency: ItemFrequency.daily,
@@ -31,10 +36,11 @@ class RoutineFormState extends Equatable {
     weeklyDays: const [],
     monthlyDates: const [],
     startDate: DateTime.now(),
+    mode: RoutineFormMode.create,
   );
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
     title,
     iconIndex,
     selectedFrequency,
@@ -43,6 +49,8 @@ class RoutineFormState extends Equatable {
     startDate,
     monthlyDates,
     startTime,
+    mode,
+    id,
   ];
   RoutineFormState copyWith({
     String? title,
@@ -53,6 +61,8 @@ class RoutineFormState extends Equatable {
     TimeOfDay? startTime,
     DateTime? startDate,
     List<int>? monthlyDates,
+    RoutineFormMode? mode,
+    String? id,
   }) {
     return RoutineFormState(
       title: title ?? this.title,
@@ -63,6 +73,8 @@ class RoutineFormState extends Equatable {
       startTime: startTime ?? this.startTime,
       startDate: startDate ?? this.startDate,
       monthlyDates: monthlyDates ?? this.monthlyDates,
+      mode: mode ?? this.mode,
+      id: id ?? this.id,
     );
   }
 }
