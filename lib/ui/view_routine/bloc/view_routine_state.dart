@@ -15,13 +15,13 @@ class ViewRoutineInitial extends ViewRoutineState {
 
 class ViewRoutineLoaded extends ViewRoutineState {
   final RoutineModel routine;
-  final List<TaskModel> tasks;
+  final List<TaskWithEntryModel> tasks;
   const ViewRoutineLoaded({required this.routine, required this.tasks});
 
   @override
   List<Object?> get props => [routine, tasks];
 
-  ViewRoutineLoaded copyWith({RoutineModel? routine, List<TaskModel>? tasks}) {
+  ViewRoutineLoaded copyWith({RoutineModel? routine, List<TaskWithEntryModel>? tasks}) {
     return ViewRoutineLoaded(
       routine: routine ?? this.routine,
       tasks: tasks ?? this.tasks,

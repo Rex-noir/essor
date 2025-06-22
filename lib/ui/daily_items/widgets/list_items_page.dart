@@ -7,7 +7,7 @@ class ListItemsPage extends StatefulWidget {
   final String day;
   final List<DailyItem> items;
   final bool isLoading;
-  final ScrollController? scrollController; // Add this parameter
+  final ScrollController? scrollController;
   final VoidCallback onRefresh;
 
   const ListItemsPage({
@@ -15,7 +15,7 @@ class ListItemsPage extends StatefulWidget {
     required this.items,
     required this.isLoading,
     required this.onRefresh,
-    this.scrollController, // Add this parameter
+    this.scrollController,
     super.key,
   });
 
@@ -29,16 +29,52 @@ class _ListItemsPageState extends State<ListItemsPage>
   Widget build(BuildContext context) {
     super.build(context);
 
+    // Get theme and color scheme for consistent styling
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return RefreshIndicator(
+      onRefresh: () async {
+        widget.onRefresh();
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12),
-        color: Theme.of(context).colorScheme.surface,
+        color: colorScheme.surface, // Use colorScheme for consistency
         child: widget.isLoading
             ? const Center(child: CircularProgressIndicator())
+            : widget
+                  .items
+                  .isEmpty // Check if items list is empty
+            ? Center(
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.add_box_outlined, // A suitable icon for empty state
+                      size: 80,
+                      color: colorScheme.onSurface.withValues(alpha: .4),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      "No items for this day yet!",
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Add some habits or routines to get started.",
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurface.withOpacity(0.5),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              )
             : ListView.separated(
                 key: PageStorageKey('tab_${widget.day}'),
-                controller: widget
-                    .scrollController, // Use the provided scroll controller
+                controller: widget.scrollController,
                 padding: const EdgeInsets.only(bottom: 80),
                 physics: const AlwaysScrollableScrollPhysics(),
                 separatorBuilder: (context, index) => const SizedBox(height: 8),
@@ -56,9 +92,6 @@ class _ListItemsPageState extends State<ListItemsPage>
                 itemCount: widget.items.length,
               ),
       ),
-      onRefresh: () async {
-        widget.onRefresh();
-      },
     );
   }
 

@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/core/config/app_config.dart';
 import 'package:mobile/core/config/app_icons.dart';
+import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/core/widgets/show_icon_picker.dart';
+import 'package:mobile/domain/models/task_entry_model.dart';
 import 'package:mobile/domain/models/task_model.dart';
+import 'package:mobile/domain/models/task_with_entry_model.dart';
 import 'package:mobile/ui/view_routine/widgets/routine_task_duration.dart';
 import 'package:mobile/ui/view_routine/widgets/routine_task_title.dart';
 import 'package:uuid/v4.dart';
 
 class NewRoutineTaskScreen extends StatefulWidget {
-  const NewRoutineTaskScreen({super.key});
+  final String routineId;
+  const NewRoutineTaskScreen({required this.routineId, super.key});
 
   @override
   State<NewRoutineTaskScreen> createState() => _NewRoutineTaskScreenState();
@@ -34,9 +38,19 @@ class _NewRoutineTaskScreenState extends State<NewRoutineTaskScreen> {
       title: _titleController.text,
       iconIndex: _iconIndex,
       importance: 1,
+      routineId: widget.routineId,
     );
 
-    Navigator.of(context).pop(model);
+    final TaskEntryModel entry = TaskEntryModel(
+      id: UuidV4().generate(),
+      taskId: model.id,
+      completed: false,
+      entryDate: DateTime.now().dateOnly,
+    );
+
+    Navigator.of(
+      context,
+    ).pop<TaskWithEntryModel>(TaskWithEntryModel(task: model, entry: entry));
   }
 
   @override

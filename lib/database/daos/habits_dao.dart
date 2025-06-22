@@ -19,22 +19,29 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
             ))
             .get();
 
-    final weekday = date.weekday;
-    final dayOfMonth = date.day;
-
     return allHabits.where((habit) {
+      final daysDifference = date.difference(habit.startDate).inDays;
+
       switch (habit.frequency) {
         case ItemFrequency.daily:
-          return true;
+          return daysDifference % habit.interval == 0;
+
         case ItemFrequency.weekly:
-          return habit.weeklyDays.contains(weekday);
+          final weeksDifference = (daysDifference / 7).floor();
+          return habit.weeklyDays.contains(date.weekday) &&
+              weeksDifference % habit.interval == 0;
+
         case ItemFrequency.monthly:
-          return habit.monthlyDates.contains(dayOfMonth);
+          final isMatchingDay = habit.monthlyDates.contains(date.day);
+          final monthDiff =
+              (date.year - habit.startDate.year) * 12 +
+              (date.month - habit.startDate.month);
+          return isMatchingDay && monthDiff % habit.interval == 0;
       }
     }).toList();
   }
 
-  Future<Habit> insertHabit(HabitsTableCompanion habit) async {
+  Future<Habit> insertHabit(HabitCompanion habit) async {
     await into(habitsTable).insert(habit); // does not return ID
 
     final insertedHabit = await (select(

@@ -33,6 +33,7 @@ class _ViewRoutineTaskScreen extends State<ViewRoutineTaskScreen> {
       title: _titleController.text,
       iconIndex: _iconIndex,
       importance: 1,
+      routineId:widget.task.routineId
     );
 
     Navigator.of(context).pop(entity);

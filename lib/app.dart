@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:mobile/core/config/app_config.dart';
 import 'package:mobile/core/layouts/presentation/layout/home_layout.dart';
 import 'package:mobile/core/network/api_client.dart';
 import 'package:mobile/core/theme/theme.dart';
@@ -12,15 +14,18 @@ import 'package:mobile/data/repositories/authentication_repository_impl.dart';
 import 'package:mobile/data/repositories/habit_repository_impl.dart';
 import 'package:mobile/data/repositories/profile_repository_impl.dart';
 import 'package:mobile/data/repositories/routine_repository_impl.dart';
+import 'package:mobile/data/repositories/task_repository_impl.dart';
 import 'package:mobile/database/daos/habits_dao.dart';
 import 'package:mobile/database/daos/routines_dao.dart';
+import 'package:mobile/database/daos/tasks_dao.dart';
 import 'package:mobile/database/database.dart';
 import 'package:mobile/domain/enums/authentication_status.dart';
-import 'package:flutter/material.dart';
-import 'package:mobile/core/config/app_config.dart';
 import 'package:mobile/domain/repositories/auth_token_storage_repository.dart';
 import 'package:mobile/domain/repositories/authentication_repository.dart';
+import 'package:mobile/domain/repositories/habit_repository.dart';
 import 'package:mobile/domain/repositories/profile_repository.dart';
+import 'package:mobile/domain/repositories/routine_repository.dart';
+import 'package:mobile/domain/repositories/task_repository.dart';
 import 'package:mobile/domain/usecases/get_habits_for_date_usecase.dart';
 import 'package:mobile/domain/usecases/get_profile_usecase.dart';
 import 'package:mobile/domain/usecases/get_routines_for_date_usecase.dart';
@@ -41,7 +46,6 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   AuthenticationStatus? _status;
   bool? _isFirstTime;
-
   late final AuthLocalDatasource _localAuth;
 
   @override
@@ -54,9 +58,7 @@ class _AppState extends State<App> {
     _localAuth = AuthLocalDatasourceImpl(FlutterSecureStorage());
     final token = await _localAuth.getToken();
     final isFirstTimeStr = await _localAuth.getFlag(AppConfig.isFirstTimeKey);
-    final isFirstTime = isFirstTimeStr == null
-        ? true
-        : isFirstTimeStr == "true";
+    final isFirstTime = isFirstTimeStr == null || isFirstTimeStr == "true";
 
     if (isFirstTime) {
       await _localAuth.setFlag(AppConfig.isFirstTimeKey, "false");
@@ -106,46 +108,62 @@ class _AppState extends State<App> {
           dispose: (db) => db.close(),
         ),
       ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            lazy: false,
-            create: (context) => AuthenticationBloc(
-              logInUseCase: LoginUseCase(
-                authTokenStorageRepository: tokenRepo,
-                authenticationRepository: authRepo,
+      child: Builder(
+        builder: (context) => MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider<TaskRepository>(
+              create: (_) =>
+                  TaskRepositoryImpl(TasksDao(context.read<AppDatabase>())),
+            ),
+            RepositoryProvider<RoutineRepository>(
+              create: (_) => RoutineRepositoryImpl(
+                RoutinesDao(context.read<AppDatabase>()),
               ),
-              logOutUseCase: LogoutUseCase(
-                authTokenStorageRepository: context
-                    .read<AuthTokenStorageRepository>(),
-                authenticationRepository: context
-                    .read<AuthenticationRepository>(),
+            ),
+            RepositoryProvider<HabitRepository>(
+              create: (_) => HabitRepositoryImpl(
+                habitsDao: HabitsDao(context.read<AppDatabase>()),
               ),
-              getProfileUseCase: GetProfileUseCase(
-                context.read<ProfileRepository>(),
+            ),
+          ],
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                lazy: false,
+                create: (context) => AuthenticationBloc(
+                  logInUseCase: LoginUseCase(
+                    authTokenStorageRepository: tokenRepo,
+                    authenticationRepository: authRepo,
+                  ),
+                  logOutUseCase: LogoutUseCase(
+                    authTokenStorageRepository: context
+                        .read<AuthTokenStorageRepository>(),
+                    authenticationRepository: context
+                        .read<AuthenticationRepository>(),
+                  ),
+                  getProfileUseCase: GetProfileUseCase(
+                    context.read<ProfileRepository>(),
+                  ),
+                  authenticationStatus: authRepo.status,
+                )..add(AuthenticationSubscriptionRequested()),
               ),
-              authenticationStatus: authRepo.status,
-            )..add(AuthenticationSubscriptionRequested()),
+              BlocProvider(
+                lazy: false,
+                create: (context) => DailyListBloc(
+                  GetHabitsForDateUsecase(context.read<HabitRepository>()),
+                  GetRoutinesForDateUsecase(context.read<RoutineRepository>()),
+                )..add(DailyListInitialize()),
+              ),
+            ],
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'My App',
+              theme: brightness == Brightness.light
+                  ? theme.light()
+                  : theme.dark(),
+              home: _isFirstTime! ? const LoginScreen() : const HomeLayout(),
+            ),
           ),
-          BlocProvider(
-            lazy: false,
-            create: (context) => DailyListBloc(
-              GetHabitsForDateUsecase(
-                HabitRepositoryImpl(
-                  habitsDao: HabitsDao(context.read<AppDatabase>()),
-                ),
-              ),
-              GetRoutinesForDateUsecase(
-                RoutineRepositoryImpl(RoutinesDao(context.read<AppDatabase>())),
-              ),
-            )..add(DailyListInitialize()),
-          ),
-        ],
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'My App',
-          theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-          home: _isFirstTime! ? const LoginScreen() : const HomeLayout(),
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/config/app_icons.dart';
 import 'package:mobile/domain/models/task_model.dart';
+import 'package:mobile/domain/models/task_with_entry_model.dart';
 import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
 import 'package:mobile/ui/view_routine/screens/new_routine_task_screen.dart';
 import 'package:mobile/ui/view_routine/screens/view_routine_task_screen.dart';
@@ -27,10 +28,10 @@ class ViewRoutineScreen extends StatelessWidget {
             floatingActionButton: OutlinedButton.icon(
               onPressed: () async {
                 final bloc = context.read<ViewRoutineBloc>();
-                final newTask = await Navigator.push<TaskModel>(
+                final newTask = await Navigator.push<TaskWithEntryModel>(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const NewRoutineTaskScreen(),
+                    builder: (_) => NewRoutineTaskScreen(routineId: routine.id),
                   ),
                 );
 
@@ -94,7 +95,7 @@ class ViewRoutineScreen extends StatelessWidget {
                             itemBuilder: (context, index) {
                               final task = tasks[index];
                               return Dismissible(
-                                key: Key(task.id),
+                                key: Key(task.task.id),
                                 background: Container(
                                   alignment: Alignment.centerLeft,
                                   padding: const EdgeInsets.symmetric(
@@ -125,7 +126,7 @@ class ViewRoutineScreen extends StatelessWidget {
                                 ),
                                 onDismissed: (direction) {
                                   context.read<ViewRoutineBloc>().add(
-                                    ViewRoutineTaskRemoved(task),
+                                    ViewRoutineTaskRemoved(task.task),
                                   );
 
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -178,13 +179,15 @@ class ViewRoutineScreen extends StatelessWidget {
                                           MaterialPageRoute(
                                             builder: (_) =>
                                                 ViewRoutineTaskScreen(
-                                                  task: task,
+                                                  task: task.task,
                                                 ),
                                           ),
                                         );
                                     if (updatedTask != null) {
                                       bloc.add(
-                                        ViewRoutineTaskUpdated(updatedTask),
+                                        ViewRoutineTaskUpdated(
+                                          task.copyWith(task: updatedTask),
+                                        ),
                                       );
                                     }
                                   },
@@ -202,11 +205,13 @@ class ViewRoutineScreen extends StatelessWidget {
                                           Row(
                                             children: [
                                               Icon(
-                                                AppIcons.icons[task.iconIndex],
+                                                AppIcons.icons[task
+                                                    .task
+                                                    .iconIndex],
                                               ),
                                               const SizedBox(width: 8),
                                               Text(
-                                                task.title,
+                                                task.task.title,
                                                 style:
                                                     theme.textTheme.bodyMedium,
                                               ),
@@ -216,12 +221,12 @@ class ViewRoutineScreen extends StatelessWidget {
                                             children: [
                                               Text(
                                                 formatTaskDuration(
-                                                  task.duration,
+                                                  task.task.duration,
                                                 ),
                                               ),
                                               const SizedBox(width: 8),
                                               Checkbox(
-                                                value: task.isCompleted,
+                                                value: task.entry.completed,
                                                 side: BorderSide(
                                                   color: theme
                                                       .colorScheme
@@ -235,7 +240,11 @@ class ViewRoutineScreen extends StatelessWidget {
                                                       .add(
                                                         ViewRoutineTaskUpdated(
                                                           task.copyWith(
-                                                            isCompleted: value,
+                                                            entry: task.entry
+                                                                .copyWith(
+                                                                  completed:
+                                                                      value,
+                                                                ),
                                                           ),
                                                         ),
                                                       );

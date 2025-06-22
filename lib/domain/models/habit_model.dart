@@ -10,7 +10,7 @@ class HabitModel {
   final ItemFrequency frequency;
   final DateTime startDate;
   final List<int> weeklyDays;
-  final List<DateTime> monthlyDates;
+  final List<int> monthlyDates;
   final int interval;
   final bool isActive;
   final ItemType habitType;

@@ -22,8 +22,6 @@ class _DailyListScreenState extends State<DailyListScreen>
   static const minChildSize = 0.65;
   static const maxChildSize = 1.0;
 
-  final Map<String, ScrollController> _scrollControllers = {};
-
   // Add DraggableScrollableController for the expandable content
   late DraggableScrollableController _dragController;
   double _currentExtent = 0.6; // Initial height (60% of screen)
@@ -34,7 +32,10 @@ class _DailyListScreenState extends State<DailyListScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 1, vsync: this);
+    _tabController = TabController(
+      length: DailyListBloc.initialDaysEachSide * 2,
+      vsync: this,
+    );
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -47,37 +48,63 @@ class _DailyListScreenState extends State<DailyListScreen>
     // Initialize the drag controller
     _dragController = DraggableScrollableController();
     _dragController.addListener(_onDragUpdate);
+    _tabController.addListener(_handleTabSelection); // Add listener once
+    _tabController.animation!.addListener(
+      _handleTabAnimation,
+    ); // Add listener once
   }
 
   @override
   void dispose() {
+    // Remove listeners before disposing
+    _tabController.removeListener(_handleTabSelection);
+    _tabController.animation!.removeListener(_handleTabAnimation);
     _tabController.dispose();
     _fadeController.dispose();
     _dragController.removeListener(_onDragUpdate);
     _dragController.dispose();
-
-    for (var controller in _scrollControllers.values) {
-      controller.dispose();
-    }
-    _scrollControllers.clear();
     super.dispose();
+  }
+
+  void _handleTabSelection() {
+    if (_tabController.indexIsChanging) {
+      setState(() {
+        _currentTabIndex = _tabController.index;
+      });
+      context.read<DailyListBloc>().add(
+        DailyListDateChanged(_tabController.index),
+      );
+    }
+  }
+
+  void _handleTabAnimation() {
+    if (!_tabController.indexIsChanging) {
+      final int temp = _tabController.animation!.value.round();
+      if (_currentTabIndex != temp) {
+        setState(() {
+          _currentTabIndex = temp;
+        });
+        context.read<DailyListBloc>().add(DailyListDateChanged(temp));
+      }
+    }
   }
 
   void _onDragUpdate() {
     setState(() {
       _currentExtent = _dragController.size;
-      _isExpanded = _currentExtent > 0.8;
+      _isExpanded = _currentExtent > 0.85;
     });
   }
 
-  ScrollController _getScrollController(String dayKey) {
-    if (!_scrollControllers.containsKey(dayKey)) {
-      _scrollControllers[dayKey] = ScrollController();
-    }
-    return _scrollControllers[dayKey]!;
-  }
-
   void _toggleExpansion() {
+    // Check if the dragController is attached before animating
+    if (!_dragController.isAttached) {
+      logger.warning(
+        "DraggableScrollableController not attached. Cannot animate.",
+      );
+      return;
+    }
+
     if (_isExpanded) {
       _dragController.animateTo(
         0.65,
@@ -94,39 +121,34 @@ class _DailyListScreenState extends State<DailyListScreen>
   }
 
   void _updateTabController(int newLength, int selectedIndex) {
-    final oldController = _tabController;
-    _tabController = TabController(
-      length: newLength,
-      vsync: this,
-      initialIndex: selectedIndex,
-    );
+    if (_tabController.length != newLength) {
+      // Dispose old listeners before re-creating
+      _tabController.removeListener(_handleTabSelection);
+      _tabController.animation!.removeListener(_handleTabAnimation);
+      _tabController.dispose();
 
-    _currentTabIndex = selectedIndex;
+      logger.debug("New length: $newLength");
 
-    _tabController.addListener(() {
-      if (_tabController.indexIsChanging) {
-        setState(() {
-          _currentTabIndex = _tabController.index;
-        });
-        context.read<DailyListBloc>().add(
-          DailyListDateChanged(_tabController.index),
-        );
-      }
-    });
+      _tabController = TabController(
+        length: newLength,
+        vsync: this,
+        initialIndex: selectedIndex,
+      );
+      // Add listeners to the new controller
+      _tabController.addListener(_handleTabSelection);
+      _tabController.animation!.addListener(_handleTabAnimation);
 
-    _tabController.animation!.addListener(() {
-      if (!_tabController.indexIsChanging) {
-        final int temp = _tabController.animation!.value.round();
-        if (_currentTabIndex != temp) {
-          setState(() {
-            _currentTabIndex = temp;
-          });
-          context.read<DailyListBloc>().add(DailyListDateChanged(temp));
-        }
-      }
-    });
-
-    oldController.dispose();
+      // Immediately update the current index as the controller is new
+      _currentTabIndex = selectedIndex;
+    } else if (_currentTabIndex != selectedIndex) {
+      // If length is the same, just animate/jump to the new index
+      // This avoids disposing/recreating the controller unnecessarily.
+      _tabController.animateTo(
+        selectedIndex,
+        duration: const Duration(milliseconds: 300), // Optional animation
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   @override
@@ -208,24 +230,29 @@ class _DailyListScreenState extends State<DailyListScreen>
                       Expanded(
                         child: state is! DailyListLoaded
                             ? const Center(child: CircularProgressIndicator())
-                            : TabBarView(
-                                controller: _tabController,
-                                children: state.days.map((day) {
+                            : IndexedStack(
+                                index: _currentTabIndex,
+                                children: state.days.asMap().entries.map((
+                                  entry,
+                                ) {
+                                  final index = entry.key;
+                                  final day = entry.value;
                                   final dayKey = day.toIso8601String();
 
-                                  return ListItemsPage(
-                                    day: dayKey,
-                                    key: ValueKey(day),
-                                    items: state.items,
-                                    isLoading: state.isLoading,
-                                    scrollController: _getScrollController(
-                                      dayKey,
-                                    ), // Use separate controller
-                                    // Pass the scroll controller
-                                    onRefresh: () {
-                                      logger.info("Refresh called");
-                                    },
-                                  );
+                                  // Only build the current tab
+                                  if (index == _currentTabIndex) {
+                                    return ListItemsPage(
+                                      day: dayKey,
+                                      key: ValueKey(day),
+                                      items: state.items,
+                                      isLoading: state.isLoading,
+                                      scrollController: scrollController,
+                                      onRefresh: () {
+                                        logger.info("Refresh called");
+                                      },
+                                    );
+                                  }
+                                  return const SizedBox.shrink();
                                 }).toList(),
                               ),
                       ),

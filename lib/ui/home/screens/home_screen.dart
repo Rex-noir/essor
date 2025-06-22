@@ -255,7 +255,7 @@ class _TabContent extends StatelessWidget {
     return TabBarView(
       controller: tabController,
       children: [
-        _KeepAliveTab(child: const DailyListScreen()),
+        const _KeepAliveTab(child: DailyListScreen()),
         const _KeepAliveTab(child: _ExploreTab()),
       ],
     );

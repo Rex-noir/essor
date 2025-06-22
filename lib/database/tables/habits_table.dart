@@ -1,12 +1,11 @@
 import 'package:drift/drift.dart';
-import 'package:mobile/database/converters/date_list_converter.dart';
 import 'package:mobile/database/converters/int_list_converter.dart';
 import 'package:mobile/database/converters/item_frequency_converter.dart';
 import 'package:mobile/database/converters/item_type_converter.dart';
 import 'package:mobile/database/database.dart';
 import 'package:mobile/domain/models/habit_model.dart';
 
-@DataClassName("Habit")
+@DataClassName("Habit", companion: "HabitCompanion")
 class HabitsTable extends Table {
   TextColumn get id => text()();
   TextColumn get title => text()();
@@ -19,7 +18,7 @@ class HabitsTable extends Table {
   TextColumn get weeklyDays =>
       text().map(const IntListConverter()).withDefault(const Constant('[]'))();
   TextColumn get monthlyDates =>
-      text().map(const DateListConverter()).withDefault(const Constant('[]'))();
+      text().map(const IntListConverter()).withDefault(const Constant('[]'))();
 
   IntColumn get interval => integer().withDefault(const Constant(1))();
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();

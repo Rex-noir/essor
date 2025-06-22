@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/domain/models/routine_model.dart';
+import 'package:mobile/domain/repositories/task_repository.dart';
+import 'package:mobile/domain/usecases/create_new_task_usecase.dart';
+import 'package:mobile/domain/usecases/get_tasks_with_entry_usecase.dart';
+import 'package:mobile/domain/usecases/update_task_with_entry_usecase.dart';
 import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
 import 'package:mobile/ui/new_routine/bloc/new_routine_bloc.dart';
 import 'package:mobile/ui/new_routine/widgets/repeat_section_card.dart';
@@ -237,14 +241,28 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
                             date: bloc.state.startDate.dateOnly,
                           ),
                         );
+                        final routineDate =
+                            (context.read<DailyListBloc>().state
+                                    as DailyListLoaded)
+                                .selectedDate;
 
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (_) => BlocProvider(
-                              create: (_) =>
-                                  ViewRoutineBloc()
-                                    ..add(ViewRoutineStarted(routine, [])),
+                              create: (_) => ViewRoutineBloc(
+                                getTasksWithEntryUsecase:
+                                    GetTasksWithEntryUsecase(
+                                      context.read<TaskRepository>(),
+                                    ),
+                                createNewTaskUsecase: CreateNewTaskUsecase(
+                                  context.read<TaskRepository>(),
+                                ),
+                                updateTaskWithEntryUsecase:
+                                    UpdateTaskWithEntryUsecase(
+                                      context.read<TaskRepository>(),
+                                    ),
+                              )..add(ViewRoutineStarted(routine, routineDate)),
                               child: ViewRoutineScreen(),
                             ),
                           ),

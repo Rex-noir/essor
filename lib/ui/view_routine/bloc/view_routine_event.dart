@@ -9,15 +9,15 @@ sealed class ViewRoutineEvent extends Equatable {
 
 class ViewRoutineStarted extends ViewRoutineEvent {
   final RoutineModel routine;
-  final List<TaskModel> tasks;
-  const ViewRoutineStarted(this.routine, this.tasks);
+  final DateTime date;
+  const ViewRoutineStarted(this.routine, this.date);
 
   @override
-  List<Object> get props => [routine, tasks];
+  List<Object> get props => [routine, date];
 }
 
 class ViewRoutineNewTaskAdded extends ViewRoutineEvent {
-  final TaskModel task;
+  final TaskWithEntryModel task;
   const ViewRoutineNewTaskAdded(this.task);
 
   @override
@@ -25,7 +25,7 @@ class ViewRoutineNewTaskAdded extends ViewRoutineEvent {
 }
 
 class ViewRoutineTaskUpdated extends ViewRoutineEvent {
-  final TaskModel task;
+  final TaskWithEntryModel task;
   const ViewRoutineTaskUpdated(this.task);
 
   @override
