@@ -359,11 +359,12 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
                       ),
                       const SizedBox(height: 2),
                       BlocBuilder<NewRoutineBloc, NewRoutineState>(
-                        buildWhen: (previous, current) =>
-                            previous.startTime != current.startTime,
                         builder: (context, state) {
                           return Text(
-                            state.startTime.format(context),
+                            MaterialLocalizations.of(context).formatTimeOfDay(
+                              state.startTime,
+                              alwaysUse24HourFormat: false,
+                            ),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.primary,
                               fontWeight: FontWeight.w500,

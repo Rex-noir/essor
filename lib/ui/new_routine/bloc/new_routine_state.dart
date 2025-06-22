@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'new_routine_bloc.dart';
 
 class NewRoutineState extends Equatable {
@@ -34,6 +33,7 @@ class NewRoutineState extends Equatable {
     weeklyDays,
     startDate,
     monthlyDates,
+    startTime,
   ];
 
   NewRoutineState copyWith({
