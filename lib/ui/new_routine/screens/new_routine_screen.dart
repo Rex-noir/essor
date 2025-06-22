@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile/core/config/app_icons.dart';
 import 'package:mobile/core/extensions/date_extensions.dart';
+import 'package:mobile/core/widgets/show_icon_picker.dart';
 import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/domain/repositories/task_repository.dart';
 import 'package:mobile/domain/usecases/create_new_task_usecase.dart';
@@ -23,38 +25,18 @@ class NewRoutineScreen extends StatefulWidget {
 class _NewRoutineScreenState extends State<NewRoutineScreen>
     with SingleTickerProviderStateMixin {
   late TextEditingController _titleController;
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
+  late int _iconIndex;
 
   @override
   void initState() {
     super.initState();
     _titleController = TextEditingController();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-
-    _slideAnimation =
-        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
-          CurvedAnimation(
-            parent: _animationController,
-            curve: Curves.easeOutCubic,
-          ),
-        );
-
-    _animationController.forward();
+    _iconIndex = 1;
   }
 
   @override
   void dispose() {
     _titleController.dispose();
-    _animationController.dispose();
     super.dispose();
   }
 
@@ -66,27 +48,21 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: _buildAppBar(context, colorScheme),
-      body: FadeTransition(
-        opacity: _fadeAnimation,
-        child: SlideTransition(
-          position: _slideAnimation,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildHeader(context),
-                const SizedBox(height: 32),
-                _buildTitleInput(context, theme),
-                const SizedBox(height: 32),
-                RepeatSectionCard(),
-                const SizedBox(height: 24),
-                _buildTimeOfDayPicker(context),
-                const SizedBox(height: 24),
-                _buildActionButtons(context, theme),
-              ],
-            ),
-          ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildHeader(context),
+            const SizedBox(height: 32),
+            _buildTitleInput(context, theme),
+            const SizedBox(height: 32),
+            RepeatSectionCard(),
+            const SizedBox(height: 24),
+            _buildTimeOfDayPicker(context),
+            const SizedBox(height: 24),
+            _buildActionButtons(context, theme),
+          ],
         ),
       ),
     );
@@ -132,7 +108,34 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
   Widget _buildHeader(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 8),
+        Center(
+          child: IconButton(
+            icon: Icon(AppIcons.icons[_iconIndex]),
+            iconSize: 36,
+            padding: const EdgeInsets.all(32),
+            style: ButtonStyle(
+              backgroundColor: WidgetStatePropertyAll(
+                Theme.of(context).colorScheme.surfaceContainerHighest,
+              ),
+              shape: WidgetStatePropertyAll(
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+            ),
+            onPressed: () async {
+              final icon = await showIconPicker(
+                context,
+                AppIcons.categorizedIcons,
+              );
+
+              if (icon != null) {
+                setState(() {
+                  _iconIndex = icon;
+                });
+              }
+            },
+          ),
+        ),
+        const SizedBox(height: 32),
         Text(
           "Build consistent habits that stick",
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -228,7 +231,7 @@ class _NewRoutineScreenState extends State<NewRoutineScreen>
                           createdAt: DateTime.now(),
                           updatedAt: DateTime.now(),
                           deletedAt: null,
-                          iconIndex: 1,
+                          iconIndex: _iconIndex,
                           isShared: false,
                           syncVersion: 1,
                         );
