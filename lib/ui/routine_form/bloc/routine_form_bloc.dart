@@ -9,7 +9,7 @@ import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/domain/usecases/create_new_routine_usecase.dart';
 import 'package:mobile/domain/usecases/update_routine_usecase.dart';
 import 'package:mobile/utils/app_logger.dart';
-import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
 
 part 'routine_form_event.dart';
 part 'routine_form_state.dart';
@@ -57,7 +57,7 @@ class RoutineFormBloc extends Bloc<RoutineFormEvent, RoutineFormState> {
   ) async {
     final title = state.title.trim();
     final routine = RoutineModel(
-      id: state.id ?? const Uuid().v4(),
+      id: state.id,
       title: title,
       startDate: state.startDate.dateOnly,
       startTime: state.startTime,

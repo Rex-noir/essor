@@ -12,7 +12,7 @@ class RoutineFormState extends Equatable {
   final String title;
   final int iconIndex;
   final RoutineFormMode? mode;
-  final String? id;
+  final String id;
 
   const RoutineFormState({
     required this.selectedFrequency,
@@ -23,13 +23,14 @@ class RoutineFormState extends Equatable {
     required this.startTime,
     required this.startDate,
     required this.monthlyDates,
-    this.id,
+    required this.id,
     this.mode = RoutineFormMode.create,
   });
 
   factory RoutineFormState.empty() => RoutineFormState(
     title: '',
     iconIndex: 1,
+    id: const UuidV4().generate(),
     selectedFrequency: ItemFrequency.daily,
     startTime: TimeOfDay(hour: 8, minute: 00),
     interval: 2,
