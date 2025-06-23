@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/layouts/presentation/widgets/home_add_dialog_action.dart';
 import 'package:mobile/domain/repositories/routine_repository.dart';
 import 'package:mobile/domain/usecases/create_new_routine_usecase.dart';
+import 'package:mobile/domain/usecases/update_routine_usecase.dart';
 import 'package:mobile/ui/routine_form/bloc/routine_form_bloc.dart';
 import 'package:mobile/ui/routine_form/screens/routine_form_screen.dart';
 import 'package:mobile/utils/app_logger.dart';
@@ -50,6 +51,9 @@ class HomeAddDialog extends StatelessWidget {
                         builder: (context) => BlocProvider(
                           create: (_) => RoutineFormBloc(
                             createNewRoutineUsecase: CreateNewRoutineUsecase(
+                              context.read<RoutineRepository>(),
+                            ),
+                            updateRoutineUsecase: UpdateRoutineUsecase(
                               context.read<RoutineRepository>(),
                             ),
                           )..add(RoutineFormInitial(null)),

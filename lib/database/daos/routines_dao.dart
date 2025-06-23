@@ -47,4 +47,12 @@ class RoutinesDao extends DatabaseAccessor<AppDatabase>
       routinesTable,
     )..where((tbl) => tbl.id.equals(routine.id.value))).getSingle();
   }
+
+  Future<Routine> updateRoutine(RoutineCompanion routine) async {
+    await update(routinesTable).replace(routine);
+    final newRoutine = await (select(
+      routinesTable,
+    )..where((tbl) => tbl.id.equals(routine.id.value))).getSingle();
+    return newRoutine;
+  }
 }

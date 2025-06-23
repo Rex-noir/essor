@@ -5,6 +5,7 @@ import 'package:mobile/domain/models/task_model.dart';
 import 'package:mobile/domain/models/task_with_entry_model.dart';
 import 'package:mobile/domain/repositories/routine_repository.dart';
 import 'package:mobile/domain/usecases/create_new_routine_usecase.dart';
+import 'package:mobile/domain/usecases/update_routine_usecase.dart';
 import 'package:mobile/ui/routine_form/bloc/routine_form_bloc.dart';
 import 'package:mobile/ui/routine_form/screens/routine_form_screen.dart';
 import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
@@ -34,12 +35,15 @@ class ViewRoutineScreen extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 10.0),
                   child: TextButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => BlocProvider(
                             create: (_) => RoutineFormBloc(
                               createNewRoutineUsecase: CreateNewRoutineUsecase(
+                                context.read<RoutineRepository>(),
+                              ),
+                              updateRoutineUsecase: UpdateRoutineUsecase(
                                 context.read<RoutineRepository>(),
                               ),
                             )..add(RoutineFormInitial(routine)),

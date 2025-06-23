@@ -7,6 +7,7 @@ import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
 import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/domain/usecases/create_new_routine_usecase.dart';
+import 'package:mobile/domain/usecases/update_routine_usecase.dart';
 import 'package:mobile/utils/app_logger.dart';
 import 'package:uuid/uuid.dart';
 
@@ -15,12 +16,15 @@ part 'routine_form_state.dart';
 
 class RoutineFormBloc extends Bloc<RoutineFormEvent, RoutineFormState> {
   final CreateNewRoutineUsecase _createNewRoutineUsecase;
+  final UpdateRoutineUsecase _updateRoutineUsecase;
 
   final logger = TaggedLogger("RoutineFormBloc");
 
   RoutineFormBloc({
-    required CreateNewRoutineUsecase createNewRoutineUsecase, // <-- FIXED
+    required CreateNewRoutineUsecase createNewRoutineUsecase,
+    required UpdateRoutineUsecase updateRoutineUsecase,
   }) : _createNewRoutineUsecase = createNewRoutineUsecase,
+       _updateRoutineUsecase = updateRoutineUsecase,
        super(RoutineFormState.empty()) {
     on<RoutineFormFrequencyUpated>(_onChangeFrequency);
     on<RoutineFormIntervalUpdated>(_onUpdateInterval);
@@ -73,6 +77,9 @@ class RoutineFormBloc extends Bloc<RoutineFormEvent, RoutineFormState> {
     if (state.mode == RoutineFormMode.create) {
       logger.debug("Creating routine");
       await _createNewRoutineUsecase(routine);
+    } else if (state.mode == RoutineFormMode.edit) {
+      logger.debug("Updating routine");
+      await _updateRoutineUsecase(routine);
     }
     event.onSubmit(routine: routine);
   }

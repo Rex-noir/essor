@@ -34,4 +34,23 @@ class RoutineRepositoryImpl implements RoutineRepository {
     final inserted = await _routinesDao.insertNewRoutine(companion);
     return inserted.toModel();
   }
+
+  @override
+  Future<RoutineModel> updateRoutine(RoutineModel routine) async {
+    final updated = await _routinesDao.updateRoutine(
+      RoutineCompanion(
+        id: Value(routine.id),
+        title: Value(routine.title),
+        startDate: Value(routine.startDate),
+        startTime: Value(routine.startTime),
+        frequency: Value(routine.frequency),
+        interval: Value(routine.interval),
+        updatedAt: Value(DateTime.now()),
+        weeklyDays: Value(routine.weeklyDays),
+        monthlyDates: Value(routine.monthlyDates),
+        iconIndex: Value(routine.iconIndex),
+      ),
+    );
+    return updated.toModel();
+  }
 }

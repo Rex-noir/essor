@@ -292,7 +292,7 @@ class RoutineFormScreen extends StatelessWidget {
                 child: Text(
                   state.mode == RoutineFormMode.create
                       ? "Create Routine"
-                      : "Update Routine",
+                      : "Save Routine",
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                 ),
               );
