@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
+
 import 'package:mobile/ui/habit_form/bloc/habit_form_bloc.dart';
 import 'package:mobile/ui/habit_form/screen/habit_form_first_page.dart';
 import 'package:mobile/ui/habit_form/screen/habit_form_second_page.dart';
@@ -259,7 +259,6 @@ class _HabitFormScreenState extends State<HabitFormScreen> {
 
   void _createHabit(BuildContext context, HabitFormState state) {
     context.read<HabitFormBloc>().add(HabitFormSubmitted());
-    context.read<DailyListBloc>().add(DailyListRefreshRequested(date:state.startDate));
     Navigator.of(context).pop();
   }
 }

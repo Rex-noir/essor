@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile/core/layouts/presentation/widgets/home_add_dialog_action.dart';
+import 'package:mobile/core/ui/widgets/home_add_dialog_action.dart';
 import 'package:mobile/domain/repositories/habit_repository.dart';
 import 'package:mobile/domain/repositories/routine_repository.dart';
 import 'package:mobile/domain/usecases/create_new_routine_usecase.dart';

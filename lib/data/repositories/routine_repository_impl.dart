@@ -11,10 +11,12 @@ class RoutineRepositoryImpl implements RoutineRepository {
   RoutineRepositoryImpl(this._routinesDao);
 
   @override
-  Future<List<RoutineModel>> fetchRoutinesForDate(DateTime date) async {
-    final routines = await _routinesDao.fetchAllActiveForDate(date);
-
-    return routines.map((t) => t.toModel()).toList();
+  Stream<List<RoutineModel>> fetchRoutinesForDate(DateTime date) {
+    return _routinesDao.fetchAllActiveForDate(date).map((listOfRoutinesFromDb) {
+      return listOfRoutinesFromDb
+          .map((dbRoutine) => dbRoutine.toModel())
+          .toList();
+    });
   }
 
   @override

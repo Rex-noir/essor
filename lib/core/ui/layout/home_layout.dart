@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/core/layouts/presentation/widgets/home_add_dialog.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile/core/ui/widgets/home_add_dialog.dart';
+import 'package:mobile/domain/repositories/habit_repository.dart';
+import 'package:mobile/domain/repositories/routine_repository.dart';
+import 'package:mobile/domain/usecases/get_habits_for_date_usecase.dart';
+import 'package:mobile/domain/usecases/get_routines_for_date_usecase.dart';
+import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
 import 'package:mobile/ui/home/screens/home_screen.dart';
 import 'package:mobile/utils/app_logger.dart';
 
@@ -41,7 +47,19 @@ class _HomeLayoutState extends State<HomeLayout> with TickerProviderStateMixin {
     return Scaffold(
       extendBody: true,
       body: SafeArea(
-        child: IndexedStack(index: _selectedIndex, children: [HomeScreen()]),
+        child: IndexedStack(
+          index: _selectedIndex,
+          children: [
+            BlocProvider(
+              lazy: false,
+              create: (context) => DailyListBloc(
+                GetHabitsForDateUsecase(context.read<HabitRepository>()),
+                GetRoutinesForDateUsecase(context.read<RoutineRepository>()),
+              )..add(DailyListInitialize()),
+              child: HomeScreen()
+            ),
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: ValueListenableBuilder(

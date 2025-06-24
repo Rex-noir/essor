@@ -9,9 +9,10 @@ class HabitRepositoryImpl implements HabitRepository {
   final HabitsDao _habitsDao;
   HabitRepositoryImpl({required HabitsDao habitsDao}) : _habitsDao = habitsDao;
   @override
-  Future<List<HabitModel>> fetchHabitsForDate(DateTime date) async {
-    final habits = await _habitsDao.getHabitsForDate(date);
-    return habits.map((t) => t.toModel()).toList();
+  Stream<List<HabitModel>> fetchHabitsForDate(DateTime date) {
+    return _habitsDao.getHabitsForDate(date).map((listOfHabitsFromDb) {
+      return listOfHabitsFromDb.map((dbHabit) => dbHabit.toModel()).toList();
+    });
   }
 
   @override

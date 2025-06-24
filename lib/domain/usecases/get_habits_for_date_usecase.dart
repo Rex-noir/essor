@@ -6,7 +6,7 @@ class GetHabitsForDateUsecase {
 
   GetHabitsForDateUsecase(this.repository);
 
-  Future<List<HabitModel>> call(DateTime date) {
+  Stream<List<HabitModel>> call(DateTime date) {
     return repository.fetchHabitsForDate(date);
   }
 }

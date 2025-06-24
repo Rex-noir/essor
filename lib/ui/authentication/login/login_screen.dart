@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mobile/core/layouts/presentation/layout/home_layout.dart';
+import 'package:mobile/core/ui/layout/home_layout.dart';
 import 'package:mobile/core/widgets/app_social_button.dart';
 import 'package:mobile/core/widgets/app_text_field.dart';
 import 'package:mobile/core/widgets/logo_widget.dart';

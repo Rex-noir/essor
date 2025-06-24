@@ -8,7 +8,6 @@ import 'package:mobile/domain/repositories/task_repository.dart';
 import 'package:mobile/domain/usecases/create_new_task_usecase.dart';
 import 'package:mobile/domain/usecases/get_tasks_with_entry_usecase.dart';
 import 'package:mobile/domain/usecases/update_task_with_entry_usecase.dart';
-import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
 import 'package:mobile/ui/routine_form/bloc/routine_form_bloc.dart';
 import 'package:mobile/ui/routine_form/widgets/repeat_section_card.dart';
 import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
@@ -22,7 +21,6 @@ class RoutineFormScreen extends StatelessWidget {
     required RoutineModel routine,
   }) async {
     final taskRepo = context.read<TaskRepository>();
-    final bloc = context.read<DailyListBloc>();
 
     await Navigator.pushReplacement(
       context,
@@ -37,7 +35,6 @@ class RoutineFormScreen extends StatelessWidget {
         ),
       ),
     );
-    bloc.add(DailyListRefreshRequested());
   }
 
   @override

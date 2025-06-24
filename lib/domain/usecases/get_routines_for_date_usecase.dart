@@ -6,7 +6,7 @@ class GetRoutinesForDateUsecase {
 
   GetRoutinesForDateUsecase(this._routineRepository);
 
-  Future<List<RoutineModel>> call(DateTime date) {
+  Stream<List<RoutineModel>> call(DateTime date) {
     return _routineRepository.fetchRoutinesForDate(date);
   }
 }

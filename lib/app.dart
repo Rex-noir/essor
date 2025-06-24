@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobile/core/config/app_config.dart';
-import 'package:mobile/core/layouts/presentation/layout/home_layout.dart';
+import 'package:mobile/core/ui/layout/home_layout.dart';
 import 'package:mobile/core/network/api_client.dart';
 import 'package:mobile/core/theme/theme.dart';
 import 'package:mobile/core/theme/util.dart';
@@ -26,14 +26,11 @@ import 'package:mobile/domain/repositories/habit_repository.dart';
 import 'package:mobile/domain/repositories/profile_repository.dart';
 import 'package:mobile/domain/repositories/routine_repository.dart';
 import 'package:mobile/domain/repositories/task_repository.dart';
-import 'package:mobile/domain/usecases/get_habits_for_date_usecase.dart';
 import 'package:mobile/domain/usecases/get_profile_usecase.dart';
-import 'package:mobile/domain/usecases/get_routines_for_date_usecase.dart';
 import 'package:mobile/domain/usecases/login_usecase.dart';
 import 'package:mobile/domain/usecases/logout_usecase.dart';
 import 'package:mobile/ui/authentication/login/login_screen.dart';
 import 'package:mobile/ui/authentication/shared/bloc/authentication_bloc.dart';
-import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class App extends StatefulWidget {
@@ -146,13 +143,6 @@ class _AppState extends State<App> {
                   ),
                   authenticationStatus: authRepo.status,
                 )..add(AuthenticationSubscriptionRequested()),
-              ),
-              BlocProvider(
-                lazy: false,
-                create: (context) => DailyListBloc(
-                  GetHabitsForDateUsecase(context.read<HabitRepository>()),
-                  GetRoutinesForDateUsecase(context.read<RoutineRepository>()),
-                )..add(DailyListInitialize()),
               ),
             ],
             child: MaterialApp(
