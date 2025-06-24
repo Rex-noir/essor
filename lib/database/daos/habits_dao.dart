@@ -50,4 +50,13 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
 
     return insertedHabit;
   }
+
+  Future<Habit> updateHabit(HabitCompanion habit) async {
+    await into(habitsTable).insertOnConflictUpdate(habit);
+    final updatedHabit = await (select(
+      habitsTable,
+    )..where((tbl) => tbl.id.equals(habit.id.value))).getSingle();
+
+    return updatedHabit;
+  }
 }

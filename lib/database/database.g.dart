@@ -976,6 +976,15 @@ class $HabitsTableTable extends HabitsTable
     defaultValue: const Constant(true),
   );
   @override
+  late final GeneratedColumnWithTypeConverter<TimeOfDay, String> startTime =
+      GeneratedColumn<String>(
+        'start_time',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<TimeOfDay>($HabitsTableTable.$converterstartTime);
+  @override
   late final GeneratedColumnWithTypeConverter<ItemType, String> habitType =
       GeneratedColumn<String>(
         'habit_type',
@@ -1006,18 +1015,16 @@ class $HabitsTableTable extends HabitsTable
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _targetOperatorMeta = const VerificationMeta(
-    'targetOperator',
-  );
   @override
-  late final GeneratedColumn<String> targetOperator = GeneratedColumn<String>(
+  late final GeneratedColumnWithTypeConverter<TargetOperator, String>
+  targetOperator = GeneratedColumn<String>(
     'target_operator',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
     defaultValue: const Constant('='),
-  );
+  ).withConverter<TargetOperator>($HabitsTableTable.$convertertargetOperator);
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -1065,6 +1072,7 @@ class $HabitsTableTable extends HabitsTable
     monthlyDates,
     interval,
     isActive,
+    startTime,
     habitType,
     targetUnit,
     targetValue,
@@ -1150,15 +1158,6 @@ class $HabitsTableTable extends HabitsTable
         ),
       );
     }
-    if (data.containsKey('target_operator')) {
-      context.handle(
-        _targetOperatorMeta,
-        targetOperator.isAcceptableOrUnknown(
-          data['target_operator']!,
-          _targetOperatorMeta,
-        ),
-      );
-    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -1232,6 +1231,12 @@ class $HabitsTableTable extends HabitsTable
         DriftSqlType.bool,
         data['${effectivePrefix}is_active'],
       )!,
+      startTime: $HabitsTableTable.$converterstartTime.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}start_time'],
+        )!,
+      ),
       habitType: $HabitsTableTable.$converterhabitType.fromSql(
         attachedDatabase.typeMapping.read(
           DriftSqlType.string,
@@ -1246,10 +1251,12 @@ class $HabitsTableTable extends HabitsTable
         DriftSqlType.int,
         data['${effectivePrefix}target_value'],
       ),
-      targetOperator: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}target_operator'],
-      )!,
+      targetOperator: $HabitsTableTable.$convertertargetOperator.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}target_operator'],
+        )!,
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -1276,8 +1283,12 @@ class $HabitsTableTable extends HabitsTable
       const IntListConverter();
   static TypeConverter<List<int>, String> $convertermonthlyDates =
       const IntListConverter();
+  static TypeConverter<TimeOfDay, String> $converterstartTime =
+      const TimeOfDayConverter();
   static TypeConverter<ItemType, String> $converterhabitType =
       const ItemTypeConverter();
+  static TypeConverter<TargetOperator, String> $convertertargetOperator =
+      const HabitTargetOperatorConverter();
 }
 
 class Habit extends DataClass implements Insertable<Habit> {
@@ -1291,10 +1302,11 @@ class Habit extends DataClass implements Insertable<Habit> {
   final List<int> monthlyDates;
   final int interval;
   final bool isActive;
+  final TimeOfDay startTime;
   final ItemType habitType;
   final String? targetUnit;
   final int? targetValue;
-  final String targetOperator;
+  final TargetOperator targetOperator;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? deletedAt;
@@ -1309,6 +1321,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     required this.monthlyDates,
     required this.interval,
     required this.isActive,
+    required this.startTime,
     required this.habitType,
     this.targetUnit,
     this.targetValue,
@@ -1345,6 +1358,11 @@ class Habit extends DataClass implements Insertable<Habit> {
     map['interval'] = Variable<int>(interval);
     map['is_active'] = Variable<bool>(isActive);
     {
+      map['start_time'] = Variable<String>(
+        $HabitsTableTable.$converterstartTime.toSql(startTime),
+      );
+    }
+    {
       map['habit_type'] = Variable<String>(
         $HabitsTableTable.$converterhabitType.toSql(habitType),
       );
@@ -1355,7 +1373,11 @@ class Habit extends DataClass implements Insertable<Habit> {
     if (!nullToAbsent || targetValue != null) {
       map['target_value'] = Variable<int>(targetValue);
     }
-    map['target_operator'] = Variable<String>(targetOperator);
+    {
+      map['target_operator'] = Variable<String>(
+        $HabitsTableTable.$convertertargetOperator.toSql(targetOperator),
+      );
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     if (!nullToAbsent || deletedAt != null) {
@@ -1378,6 +1400,7 @@ class Habit extends DataClass implements Insertable<Habit> {
       monthlyDates: Value(monthlyDates),
       interval: Value(interval),
       isActive: Value(isActive),
+      startTime: Value(startTime),
       habitType: Value(habitType),
       targetUnit: targetUnit == null && nullToAbsent
           ? const Value.absent()
@@ -1410,10 +1433,13 @@ class Habit extends DataClass implements Insertable<Habit> {
       monthlyDates: serializer.fromJson<List<int>>(json['monthlyDates']),
       interval: serializer.fromJson<int>(json['interval']),
       isActive: serializer.fromJson<bool>(json['isActive']),
+      startTime: serializer.fromJson<TimeOfDay>(json['startTime']),
       habitType: serializer.fromJson<ItemType>(json['habitType']),
       targetUnit: serializer.fromJson<String?>(json['targetUnit']),
       targetValue: serializer.fromJson<int?>(json['targetValue']),
-      targetOperator: serializer.fromJson<String>(json['targetOperator']),
+      targetOperator: serializer.fromJson<TargetOperator>(
+        json['targetOperator'],
+      ),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
@@ -1433,10 +1459,11 @@ class Habit extends DataClass implements Insertable<Habit> {
       'monthlyDates': serializer.toJson<List<int>>(monthlyDates),
       'interval': serializer.toJson<int>(interval),
       'isActive': serializer.toJson<bool>(isActive),
+      'startTime': serializer.toJson<TimeOfDay>(startTime),
       'habitType': serializer.toJson<ItemType>(habitType),
       'targetUnit': serializer.toJson<String?>(targetUnit),
       'targetValue': serializer.toJson<int?>(targetValue),
-      'targetOperator': serializer.toJson<String>(targetOperator),
+      'targetOperator': serializer.toJson<TargetOperator>(targetOperator),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
@@ -1454,10 +1481,11 @@ class Habit extends DataClass implements Insertable<Habit> {
     List<int>? monthlyDates,
     int? interval,
     bool? isActive,
+    TimeOfDay? startTime,
     ItemType? habitType,
     Value<String?> targetUnit = const Value.absent(),
     Value<int?> targetValue = const Value.absent(),
-    String? targetOperator,
+    TargetOperator? targetOperator,
     DateTime? createdAt,
     DateTime? updatedAt,
     Value<DateTime?> deletedAt = const Value.absent(),
@@ -1472,6 +1500,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     monthlyDates: monthlyDates ?? this.monthlyDates,
     interval: interval ?? this.interval,
     isActive: isActive ?? this.isActive,
+    startTime: startTime ?? this.startTime,
     habitType: habitType ?? this.habitType,
     targetUnit: targetUnit.present ? targetUnit.value : this.targetUnit,
     targetValue: targetValue.present ? targetValue.value : this.targetValue,
@@ -1498,6 +1527,7 @@ class Habit extends DataClass implements Insertable<Habit> {
           : this.monthlyDates,
       interval: data.interval.present ? data.interval.value : this.interval,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      startTime: data.startTime.present ? data.startTime.value : this.startTime,
       habitType: data.habitType.present ? data.habitType.value : this.habitType,
       targetUnit: data.targetUnit.present
           ? data.targetUnit.value
@@ -1527,6 +1557,7 @@ class Habit extends DataClass implements Insertable<Habit> {
           ..write('monthlyDates: $monthlyDates, ')
           ..write('interval: $interval, ')
           ..write('isActive: $isActive, ')
+          ..write('startTime: $startTime, ')
           ..write('habitType: $habitType, ')
           ..write('targetUnit: $targetUnit, ')
           ..write('targetValue: $targetValue, ')
@@ -1550,6 +1581,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     monthlyDates,
     interval,
     isActive,
+    startTime,
     habitType,
     targetUnit,
     targetValue,
@@ -1572,6 +1604,7 @@ class Habit extends DataClass implements Insertable<Habit> {
           other.monthlyDates == this.monthlyDates &&
           other.interval == this.interval &&
           other.isActive == this.isActive &&
+          other.startTime == this.startTime &&
           other.habitType == this.habitType &&
           other.targetUnit == this.targetUnit &&
           other.targetValue == this.targetValue &&
@@ -1592,10 +1625,11 @@ class HabitCompanion extends UpdateCompanion<Habit> {
   final Value<List<int>> monthlyDates;
   final Value<int> interval;
   final Value<bool> isActive;
+  final Value<TimeOfDay> startTime;
   final Value<ItemType> habitType;
   final Value<String?> targetUnit;
   final Value<int?> targetValue;
-  final Value<String> targetOperator;
+  final Value<TargetOperator> targetOperator;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> deletedAt;
@@ -1611,6 +1645,7 @@ class HabitCompanion extends UpdateCompanion<Habit> {
     this.monthlyDates = const Value.absent(),
     this.interval = const Value.absent(),
     this.isActive = const Value.absent(),
+    this.startTime = const Value.absent(),
     this.habitType = const Value.absent(),
     this.targetUnit = const Value.absent(),
     this.targetValue = const Value.absent(),
@@ -1631,6 +1666,7 @@ class HabitCompanion extends UpdateCompanion<Habit> {
     this.monthlyDates = const Value.absent(),
     this.interval = const Value.absent(),
     this.isActive = const Value.absent(),
+    required TimeOfDay startTime,
     required ItemType habitType,
     this.targetUnit = const Value.absent(),
     this.targetValue = const Value.absent(),
@@ -1644,6 +1680,7 @@ class HabitCompanion extends UpdateCompanion<Habit> {
        iconIndex = Value(iconIndex),
        frequency = Value(frequency),
        startDate = Value(startDate),
+       startTime = Value(startTime),
        habitType = Value(habitType);
   static Insertable<Habit> custom({
     Expression<String>? id,
@@ -1656,6 +1693,7 @@ class HabitCompanion extends UpdateCompanion<Habit> {
     Expression<String>? monthlyDates,
     Expression<int>? interval,
     Expression<bool>? isActive,
+    Expression<String>? startTime,
     Expression<String>? habitType,
     Expression<String>? targetUnit,
     Expression<int>? targetValue,
@@ -1676,6 +1714,7 @@ class HabitCompanion extends UpdateCompanion<Habit> {
       if (monthlyDates != null) 'monthly_dates': monthlyDates,
       if (interval != null) 'interval': interval,
       if (isActive != null) 'is_active': isActive,
+      if (startTime != null) 'start_time': startTime,
       if (habitType != null) 'habit_type': habitType,
       if (targetUnit != null) 'target_unit': targetUnit,
       if (targetValue != null) 'target_value': targetValue,
@@ -1698,10 +1737,11 @@ class HabitCompanion extends UpdateCompanion<Habit> {
     Value<List<int>>? monthlyDates,
     Value<int>? interval,
     Value<bool>? isActive,
+    Value<TimeOfDay>? startTime,
     Value<ItemType>? habitType,
     Value<String?>? targetUnit,
     Value<int?>? targetValue,
-    Value<String>? targetOperator,
+    Value<TargetOperator>? targetOperator,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<DateTime?>? deletedAt,
@@ -1718,6 +1758,7 @@ class HabitCompanion extends UpdateCompanion<Habit> {
       monthlyDates: monthlyDates ?? this.monthlyDates,
       interval: interval ?? this.interval,
       isActive: isActive ?? this.isActive,
+      startTime: startTime ?? this.startTime,
       habitType: habitType ?? this.habitType,
       targetUnit: targetUnit ?? this.targetUnit,
       targetValue: targetValue ?? this.targetValue,
@@ -1768,6 +1809,11 @@ class HabitCompanion extends UpdateCompanion<Habit> {
     if (isActive.present) {
       map['is_active'] = Variable<bool>(isActive.value);
     }
+    if (startTime.present) {
+      map['start_time'] = Variable<String>(
+        $HabitsTableTable.$converterstartTime.toSql(startTime.value),
+      );
+    }
     if (habitType.present) {
       map['habit_type'] = Variable<String>(
         $HabitsTableTable.$converterhabitType.toSql(habitType.value),
@@ -1780,7 +1826,9 @@ class HabitCompanion extends UpdateCompanion<Habit> {
       map['target_value'] = Variable<int>(targetValue.value);
     }
     if (targetOperator.present) {
-      map['target_operator'] = Variable<String>(targetOperator.value);
+      map['target_operator'] = Variable<String>(
+        $HabitsTableTable.$convertertargetOperator.toSql(targetOperator.value),
+      );
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -1810,6 +1858,7 @@ class HabitCompanion extends UpdateCompanion<Habit> {
           ..write('monthlyDates: $monthlyDates, ')
           ..write('interval: $interval, ')
           ..write('isActive: $isActive, ')
+          ..write('startTime: $startTime, ')
           ..write('habitType: $habitType, ')
           ..write('targetUnit: $targetUnit, ')
           ..write('targetValue: $targetValue, ')
@@ -3154,10 +3203,11 @@ typedef $$HabitsTableTableCreateCompanionBuilder =
       Value<List<int>> monthlyDates,
       Value<int> interval,
       Value<bool> isActive,
+      required TimeOfDay startTime,
       required ItemType habitType,
       Value<String?> targetUnit,
       Value<int?> targetValue,
-      Value<String> targetOperator,
+      Value<TargetOperator> targetOperator,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<DateTime?> deletedAt,
@@ -3175,10 +3225,11 @@ typedef $$HabitsTableTableUpdateCompanionBuilder =
       Value<List<int>> monthlyDates,
       Value<int> interval,
       Value<bool> isActive,
+      Value<TimeOfDay> startTime,
       Value<ItemType> habitType,
       Value<String?> targetUnit,
       Value<int?> targetValue,
-      Value<String> targetOperator,
+      Value<TargetOperator> targetOperator,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<DateTime?> deletedAt,
@@ -3247,6 +3298,12 @@ class $$HabitsTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnWithTypeConverterFilters<TimeOfDay, TimeOfDay, String> get startTime =>
+      $composableBuilder(
+        column: $table.startTime,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
   ColumnWithTypeConverterFilters<ItemType, ItemType, String> get habitType =>
       $composableBuilder(
         column: $table.habitType,
@@ -3263,9 +3320,10 @@ class $$HabitsTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get targetOperator => $composableBuilder(
+  ColumnWithTypeConverterFilters<TargetOperator, TargetOperator, String>
+  get targetOperator => $composableBuilder(
     column: $table.targetOperator,
-    builder: (column) => ColumnFilters(column),
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
@@ -3340,6 +3398,11 @@ class $$HabitsTableTableOrderingComposer
 
   ColumnOrderings<bool> get isActive => $composableBuilder(
     column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get startTime => $composableBuilder(
+    column: $table.startTime,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3426,6 +3489,9 @@ class $$HabitsTableTableAnnotationComposer
   GeneratedColumn<bool> get isActive =>
       $composableBuilder(column: $table.isActive, builder: (column) => column);
 
+  GeneratedColumnWithTypeConverter<TimeOfDay, String> get startTime =>
+      $composableBuilder(column: $table.startTime, builder: (column) => column);
+
   GeneratedColumnWithTypeConverter<ItemType, String> get habitType =>
       $composableBuilder(column: $table.habitType, builder: (column) => column);
 
@@ -3439,10 +3505,11 @@ class $$HabitsTableTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get targetOperator => $composableBuilder(
-    column: $table.targetOperator,
-    builder: (column) => column,
-  );
+  GeneratedColumnWithTypeConverter<TargetOperator, String> get targetOperator =>
+      $composableBuilder(
+        column: $table.targetOperator,
+        builder: (column) => column,
+      );
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -3492,10 +3559,11 @@ class $$HabitsTableTableTableManager
                 Value<List<int>> monthlyDates = const Value.absent(),
                 Value<int> interval = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
+                Value<TimeOfDay> startTime = const Value.absent(),
                 Value<ItemType> habitType = const Value.absent(),
                 Value<String?> targetUnit = const Value.absent(),
                 Value<int?> targetValue = const Value.absent(),
-                Value<String> targetOperator = const Value.absent(),
+                Value<TargetOperator> targetOperator = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
@@ -3511,6 +3579,7 @@ class $$HabitsTableTableTableManager
                 monthlyDates: monthlyDates,
                 interval: interval,
                 isActive: isActive,
+                startTime: startTime,
                 habitType: habitType,
                 targetUnit: targetUnit,
                 targetValue: targetValue,
@@ -3532,10 +3601,11 @@ class $$HabitsTableTableTableManager
                 Value<List<int>> monthlyDates = const Value.absent(),
                 Value<int> interval = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
+                required TimeOfDay startTime,
                 required ItemType habitType,
                 Value<String?> targetUnit = const Value.absent(),
                 Value<int?> targetValue = const Value.absent(),
-                Value<String> targetOperator = const Value.absent(),
+                Value<TargetOperator> targetOperator = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
@@ -3551,6 +3621,7 @@ class $$HabitsTableTableTableManager
                 monthlyDates: monthlyDates,
                 interval: interval,
                 isActive: isActive,
+                startTime: startTime,
                 habitType: habitType,
                 targetUnit: targetUnit,
                 targetValue: targetValue,

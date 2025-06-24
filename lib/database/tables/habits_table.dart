@@ -1,7 +1,9 @@
 import 'package:drift/drift.dart';
+import 'package:mobile/database/converters/habit_target_operator_converter.dart';
 import 'package:mobile/database/converters/int_list_converter.dart';
 import 'package:mobile/database/converters/item_frequency_converter.dart';
 import 'package:mobile/database/converters/item_type_converter.dart';
+import 'package:mobile/database/converters/time_of_day_converter.dart';
 import 'package:mobile/database/database.dart';
 import 'package:mobile/domain/models/habit_model.dart';
 
@@ -22,12 +24,15 @@ class HabitsTable extends Table {
 
   IntColumn get interval => integer().withDefault(const Constant(1))();
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  TextColumn get startTime => text().map(const TimeOfDayConverter())();
 
   TextColumn get habitType => text().map(const ItemTypeConverter())();
 
   TextColumn get targetUnit => text().nullable()();
   IntColumn get targetValue => integer().nullable()();
-  TextColumn get targetOperator => text().withDefault(const Constant('='))();
+  TextColumn get targetOperator => text()
+      .map(const HabitTargetOperatorConverter())
+      .withDefault(const Constant('='))();
 
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
@@ -47,6 +52,7 @@ extension HabitExtension on Habit {
       frequency: frequency,
       startDate: startDate,
       weeklyDays: weeklyDays,
+      startTime: startTime,
       monthlyDates: monthlyDates,
       interval: interval,
       isActive: isActive,

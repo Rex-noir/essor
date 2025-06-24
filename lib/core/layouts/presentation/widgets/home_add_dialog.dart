@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/layouts/presentation/widgets/home_add_dialog_action.dart';
+import 'package:mobile/domain/repositories/habit_repository.dart';
 import 'package:mobile/domain/repositories/routine_repository.dart';
 import 'package:mobile/domain/usecases/create_new_routine_usecase.dart';
 import 'package:mobile/domain/usecases/update_routine_usecase.dart';
+import 'package:mobile/ui/habit_form/bloc/habit_form_bloc.dart';
+import 'package:mobile/ui/habit_form/screen/habit_form_screen.dart';
 import 'package:mobile/ui/routine_form/bloc/routine_form_bloc.dart';
 import 'package:mobile/ui/routine_form/screens/routine_form_screen.dart';
 import 'package:mobile/utils/app_logger.dart';
@@ -35,7 +38,18 @@ class HomeAddDialog extends StatelessWidget {
                   icon: Icons.add,
                   backgroundColor: Colors.blue.shade50,
                   onTap: () {
-                    // Todo
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BlocProvider(
+                          create: (_) =>
+                              HabitFormBloc(context.read<HabitRepository>())
+                                ..add(HabitFormInitial(null)),
+                          child: const HabitFormScreen(),
+                        ),
+                      ),
+                    );
                   },
                 ),
                 HomeAddDialogAction(
@@ -45,7 +59,7 @@ class HomeAddDialog extends StatelessWidget {
                   backgroundColor: Colors.green.shade50,
                   onTap: () async {
                     Navigator.pop(context);
-                    await Navigator.push(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => BlocProvider(

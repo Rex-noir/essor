@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:mobile/domain/enums/habit_target_operator_enum.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
 import 'package:mobile/domain/enums/item_type.dart';
 
@@ -6,6 +8,7 @@ class HabitModel {
   final String title;
   final String? description;
   final int iconIndex;
+  final TimeOfDay startTime;
 
   final ItemFrequency frequency;
   final DateTime startDate;
@@ -16,7 +19,7 @@ class HabitModel {
   final ItemType habitType;
   final String? targetUnit;
   final int? targetValue;
-  final String targetOperator;
+  final TargetOperator targetOperator;
 
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -40,5 +43,6 @@ class HabitModel {
     required this.createdAt,
     required this.updatedAt,
     required this.deletedAt,
+    required this.startTime,
   });
 }
