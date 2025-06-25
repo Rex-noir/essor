@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
-import 'package:mobile/ui/routine_form/widgets/repeat_wheeltab_section.dart';
+import 'package:mobile/ui/repeat_form/widgets/repeat_wheeltab_section.dart';
 import 'package:mobile/ui/routine_form/widgets/routine_repeat_days.dart';
 import 'package:mobile/utils/app_logger.dart';
 
@@ -73,20 +74,25 @@ class _RepeatFullScreenState extends State<RepeatFullScreen>
       initialIndex: ItemFrequency.values.indexOf(selectedFrequency),
     );
     _tabController.animation?.addListener(() {
-       final int animatedIndex = _tabController.animation!.value.round();
-   
-       if (_tabController.indexIsChanging) {
-         // For tab taps, only update when change completes
-         if (selectedFrequency != ItemFrequency.values[_tabController.index]) {
-           setState(() => selectedFrequency = ItemFrequency.values[_tabController.index]);
-         }
-       } else {
-         // For swipes, update as soon as index rounds to another tab
-         if (selectedFrequency != ItemFrequency.values[animatedIndex]) {
-           setState(() => selectedFrequency = ItemFrequency.values[animatedIndex]);
-         }
-       }
-     });
+      final int animatedIndex = _tabController.animation!.value.round();
+
+      if (_tabController.indexIsChanging) {
+        // For tab taps, only update when change completes
+        if (selectedFrequency != ItemFrequency.values[_tabController.index]) {
+          setState(
+            () =>
+                selectedFrequency = ItemFrequency.values[_tabController.index],
+          );
+        }
+      } else {
+        // For swipes, update as soon as index rounds to another tab
+        if (selectedFrequency != ItemFrequency.values[animatedIndex]) {
+          setState(
+            () => selectedFrequency = ItemFrequency.values[animatedIndex],
+          );
+        }
+      }
+    });
   }
 
   @override
@@ -126,6 +132,39 @@ class _RepeatFullScreenState extends State<RepeatFullScreen>
                   _buildWeeklyTab(),
                   _buildMonthlyTab(),
                 ],
+              ),
+            ),
+            Center(
+              child: OutlinedButton.icon(
+                onPressed: () async {
+                  final newDate = await showDatePicker(
+                    context: context,
+                    initialDate: startDate,
+                    firstDate: startDate,
+                    lastDate: DateTime.now().add(const Duration(days: 730)),
+                  );
+                  if (newDate != null) {
+                    setState(() {
+                      startDate = newDate;
+                    });
+                  }
+                },
+                icon: const Icon(Icons.calendar_today, size: 18),
+                label: Text(
+                  'Start: ${DateFormat('MMM d, y').format(startDate)}',
+                  style: const TextStyle(fontSize: 14),
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: colorScheme.primary,
+                  side: BorderSide(color: colorScheme.primary),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                ),
               ),
             ),
             Padding(
@@ -252,7 +291,6 @@ class _RepeatFullScreenState extends State<RepeatFullScreen>
     final selectedIndex = intervals.indexOf(interval);
     logger.debug("initial interval $interval");
     logger.debug("selected index $selectedIndex");
-
     return RepeatWheeltabSection(
       title: 'Repeat Frequency',
       intervals: intervals,
