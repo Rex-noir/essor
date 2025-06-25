@@ -5,6 +5,7 @@ import 'package:mobile/domain/repositories/habit_repository.dart';
 import 'package:mobile/domain/repositories/routine_repository.dart';
 import 'package:mobile/domain/usecases/create_new_routine_usecase.dart';
 import 'package:mobile/domain/usecases/update_routine_usecase.dart';
+import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
 import 'package:mobile/ui/habit_form/bloc/habit_form_bloc.dart';
 import 'package:mobile/ui/habit_form/screen/habit_form_screen.dart';
 import 'package:mobile/ui/routine_form/bloc/routine_form_bloc.dart';
@@ -38,6 +39,13 @@ class HomeAddDialog extends StatelessWidget {
                   icon: Icons.add,
                   backgroundColor: Colors.blue.shade50,
                   onTap: () {
+                    final dailyListState = context.read<DailyListBloc>().state;
+                    DateTime? selectedDate;
+
+                    if (dailyListState is DailyListLoaded) {
+                      selectedDate = dailyListState.selectedDate;
+                    }
+
                     Navigator.pop(context);
                     Navigator.push(
                       context,
@@ -45,7 +53,7 @@ class HomeAddDialog extends StatelessWidget {
                         builder: (_) => BlocProvider(
                           create: (_) =>
                               HabitFormBloc(context.read<HabitRepository>())
-                                ..add(HabitFormInitial(null)),
+                                ..add(HabitFormInitial(null, selectedDate)),
                           child: const HabitFormScreen(),
                         ),
                       ),
@@ -58,20 +66,35 @@ class HomeAddDialog extends StatelessWidget {
                   icon: Icons.add,
                   backgroundColor: Colors.green.shade50,
                   onTap: () async {
+                    final dailyListState = context.read<DailyListBloc>().state;
+                    DateTime? selectedDate;
+
+                    if (dailyListState is DailyListLoaded) {
+                      selectedDate = dailyListState.selectedDate;
+                    }
+
                     Navigator.pop(context);
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => BlocProvider(
-                          create: (_) => RoutineFormBloc(
-                            createNewRoutineUsecase: CreateNewRoutineUsecase(
-                              context.read<RoutineRepository>(),
-                            ),
-                            updateRoutineUsecase: UpdateRoutineUsecase(
-                              context.read<RoutineRepository>(),
-                            ),
-                          )..add(RoutineFormInitial(null)),
-                          child: RoutineFormScreen(),
+                          create: (_) =>
+                              RoutineFormBloc(
+                                createNewRoutineUsecase:
+                                    CreateNewRoutineUsecase(
+                                      context.read<RoutineRepository>(),
+                                    ),
+                                updateRoutineUsecase: UpdateRoutineUsecase(
+                                  context.read<RoutineRepository>(),
+                                ),
+                              )..add(
+                                RoutineFormInitial(
+                                  existingModel: null,
+                                  startDate: selectedDate,
+                                ),
+                              ),
+                          child: const RoutineFormScreen(),
                         ),
                       ),
                     ).whenComplete(() {

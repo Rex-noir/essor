@@ -9,8 +9,8 @@ class RepeatWheeltabSection extends StatelessWidget {
   final String Function(int) labelBuilder;
   final void Function(int) onChanged;
   final double height;
-  final DateTime startDate; // Added startDate as a parameter
-  final ValueChanged<DateTime> onStartDateChanged; // Callback for date changes
+  final DateTime startDate;
+  final ValueChanged<DateTime> onStartDateChanged;
 
   const RepeatWheeltabSection({
     super.key,
@@ -20,8 +20,8 @@ class RepeatWheeltabSection extends StatelessWidget {
     required this.labelBuilder,
     required this.onChanged,
     this.height = 300,
-    required this.startDate, // Make startDate required
-    required this.onStartDateChanged, // Make onStartDateChanged required
+    required this.startDate,
+    required this.onStartDateChanged,
   });
 
   @override
@@ -75,7 +75,7 @@ class RepeatWheeltabSection extends StatelessWidget {
                   right: 0,
                   child: Container(
                     height: 2,
-                    color: colorScheme.primary.withOpacity(0.3),
+                    color: colorScheme.primary.withValues(alpha: .3),
                   ),
                 ),
                 Positioned(
@@ -84,9 +84,7 @@ class RepeatWheeltabSection extends StatelessWidget {
                   right: 0,
                   child: Container(
                     height: 2,
-                    color: colorScheme.primary.withOpacity(
-                      0.3,
-                    ), // Corrected to use withOpacity instead of withValues
+                    color: colorScheme.primary.withValues(alpha: 0.3),
                   ),
                 ),
               ],
@@ -96,17 +94,17 @@ class RepeatWheeltabSection extends StatelessWidget {
             onPressed: () async {
               final newDate = await showDatePicker(
                 context: context,
-                initialDate: startDate, // Use the passed startDate
-                firstDate: DateTime.now(),
+                initialDate: startDate,
+                firstDate: startDate,
                 lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
               );
               if (newDate != null) {
-                onStartDateChanged(newDate); // Call the callback
+                onStartDateChanged(newDate);
               }
             },
             icon: const Icon(Icons.calendar_today, size: 18),
             label: Text(
-              'Start: ${DateFormat('MMM d, y').format(startDate)}', // Use the passed startDate
+              'Start: ${DateFormat('MMM d, y').format(startDate)}',
               style: const TextStyle(fontSize: 14),
             ),
             style: OutlinedButton.styleFrom(

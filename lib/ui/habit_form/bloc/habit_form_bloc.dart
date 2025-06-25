@@ -18,31 +18,27 @@ class HabitFormBloc extends Bloc<HabitFormEvent, HabitFormState> {
   final HabitRepository _repository;
   HabitFormBloc(this._repository) : super(HabitFormState.empty()) {
     on<HabitFormInitial>((event, emit) {
-      if (event.habit != null) {
-        final habit = event.habit!;
-        emit(
-          HabitFormState(
-            id: habit.id,
-            title: habit.title,
-            description: habit.description,
-            startTime: habit.startTime,
-            iconIndex: habit.iconIndex,
-            frequency: habit.frequency,
-            startDate: habit.startDate,
-            weeklyDays: habit.weeklyDays,
-            monthlyDates: habit.monthlyDates,
-            interval: habit.interval,
-            isActive: habit.isActive,
-            habitType: habit.habitType,
-            targetUnit: habit.targetUnit,
-            targetValue: habit.targetValue,
-            targetOperator: habit.targetOperator,
-            mode: HabitFormMode.edit,
-          ),
-        );
-      } else {
-        emit(state.copyWith(id: UuidV4().generate(), mode: HabitFormMode.edit));
-      }
+      final habit = event.habit;
+      emit(
+        state.copyWith(
+          id: habit?.id ?? UuidV4().generate(),
+          title: habit?.title ?? '',
+          description: habit?.description ?? '',
+          startTime: habit?.startTime,
+          iconIndex: habit?.iconIndex ?? 0,
+          frequency: habit?.frequency,
+          startDate: habit?.startDate ?? event.startDate,
+          weeklyDays: habit?.weeklyDays ?? const [],
+          monthlyDates: habit?.monthlyDates ?? const [],
+          interval: habit?.interval ?? 1,
+          isActive: habit?.isActive ?? true,
+          habitType: habit?.habitType,
+          targetUnit: habit?.targetUnit,
+          targetValue: habit?.targetValue,
+          targetOperator: habit?.targetOperator,
+          mode: habit != null ? HabitFormMode.edit : HabitFormMode.create,
+        ),
+      );
     });
 
     on<HabitFormTitleUpdated>(

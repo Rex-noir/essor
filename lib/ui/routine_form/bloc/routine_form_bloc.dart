@@ -131,25 +131,22 @@ class RoutineFormBloc extends Bloc<RoutineFormEvent, RoutineFormState> {
     Emitter<RoutineFormState> emit,
   ) {
     final routine = event.existingModel;
-    if (routine != null) {
-      emit(
-        state.copyWith(
-          id: routine.id,
-          title: routine.title,
-          iconIndex: routine.iconIndex,
-          selectedFrequency: routine.frequency,
-          startTime: routine.startTime,
-          interval: routine.interval,
-          weeklyDays: routine.weeklyDays,
-          monthlyDates: routine.monthlyDates,
-          startDate: routine.startDate,
-          mode: RoutineFormMode.edit,
-        ),
-      );
-    } else {
-      emit(state.copyWith(mode: RoutineFormMode.create));
-    }
 
-    logger.debug("Mode after emitting ${state.mode}");
+    emit(
+      state.copyWith(
+        id: routine?.id,
+        title: routine?.title,
+        iconIndex: routine?.iconIndex,
+        selectedFrequency: routine?.frequency,
+        startTime: routine?.startTime,
+        interval: routine?.interval,
+        weeklyDays: routine?.weeklyDays,
+        monthlyDates: routine?.monthlyDates,
+        startDate: routine?.startDate ?? event.startDate,
+        mode: routine != null ? RoutineFormMode.edit : RoutineFormMode.create,
+      ),
+    );
+
+    logger.debug("Mode after emitting ${routine != null ? 'edit' : 'create'}");
   }
 }

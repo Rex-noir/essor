@@ -39,14 +39,21 @@ class ViewRoutineScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (_) => BlocProvider(
-                            create: (_) => RoutineFormBloc(
-                              createNewRoutineUsecase: CreateNewRoutineUsecase(
-                                context.read<RoutineRepository>(),
-                              ),
-                              updateRoutineUsecase: UpdateRoutineUsecase(
-                                context.read<RoutineRepository>(),
-                              ),
-                            )..add(RoutineFormInitial(routine)),
+                            create: (_) =>
+                                RoutineFormBloc(
+                                  createNewRoutineUsecase:
+                                      CreateNewRoutineUsecase(
+                                        context.read<RoutineRepository>(),
+                                      ),
+                                  updateRoutineUsecase: UpdateRoutineUsecase(
+                                    context.read<RoutineRepository>(),
+                                  ),
+                                )..add(
+                                  RoutineFormInitial(
+                                    existingModel: routine,
+                                    startDate: null,
+                                  ),
+                                ),
                             child: const RoutineFormScreen(),
                           ),
                         ),

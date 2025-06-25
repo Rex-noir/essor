@@ -8,9 +8,10 @@ sealed class HabitFormEvent extends Equatable {
 
 final class HabitFormInitial extends HabitFormEvent {
   final HabitModel? habit;
-  const HabitFormInitial(this.habit);
+  final DateTime? startDate;
+  const HabitFormInitial(this.habit, this.startDate);
   @override
-  List<Object?> get props => [habit];
+  List<Object?> get props => [habit, startDate];
 }
 
 final class HabitFormTitleUpdated extends HabitFormEvent {

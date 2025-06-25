@@ -4,12 +4,18 @@ sealed class RoutineFormEvent extends Equatable {
   const RoutineFormEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 final class RoutineFormInitial extends RoutineFormEvent {
   final RoutineModel? existingModel;
-  const RoutineFormInitial(this.existingModel);
+  final DateTime? startDate;
+  const RoutineFormInitial({
+    required this.existingModel,
+    required this.startDate,
+  });
+  @override
+  List<Object?> get props => [existingModel, startDate];
 }
 
 final class RoutineFormFrequencyUpated extends RoutineFormEvent {
