@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
+
 import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
-import 'package:mobile/ui/daily_items/widgets/list_items_page.dart';
+import 'package:mobile/ui/daily_items/widgets/daily_list_tabs.dart';
+import 'package:mobile/ui/daily_items/widgets/daily_list_header.dart';
+import 'package:mobile/ui/daily_items/widgets/daily_lists_widget.dart';
 import 'package:mobile/utils/app_logger.dart';
 
 class DailyListScreen extends StatefulWidget {
@@ -18,14 +20,6 @@ class _DailyListScreenState extends State<DailyListScreen>
   int _currentTabIndex = 0;
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
-
-  static const minChildSize = 0.65;
-  static const maxChildSize = 1.0;
-
-  // Add DraggableScrollableController for the expandable content
-  late DraggableScrollableController _dragController;
-  double _currentExtent = 0.6; // Initial height (60% of screen)
-  bool _isExpanded = false;
 
   final logger = AppLogger.tag("DailyListScreen");
 
@@ -46,8 +40,6 @@ class _DailyListScreenState extends State<DailyListScreen>
     _fadeController.forward();
 
     // Initialize the drag controller
-    _dragController = DraggableScrollableController();
-    _dragController.addListener(_onDragUpdate);
     _tabController.addListener(_handleTabSelection); // Add listener once
     _tabController.animation!.addListener(
       _handleTabAnimation,
@@ -61,8 +53,6 @@ class _DailyListScreenState extends State<DailyListScreen>
     _tabController.animation!.removeListener(_handleTabAnimation);
     _tabController.dispose();
     _fadeController.dispose();
-    _dragController.removeListener(_onDragUpdate);
-    _dragController.dispose();
     super.dispose();
   }
 
@@ -89,37 +79,6 @@ class _DailyListScreenState extends State<DailyListScreen>
     }
   }
 
-  void _onDragUpdate() {
-    setState(() {
-      _currentExtent = _dragController.size;
-      _isExpanded = _currentExtent > 0.85;
-    });
-  }
-
-  void _toggleExpansion() {
-    // Check if the dragController is attached before animating
-    if (!_dragController.isAttached) {
-      logger.warning(
-        "DraggableScrollableController not attached. Cannot animate.",
-      );
-      return;
-    }
-
-    if (_isExpanded) {
-      _dragController.animateTo(
-        0.65,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      _dragController.animateTo(
-        1.0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
-
   void _updateTabController(int newLength, int selectedIndex) {
     if (_tabController.length != newLength) {
       // Dispose old listeners before re-creating
@@ -127,7 +86,7 @@ class _DailyListScreenState extends State<DailyListScreen>
       _tabController.animation!.removeListener(_handleTabAnimation);
       _tabController.dispose();
 
-      logger.debug("New length: $newLength");
+      logger.debug("Tab controler updated with new length: $newLength");
 
       _tabController = TabController(
         length: newLength,
@@ -172,340 +131,62 @@ class _DailyListScreenState extends State<DailyListScreen>
                   end: Alignment.bottomCenter,
                   colors: [
                     colorScheme.surface,
-                    colorScheme.surface.withValues(alpha: 0.95),
+                    colorScheme.surface.withValues(alpha: .95),
                   ],
                 ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header section
-                  AnimatedOpacity(
-                    opacity: _currentExtent < 0.9 ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 200),
-                    child: _buildHeader(context, state),
+                  DailyListHeader(
+                    fadeAnimation: _fadeAnimation,
+                    context: context,
+                    state: state,
                   ),
-                  // Tab section
-                  AnimatedOpacity(
-                    opacity: _currentExtent < 0.9 ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 200),
-                    child: _buildTabSection(context, state),
+                  if (state is DailyListLoaded)
+                    DailyListTabs(
+                      tabController: _tabController,
+                      currentTabIndex: _currentTabIndex,
+                      context: context,
+                      state: state,
+                    ),
+                  Expanded(
+                    child: () {
+                      if (state is DailyListLoading ||
+                          state is DailyListInitial) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (state is DailyListError) {
+                        return Center(child: Text(state.message));
+                      } else if (state is DailyListLoaded) {
+                        return TabBarView(
+                          controller: _tabController,
+                          children: state.days.map((day) {
+                            final dayKey = day.toIso8601String();
+                            final isCurrent =
+                                state.days.indexOf(day) == _currentTabIndex;
+
+                            return ListItemsPage(
+                              day: dayKey,
+                              key: ValueKey(day),
+                              items: isCurrent ? state.items : [],
+                              isLoading: state.isLoading,
+                              onRefresh: () {
+                                // refresh logic
+                              },
+                            );
+                          }).toList(),
+                        );
+                      } else {
+                        return const SizedBox(); // fallback for unexpected state
+                      }
+                    }(),
                   ),
-                  // Spacer to push content down
-                  const Expanded(child: SizedBox()),
                 ],
               ),
-            ),
-
-            // Draggable content section
-            DraggableScrollableSheet(
-              controller: _dragController,
-              initialChildSize: minChildSize,
-              minChildSize: minChildSize,
-              maxChildSize: maxChildSize,
-              snap: true,
-              snapSizes: const [minChildSize, maxChildSize],
-              builder: (context, scrollController) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: colorScheme.surface,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(_isExpanded ? 0 : 24),
-                      topRight: Radius.circular(_isExpanded ? 0 : 24),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: colorScheme.shadow.withValues(alpha: 0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, -2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      // Drag handle section
-                      _buildDragHandle(context, state),
-
-                      // Content section
-                      Expanded(
-                        child: state is! DailyListLoaded
-                            ? const Center(child: CircularProgressIndicator())
-                            : IndexedStack(
-                                index: _currentTabIndex,
-                                children: state.days.asMap().entries.map((
-                                  entry,
-                                ) {
-                                  final index = entry.key;
-                                  final day = entry.value;
-                                  final dayKey = day.toIso8601String();
-
-                                  // Only build the current tab
-                                  if (index == _currentTabIndex) {
-                                    return ListItemsPage(
-                                      day: dayKey,
-                                      key: ValueKey(day),
-                                      items: state.items,
-                                      isLoading: state.isLoading,
-                                      scrollController: scrollController,
-                                      onRefresh: () {
-                                        logger.info("Refresh called");
-                                      },
-                                    );
-                                  }
-                                  return const SizedBox.shrink();
-                                }).toList(),
-                              ),
-                      ),
-                    ],
-                  ),
-                );
-              },
             ),
           ],
         );
       },
-    );
-  }
-
-  Widget _buildDragHandle(BuildContext context, DailyListState state) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Column(
-        children: [
-          // Drag indicator
-          if (!_isExpanded)
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: colorScheme.onSurface.withValues(alpha: .3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-
-          // Expanded header
-          if (_isExpanded) ...[
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: _toggleExpansion,
-                    icon: const Icon(Icons.keyboard_arrow_down),
-                    style: IconButton.styleFrom(
-                      backgroundColor: colorScheme.surfaceContainerHighest,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Daily Items",
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        if (state is DailyListLoaded)
-                          Text(
-                            DateFormat.yMMMMEEEEd().format(
-                              state.days[_currentTabIndex],
-                            ),
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurface.withValues(
-                                alpha: 0.7,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context, DailyListState state) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Container(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Daily Items",
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
-          ),
-          const SizedBox(height: 4),
-          if (state is DailyListLoaded)
-            FadeTransition(
-              opacity: _fadeAnimation,
-              child: Text(
-                DateFormat.yMMMMEEEEd().format(state.days[_currentTabIndex]),
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurface.withValues(alpha: 0.7),
-                ),
-              ),
-            )
-          else
-            Text(
-              DateFormat.yMMMMEEEEd().format(DateTime.now()),
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabSection(BuildContext context, DailyListState state) {
-    if (state is! DailyListLoaded) {
-      return Container(
-        height: 110,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Center(
-          child: SizedBox(
-            width: 70,
-            height: 90,
-            child: Card(
-              elevation: 2,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Theme.of(context).colorScheme.surface,
-                ),
-                child: const Center(child: CircularProgressIndicator()),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    final days = state.days;
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: TabBar(
-        controller: _tabController,
-        isScrollable: true,
-        key: ValueKey(days.map((e) => e.toIso8601String()).join(',')),
-        tabAlignment: TabAlignment.center,
-        indicatorPadding: EdgeInsets.zero,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-        dividerColor: Colors.transparent,
-        indicatorColor: Colors.transparent,
-        labelPadding: const EdgeInsets.symmetric(horizontal: 6),
-        splashFactory: NoSplash.splashFactory,
-        tabs: days.asMap().entries.map((entry) {
-          final index = entry.key;
-          final day = entry.value;
-          final dayName = DateFormat('EEE').format(day);
-          final isSelected = _currentTabIndex == index;
-          final isToday = DateUtils.isSameDay(day, DateTime.now());
-
-          return Container(
-            height: 90,
-            width: 70,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              gradient: isSelected
-                  ? LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        colorScheme.primary,
-                        colorScheme.primary.withValues(alpha: 0.8),
-                      ],
-                    )
-                  : null,
-              color: isSelected ? null : colorScheme.surface,
-              border: Border.all(
-                color: isSelected
-                    ? colorScheme.primary
-                    : isToday
-                    ? colorScheme.primary.withValues(alpha: .3)
-                    : colorScheme.outline.withValues(alpha: 0.2),
-                width: isSelected ? 2 : 1,
-              ),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: colorScheme.primary.withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ]
-                  : [
-                      BoxShadow(
-                        color: colorScheme.shadow.withValues(alpha: 0.1),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 200),
-                  style: theme.textTheme.titleMedium!.copyWith(
-                    color: isSelected
-                        ? colorScheme.onPrimary
-                        : colorScheme.onSurface,
-                    fontWeight: isSelected || isToday
-                        ? FontWeight.bold
-                        : FontWeight.w500,
-                  ),
-                  child: Text("${day.day}"),
-                ),
-                const SizedBox(height: 4),
-                AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 200),
-                  style: theme.textTheme.labelSmall!.copyWith(
-                    color: isSelected
-                        ? colorScheme.onPrimary.withValues(alpha: 0.9)
-                        : colorScheme.onSurface.withValues(alpha: 0.7),
-                    fontWeight: isToday ? FontWeight.w600 : FontWeight.normal,
-                  ),
-                  child: Text(dayName),
-                ),
-                if (isToday)
-                  Container(
-                    margin: const EdgeInsets.only(top: 4),
-                    width: 6,
-                    height: 6,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: isSelected
-                          ? colorScheme.onPrimary
-                          : colorScheme.primary,
-                    ),
-                  ),
-              ],
-            ),
-          );
-        }).toList(),
-      ),
     );
   }
 }
