@@ -58,6 +58,7 @@ class _RepeatFullScreenState extends State<RepeatFullScreen>
   late DateTime startDate;
 
   final logger = AppLogger.tag("RepeatFullScreen");
+
   @override
   void initState() {
     super.initState();
@@ -71,14 +72,21 @@ class _RepeatFullScreenState extends State<RepeatFullScreen>
       vsync: this,
       initialIndex: ItemFrequency.values.indexOf(selectedFrequency),
     );
-
-    _tabController.animation!.addListener(() {
-      final swipeIndex = _tabController.animation!.value.round();
-      final newFrequency = ItemFrequency.values[swipeIndex];
-      if (newFrequency != selectedFrequency) {
-        setState(() => selectedFrequency = newFrequency);
-      }
-    });
+    _tabController.animation?.addListener(() {
+       final int animatedIndex = _tabController.animation!.value.round();
+   
+       if (_tabController.indexIsChanging) {
+         // For tab taps, only update when change completes
+         if (selectedFrequency != ItemFrequency.values[_tabController.index]) {
+           setState(() => selectedFrequency = ItemFrequency.values[_tabController.index]);
+         }
+       } else {
+         // For swipes, update as soon as index rounds to another tab
+         if (selectedFrequency != ItemFrequency.values[animatedIndex]) {
+           setState(() => selectedFrequency = ItemFrequency.values[animatedIndex]);
+         }
+       }
+     });
   }
 
   @override
@@ -105,42 +113,79 @@ class _RepeatFullScreenState extends State<RepeatFullScreen>
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
-      appBar: AppBar(
-        title: const Text('Repeat Settings'),
-        centerTitle: true,
-        backgroundColor: colorScheme.surface,
-        surfaceTintColor: colorScheme.surface,
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          _buildTabBar(context),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildDailyTab(),
-                _buildWeeklyTab(),
-                _buildMonthlyTab(),
-              ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildCustomAppBar(context),
+            _buildTabBar(context),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildDailyTab(),
+                  _buildWeeklyTab(),
+                  _buildMonthlyTab(),
+                ],
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: FilledButton(
-              onPressed: _onApply,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: FilledButton(
+                onPressed: _onApply,
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(52),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Apply Repeat Settings',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
-              child: const Text(
-                'Apply Repeat Settings',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCustomAppBar(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      height: 56,
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        border: Border(
+          bottom: BorderSide(
+            color: colorScheme.outlineVariant.withValues(alpha: .3),
+            width: 0.5,
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () => Navigator.of(context).pop(),
+            icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+            style: IconButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              foregroundColor: colorScheme.onSurface,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              'Repeat Settings',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurface,
               ),
             ),
           ),
+          const SizedBox(width: 48), // Balance the back button
         ],
       ),
     );
@@ -148,54 +193,57 @@ class _RepeatFullScreenState extends State<RepeatFullScreen>
 
   Widget _buildTabBar(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return TabBar(
-      controller: _tabController,
-      labelPadding: const EdgeInsets.symmetric(horizontal: 8),
-      dividerColor: Colors.transparent,
-      splashFactory: NoSplash.splashFactory,
-      indicatorColor: Colors.transparent,
-      overlayColor: WidgetStatePropertyAll(Colors.transparent),
-      padding: EdgeInsets.zero,
-      indicatorSize: TabBarIndicatorSize.label,
-      indicatorPadding: EdgeInsets.zero,
-      isScrollable: true,
-      tabAlignment: TabAlignment.center,
-      tabs: List.generate(ItemFrequency.values.length, (index) {
-        final type = ItemFrequency.values[index];
-        final isSelected = selectedFrequency == type;
-        return Material(
-          child: Container(
-            width: 110,
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? colorScheme.primary
-                  : colorScheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: colorScheme.primary.withValues(alpha: 0.15),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ]
-                  : [],
-            ),
-            child: Text(
-              type.label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: TabBar(
+        controller: _tabController,
+        labelPadding: const EdgeInsets.symmetric(horizontal: 8),
+        dividerColor: Colors.transparent,
+        splashFactory: NoSplash.splashFactory,
+        indicatorColor: Colors.transparent,
+        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+        padding: EdgeInsets.zero,
+        indicatorSize: TabBarIndicatorSize.label,
+        indicatorPadding: EdgeInsets.zero,
+        isScrollable: true,
+        tabAlignment: TabAlignment.center,
+        tabs: List.generate(ItemFrequency.values.length, (index) {
+          final type = ItemFrequency.values[index];
+          final isSelected = selectedFrequency == type;
+          return Tab(
+            child: Container(
+              width: 110,
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
                 color: isSelected
-                    ? colorScheme.onPrimary
-                    : colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
+                    ? colorScheme.primary
+                    : colorScheme.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: colorScheme.primary.withOpacity(0.15),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ]
+                    : [],
+              ),
+              child: Text(
+                type.label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: isSelected
+                      ? colorScheme.onPrimary
+                      : colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
               ),
             ),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 
