@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile/core/ui/layout/home_layout.dart';
-import 'package:mobile/core/widgets/app_social_button.dart';
-import 'package:mobile/core/widgets/app_text_field.dart';
-import 'package:mobile/core/widgets/logo_widget.dart';
+import 'package:mobile/core/ui/widgets/app_social_button.dart';
+import 'package:mobile/core/ui/widgets/app_text_field.dart';
+import 'package:mobile/core/ui/widgets/logo_widget.dart';
 import 'package:mobile/ui/authentication/registration/registration_screen.dart';
 import 'package:mobile/ui/authentication/shared/widgets/app_password_field.dart';
 

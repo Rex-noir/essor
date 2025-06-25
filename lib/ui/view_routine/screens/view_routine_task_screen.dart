@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/core/config/app_icons.dart';
-import 'package:mobile/core/widgets/show_icon_picker.dart';
+import 'package:mobile/core/ui/widgets/show_icon_picker.dart';
 import 'package:mobile/domain/models/task_model.dart';
 import 'package:mobile/ui/view_routine/widgets/routine_task_duration.dart';
 import 'package:mobile/ui/view_routine/widgets/routine_task_title.dart';

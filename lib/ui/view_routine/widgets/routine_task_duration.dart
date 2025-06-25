@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/core/widgets/show_time_of_day_picker.dart';
+import 'package:mobile/core/ui/widgets/show_time_of_day_picker.dart';
 
 String formatTaskDuration(Duration duration) {
   final h = duration.inHours;

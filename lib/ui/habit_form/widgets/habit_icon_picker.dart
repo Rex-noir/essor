@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/config/app_icons.dart';
-import 'package:mobile/core/widgets/show_icon_picker.dart';
+import 'package:mobile/core/ui/widgets/show_icon_picker.dart';
 import 'package:mobile/ui/habit_form/bloc/habit_form_bloc.dart';
 
 class HabitIconPicker extends StatelessWidget {

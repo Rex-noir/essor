@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/core/config/app_config.dart';
 import 'package:mobile/core/config/app_icons.dart';
 import 'package:mobile/core/extensions/date_extensions.dart';
-import 'package:mobile/core/widgets/show_icon_picker.dart';
+import 'package:mobile/core/ui/widgets/show_icon_picker.dart';
 import 'package:mobile/domain/models/task_entry_model.dart';
 import 'package:mobile/domain/models/task_model.dart';
 import 'package:mobile/domain/models/task_with_entry_model.dart';
