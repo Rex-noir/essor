@@ -33,7 +33,7 @@ class RoutineFormState extends Equatable {
     id: const UuidV4().generate(),
     selectedFrequency: ItemFrequency.daily,
     startTime: TimeOfDay(hour: 8, minute: 00),
-    interval: 2,
+    interval: 4,
     weeklyDays: const [],
     monthlyDates: const [],
     startDate: DateTime.now(),

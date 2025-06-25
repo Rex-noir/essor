@@ -30,7 +30,7 @@ class HabitFormBloc extends Bloc<HabitFormEvent, HabitFormState> {
           startDate: habit?.startDate ?? event.startDate,
           weeklyDays: habit?.weeklyDays ?? const [],
           monthlyDates: habit?.monthlyDates ?? const [],
-          interval: habit?.interval ?? 1,
+          interval: habit?.interval ?? 4,
           isActive: habit?.isActive ?? true,
           habitType: habit?.habitType,
           targetUnit: habit?.targetUnit,
