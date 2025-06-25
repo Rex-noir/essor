@@ -25,11 +25,13 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
 
   List<DateTime> _currentDays = [];
   int _currentSelectedIndex = 0;
+  DateTime? _currentSelectedDate;
 
   DailyListBloc(this.getHabitsForDate, this.getRoutinesForDate)
       : super(DailyListInitial()) {
     on<DailyListInitialize>(_onInitialize);
     on<DailyListDateChanged>(_onDateChanged);
+    on<_DailyListDataUpdated>(_onDataUpdated); // Internal event for data updates
   }
 
   Future<void> _onInitialize(
@@ -52,13 +54,9 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
 
       _currentDays = initialDays;
       _currentSelectedIndex = initialIndex;
+      _currentSelectedDate = selectedDate;
 
-      await _subscribeToCombinedStreams(
-        selectedDate,
-        emit,
-        days: _currentDays,
-        index: _currentSelectedIndex,
-      );
+      _subscribeToDataStreams(selectedDate);
     } catch (e) {
       logger.error("Failed to initialize daily list", e);
       emit(DailyListError("Failed to initialize daily list: $e"));
@@ -71,6 +69,10 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
   ) async {
     final currentState = state;
     if (currentState is! DailyListLoaded) return;
+
+    if(event.newIndex == currentState.selectedIndex){
+      return;
+    }
 
     logger.debug("Date changed to index: ${event.newIndex}");
     emit(currentState.copyWith(isLoading: true));
@@ -93,52 +95,53 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
 
       _currentDays = newDays;
       _currentSelectedIndex = newIndex;
+      _currentSelectedDate = selectedDate;
 
-      await _subscribeToCombinedStreams(
-        selectedDate,
-        emit,
-        days: newDays,
-        index: newIndex,
-      );
+      logger.debug("Subscribing to combined streams for date: $selectedDate");
+      _subscribeToDataStreams(selectedDate);
     } catch (e) {
       logger.error("Failed to change date", e);
       emit(DailyListError("Failed to change date: $e"));
     }
   }
 
-  Future<void> _subscribeToCombinedStreams(
-    DateTime date,
-    Emitter<DailyListState> emit, {
-    required List<DateTime> days,
-    required int index,
-  }) async {
+  void _onDataUpdated(
+    _DailyListDataUpdated event,
+    Emitter<DailyListState> emit,
+  ) {
+    logger.debug("Received ${event.habits.length} habits and ${event.routines.length} routines");
+    
+    emit(DailyListLoaded(
+      habits: event.habits,
+      routines: event.routines,
+      days: _currentDays,
+      selectedIndex: _currentSelectedIndex,
+      isLoading: false,
+    ));
+  }
+
+  void _subscribeToDataStreams(DateTime date) {
     final habitStream = getHabitsForDate.call(date);
     final routineStream = getRoutinesForDate.call(date);
 
-    logger.debug("Subscribing to combined streams for date: $date");
-
-    await emit.onEach(
-      Rx.combineLatest2<List<HabitModel>, List<RoutineModel>, DailyListLoaded>(
-        habitStream,
-        routineStream,
-        (habits, routines) {
-          logger.debug(
-              "Received ${habits.length} habits and ${routines.length} routines");
-          return DailyListLoaded(
-            habits: habits,
-            routines: routines,
-            days: days,
-            selectedIndex: index,
-            isLoading: false,
-          );
-        },
+    final combinedStream = Rx.combineLatest2<List<HabitModel>, List<RoutineModel>, _DailyListDataUpdated>(
+      habitStream,
+      routineStream,
+      (habits, routines) => _DailyListDataUpdated(
+        habits: habits,
+        routines: routines,
+        date: date,
       ),
-      onData: emit.call,
-      onError: (error, stackTrace) {
-        logger.error("Error combining streams", error);
-        emit(DailyListError("Failed to load data: $error"));
-      },
     );
+
+    // Only subscribe if this is still the current selected date
+    combinedStream
+        .where((event) => event.date.isSameDay(_currentSelectedDate ?? DateTime.now()))
+        .listen((event) {
+      if (!isClosed) {
+        add(event);
+      }
+    });
   }
 
   List<DateTime> _extendDays(int direction, List<DateTime> existingList) {
@@ -163,6 +166,22 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
     );
     return newList;
   }
+}
+
+// Internal event for data updates
+class _DailyListDataUpdated extends DailyListEvent {
+  final List<HabitModel> habits;
+  final List<RoutineModel> routines;
+  final DateTime date;
+
+  const _DailyListDataUpdated({
+    required this.habits,
+    required this.routines,
+    required this.date,
+  });
+
+  @override
+  List<Object> get props => [habits, routines, date];
 }
 
 // Extension to help with date comparison
