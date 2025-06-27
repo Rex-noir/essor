@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:mobile/ui/daily_items/screens/daily_list_screen.dart';
 import 'package:mobile/ui/home/widgets/home_greeting.dart';
+import 'package:mobile/utils/app_logger.dart';
 
 /// Main home screen with optimized tab management and dependency injection
 class HomeScreen extends StatefulWidget {
@@ -18,16 +19,16 @@ class _HomeScreenState extends State<HomeScreen>
   // Tab configuration
   static const int _initialTabIndex = 0;
   static const int _tabCount = 2;
-  int activeIndex = 0;
 
   @override
   bool get wantKeepAlive => false;
+
+  int activeIndex = _initialTabIndex; // ✅ This line is crucial
 
   @override
   void initState() {
     super.initState();
     _initializeControllers();
-    _tabAnimationListener();
   }
 
   void _initializeControllers() {
@@ -36,21 +37,17 @@ class _HomeScreenState extends State<HomeScreen>
       length: _tabCount,
       vsync: this,
     );
-  }
 
-  void _tabAnimationListener() {
     _tabController.animation!.addListener(() {
       if (_tabController.indexIsChanging) {
-        // When tapped on a tab
         if (activeIndex != _tabController.index) {
           activeIndex = _tabController.index;
         }
       } else {
-        // When swiping between tabs
         final int temp = _tabController.animation!.value.round();
         if (activeIndex != temp) {
           activeIndex = temp;
-          _tabController.index = activeIndex; // Snaps immediately
+          _tabController.index = activeIndex;
         }
       }
     });
@@ -177,12 +174,12 @@ class _TabConfig {
 
 /// Individual animated tab with smooth transitions
 class _AnimatedTab extends StatelessWidget {
-  const _AnimatedTab({
+  _AnimatedTab({
     required this.index,
     required this.config,
     required this.controller,
   });
-
+  final logger = TaggedLogger("_AnimatedTab");
   final int index;
   final _TabConfig config;
   final TabController controller;
