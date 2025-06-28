@@ -9,6 +9,7 @@ import 'package:mobile/domain/usecases/create_new_task_usecase.dart';
 import 'package:mobile/domain/usecases/get_tasks_with_entry_usecase.dart';
 import 'package:mobile/domain/usecases/update_task_with_entry_usecase.dart';
 import 'package:mobile/ui/routine_form/bloc/routine_form_bloc.dart';
+import 'package:mobile/ui/routine_form/widgets/routine_title_input.dart';
 import 'package:mobile/ui/routine_form/widgets/repeat_section_card.dart';
 import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
 import 'package:mobile/ui/view_routine/screens/view_routine_screen.dart';
@@ -52,7 +53,7 @@ class RoutineFormScreen extends StatelessWidget {
           children: [
             _buildHeader(context),
             const SizedBox(height: 32),
-            _buildTitleInput(context, theme),
+            RoutineTitleInput(context: context, theme: theme),
             const SizedBox(height: 32),
             _buildRepeatCard(context),
             const SizedBox(height: 24),
@@ -182,50 +183,6 @@ class RoutineFormScreen extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-
-  Widget _buildTitleInput(BuildContext context, ThemeData theme) {
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: theme.colorScheme.outline.withValues(alpha: 0.2),
-        ),
-      ),
-      child: BlocBuilder<RoutineFormBloc, RoutineFormState>(
-        buildWhen: (previous, current) => previous.title != current.title,
-        builder: (context, state) {
-          return TextField(
-            controller: TextEditingController(text: state.title)
-              ..selection = TextSelection.fromPosition(
-                TextPosition(offset: state.title.length),
-              ),
-            onChanged: (value) => context.read<RoutineFormBloc>().add(
-              RoutineFormTitileUpdated(value),
-            ),
-            decoration: InputDecoration(
-              hintText: 'Enter routine name...',
-              hintStyle: TextStyle(
-                color: theme.colorScheme.onSurface.withValues(alpha: .5),
-              ),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.all(20),
-              prefixIcon: Icon(
-                Icons.edit_outlined,
-                color: theme.colorScheme.primary,
-              ),
-            ),
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.left,
-            autofocus: false,
-            textCapitalization: TextCapitalization.words,
-          );
-        },
-      ),
     );
   }
 
