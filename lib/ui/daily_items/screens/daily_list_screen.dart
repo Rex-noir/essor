@@ -17,11 +17,14 @@ class DailyListScreen extends StatefulWidget {
 class _DailyListScreenState extends State<DailyListScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
+  late PageController _pageController;
   int _currentTabIndex = 0;
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
+  bool _isAnimatingFromTab = false;
 
   final logger = AppLogger.tag("DailyListScreen");
+  bool _isUpdatingControllers = false;
 
   @override
   void initState() {
@@ -29,6 +32,9 @@ class _DailyListScreenState extends State<DailyListScreen>
     _tabController = TabController(
       length: DailyListBloc.initialDaysEachSide * 2 + 1,
       vsync: this,
+    );
+    _pageController = PageController(
+      initialPage: DailyListBloc.initialDaysEachSide,
     );
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -39,75 +45,117 @@ class _DailyListScreenState extends State<DailyListScreen>
     );
     _fadeController.forward();
 
-    // Initialize the drag controller
-    _tabController.addListener(_handleTabSelection); // Add listener once
-    _tabController.animation!.addListener(
-      _handleTabAnimation,
-    ); // Add listener once
+    // Add listeners
+    _tabController.addListener(_handleTabSelection);
   }
 
   @override
   void dispose() {
-    // Remove listeners before disposing
     _tabController.removeListener(_handleTabSelection);
-    _tabController.animation!.removeListener(_handleTabAnimation);
     _tabController.dispose();
+    _pageController.dispose();
     _fadeController.dispose();
     super.dispose();
   }
 
   void _handleTabSelection() {
-    if (_tabController.indexIsChanging) {
+    if (_tabController.indexIsChanging &&
+        !_isAnimatingFromTab &&
+        _pageController.hasClients) {
+      _isAnimatingFromTab = true;
+      _pageController
+          .animateToPage(
+            _tabController.index,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
+          )
+          .then((_) {
+            _isAnimatingFromTab = false;
+          });
+    }
+  }
+
+  void _handlePageChanged(int index) {
+    if (_isUpdatingControllers) return;
+
+    logger.debug("Page changed $index");
+    if (!_isAnimatingFromTab) {
       setState(() {
-        _currentTabIndex = _tabController.index;
+        _currentTabIndex = index;
       });
-      context.read<DailyListBloc>().add(
-        DailyListDateChanged(_tabController.index),
-      );
+      _tabController.animateTo(index);
+      context.read<DailyListBloc>().add(DailyListDateChanged(index));
     }
   }
 
-  void _handleTabAnimation() {
-    if (!_tabController.indexIsChanging) {
-      final int temp = _tabController.animation!.value.round();
-      if (_currentTabIndex != temp) {
-        setState(() {
-          _currentTabIndex = temp;
-        });
-        context.read<DailyListBloc>().add(DailyListDateChanged(temp));
-      }
-    }
-  }
+  void _updateControllers(int newLength, int selectedIndex) {
+    _isUpdatingControllers = true;
 
-  void _updateTabController(int newLength, int selectedIndex) {
     if (_tabController.length != newLength) {
-      // Dispose old listeners before re-creating
       _tabController.removeListener(_handleTabSelection);
-      _tabController.animation!.removeListener(_handleTabAnimation);
       _tabController.dispose();
 
-      logger.debug("Tab controler updated with new length: $newLength");
+      logger.debug("Controllers updated with new length: $newLength");
 
       _tabController = TabController(
         length: newLength,
         vsync: this,
         initialIndex: selectedIndex,
       );
-      // Add listeners to the new controller
-      _tabController.addListener(_handleTabSelection);
-      _tabController.animation!.addListener(_handleTabAnimation);
 
-      // Immediately update the current index as the controller is new
-      _currentTabIndex = selectedIndex;
+      _pageController.dispose();
+      _pageController = PageController(initialPage: selectedIndex);
+
+      setState(() {
+        _currentTabIndex = selectedIndex;
+      });
+
+      _tabController.addListener(_handleTabSelection);
     } else if (_currentTabIndex != selectedIndex) {
-      // If length is the same, just animate/jump to the new index
-      // This avoids disposing/recreating the controller unnecessarily.
-      _tabController.animateTo(
-        selectedIndex,
-        duration: const Duration(milliseconds: 300), // Optional animation
-        curve: Curves.easeInOut,
-      );
+      setState(() {
+        _currentTabIndex = selectedIndex;
+      });
+      _tabController.animateTo(selectedIndex);
+      if (_pageController.hasClients) {
+        _pageController.animateToPage(
+          selectedIndex,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+        );
+      }
     }
+
+    Future.delayed(const Duration(milliseconds: 250), () {
+      _isUpdatingControllers = false;
+    });
+  }
+
+  void _onTabTap(int index) {
+    _isAnimatingFromTab = true;
+    setState(() {
+      _currentTabIndex = index;
+    });
+
+    // Immediately update tab controller without animation
+    _tabController.index = index;
+
+    // Animate page controller if it's attached
+    if (_pageController.hasClients) {
+      _pageController
+          .animateToPage(
+            index,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
+          )
+          .then((_) {
+            _isAnimatingFromTab = false;
+          });
+    } else {
+      _isAnimatingFromTab = false;
+    }
+
+    // Update bloc
+    context.read<DailyListBloc>().add(DailyListDateChanged(index));
   }
 
   @override
@@ -118,7 +166,7 @@ class _DailyListScreenState extends State<DailyListScreen>
     return BlocConsumer<DailyListBloc, DailyListState>(
       listener: (context, state) {
         if (state is DailyListLoaded) {
-          _updateTabController(state.days.length, state.selectedIndex);
+          _updateControllers(state.days.length, state.selectedIndex);
         }
       },
       builder: (context, state) {
@@ -149,6 +197,7 @@ class _DailyListScreenState extends State<DailyListScreen>
                       currentTabIndex: _currentTabIndex,
                       context: context,
                       state: state,
+                      onTap: _onTabTap,
                     ),
                   Expanded(
                     child: () {
@@ -158,12 +207,14 @@ class _DailyListScreenState extends State<DailyListScreen>
                       } else if (state is DailyListError) {
                         return Center(child: Text(state.message));
                       } else if (state is DailyListLoaded) {
-                        return TabBarView(
-                          controller: _tabController,
-                          children: state.days.map((day) {
+                        return PageView.builder(
+                          controller: _pageController,
+                          onPageChanged: _handlePageChanged,
+                          itemCount: state.days.length,
+                          itemBuilder: (context, index) {
+                            final day = state.days[index];
                             final dayKey = day.toIso8601String();
-                            final isCurrent =
-                                state.days.indexOf(day) == _currentTabIndex;
+                            final isCurrent = index == _currentTabIndex;
 
                             return ListItemsPage(
                               day: dayKey,
@@ -174,7 +225,7 @@ class _DailyListScreenState extends State<DailyListScreen>
                                 // refresh logic
                               },
                             );
-                          }).toList(),
+                          },
                         );
                       } else {
                         return const SizedBox(); // fallback for unexpected state

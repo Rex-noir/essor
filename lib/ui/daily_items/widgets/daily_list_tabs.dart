@@ -9,6 +9,7 @@ class DailyListTabs extends StatelessWidget {
     required int currentTabIndex,
     required this.context,
     required this.state,
+    this.onTap,
   }) : _tabController = tabController,
        _currentTabIndex = currentTabIndex;
 
@@ -16,6 +17,7 @@ class DailyListTabs extends StatelessWidget {
   final int _currentTabIndex;
   final BuildContext context;
   final DailyListState state;
+  final Function(int index)? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +60,7 @@ class DailyListTabs extends StatelessWidget {
         overlayColor: const WidgetStatePropertyAll(Colors.transparent),
         dividerColor: Colors.transparent,
         indicatorColor: Colors.transparent,
+        onTap: onTap,
         labelPadding: const EdgeInsets.symmetric(horizontal: 6),
         splashFactory: NoSplash.splashFactory,
         tabs: days.asMap().entries.map((entry) {
