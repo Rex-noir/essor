@@ -28,17 +28,19 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
   DateTime? _currentSelectedDate;
 
   DailyListBloc(this.getHabitsForDate, this.getRoutinesForDate)
-      : super(DailyListInitial()) {
+    : super(DailyListInitial()) {
     on<DailyListInitialize>(_onInitialize);
     on<DailyListDateChanged>(_onDateChanged);
-    on<_DailyListDataUpdated>(_onDataUpdated); // Internal event for data updates
+    on<_DailyListDataUpdated>(
+      _onDataUpdated,
+    ); // Internal event for data updates
   }
 
   Future<void> _onInitialize(
     DailyListInitialize event,
     Emitter<DailyListState> emit,
   ) async {
-    logger.debug("Initializing daily list");
+    // logger.debug("Initializing daily list");
     emit(DailyListLoading());
 
     try {
@@ -50,7 +52,7 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
       final initialIndex = initialDaysEachSide;
       final selectedDate = initialDays[initialIndex];
 
-      logger.debug("Initial setup - Today: $today, Selected: $selectedDate");
+      // logger.debug("Initial setup - Today: $today, Selected: $selectedDate");
 
       _currentDays = initialDays;
       _currentSelectedIndex = initialIndex;
@@ -70,11 +72,11 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
     final currentState = state;
     if (currentState is! DailyListLoaded) return;
 
-    if(event.newIndex == currentState.selectedIndex){
+    if (event.newIndex == currentState.selectedIndex) {
       return;
     }
 
-    logger.debug("Date changed to index: ${event.newIndex}");
+    // logger.debug("Date changed to index: ${event.newIndex}");
     emit(currentState.copyWith(isLoading: true));
 
     try {
@@ -84,11 +86,11 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
       List<DateTime> newDays = currentState.days;
 
       if (newIndex <= extendThreshold) {
-        logger.debug("Extending days backwards");
+        // logger.debug("Extending days backwards");
         newDays = _extendDays(-1, currentState.days);
         newIndex = newDays.indexWhere((d) => d.isSameDay(selectedDate));
       } else if (newIndex >= currentState.days.length - extendThreshold - 1) {
-        logger.debug("Extending days forwards");
+        // logger.debug("Extending days forwards");
         newDays = _extendDays(1, currentState.days);
         newIndex = newDays.indexWhere((d) => d.isSameDay(selectedDate));
       }
@@ -97,7 +99,7 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
       _currentSelectedIndex = newIndex;
       _currentSelectedDate = selectedDate;
 
-      logger.debug("Subscribing to combined streams for date: $selectedDate");
+      // logger.debug("Subscribing to combined streams for date: $selectedDate");
       _subscribeToDataStreams(selectedDate);
     } catch (e) {
       logger.error("Failed to change date", e);
@@ -109,39 +111,51 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
     _DailyListDataUpdated event,
     Emitter<DailyListState> emit,
   ) {
-    logger.debug("Received ${event.habits.length} habits and ${event.routines.length} routines");
-    
-    emit(DailyListLoaded(
-      habits: event.habits,
-      routines: event.routines,
-      days: _currentDays,
-      selectedIndex: _currentSelectedIndex,
-      isLoading: false,
-    ));
+    // logger.debug(
+    //   "Received ${event.habits.length} habits and ${event.routines.length} routines",
+    // );
+
+    emit(
+      DailyListLoaded(
+        habits: event.habits,
+        routines: event.routines,
+        days: _currentDays,
+        selectedIndex: _currentSelectedIndex,
+        isLoading: false,
+      ),
+    );
   }
 
   void _subscribeToDataStreams(DateTime date) {
     final habitStream = getHabitsForDate.call(date);
     final routineStream = getRoutinesForDate.call(date);
 
-    final combinedStream = Rx.combineLatest2<List<HabitModel>, List<RoutineModel>, _DailyListDataUpdated>(
-      habitStream,
-      routineStream,
-      (habits, routines) => _DailyListDataUpdated(
-        habits: habits,
-        routines: routines,
-        date: date,
-      ),
-    );
+    final combinedStream =
+        Rx.combineLatest2<
+          List<HabitModel>,
+          List<RoutineModel>,
+          _DailyListDataUpdated
+        >(
+          habitStream,
+          routineStream,
+          (habits, routines) => _DailyListDataUpdated(
+            habits: habits,
+            routines: routines,
+            date: date,
+          ),
+        );
 
     // Only subscribe if this is still the current selected date
     combinedStream
-        .where((event) => event.date.isSameDay(_currentSelectedDate ?? DateTime.now()))
+        .where(
+          (event) =>
+              event.date.isSameDay(_currentSelectedDate ?? DateTime.now()),
+        )
         .listen((event) {
-      if (!isClosed) {
-        add(event);
-      }
-    });
+          if (!isClosed) {
+            add(event);
+          }
+        });
   }
 
   List<DateTime> _extendDays(int direction, List<DateTime> existingList) {
@@ -161,9 +175,9 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
       newList = [...existingList, ...append];
     }
 
-    logger.debug(
-      "Extended days from ${existingList.length} to ${newList.length}",
-    );
+    // logger.debug(
+    //   "Extended days from ${existingList.length} to ${newList.length}",
+    // );
     return newList;
   }
 }
