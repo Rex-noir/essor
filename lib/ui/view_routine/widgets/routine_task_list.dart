@@ -15,28 +15,42 @@ class RoutineTaskList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
+    return ReorderableListView.builder(
       itemCount: tasks.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 8),
+      onReorder: _onReorder,
+      buildDefaultDragHandles: false,
       itemBuilder: (context, index) {
         final task = tasks[index];
         final isCompleted = task.entry.completed;
 
-        return _TaskItem(task: task, theme: theme, isCompleted: isCompleted);
+        return Padding(
+          key: ValueKey(tasks[index].task.id), // must be stable and unique
+          padding: const EdgeInsets.only(bottom: 8),
+          child: _TaskItem(
+            task: task,
+            theme: theme,
+            isCompleted: isCompleted,
+            index: index,
+          ),
+        );
       },
     );
   }
+
+  void _onReorder(int oldIndex, int newIndex) {}
 }
 
 class _TaskItem extends StatefulWidget {
   final TaskWithEntryModel task;
   final ThemeData theme;
   final bool isCompleted;
+  final int index;
 
   const _TaskItem({
     required this.task,
     required this.theme,
     required this.isCompleted,
+    required this.index,
   });
 
   @override
@@ -64,18 +78,6 @@ class _TaskItemState extends State<_TaskItem>
   void dispose() {
     _animationController.dispose();
     super.dispose();
-  }
-
-  void _onTapDown(TapDownDetails details) {
-    _animationController.forward();
-  }
-
-  void _onTapUp(TapUpDetails details) {
-    _animationController.reverse();
-  }
-
-  void _onTapCancel() {
-    _animationController.reverse();
   }
 
   @override
@@ -113,102 +115,78 @@ class _TaskItemState extends State<_TaskItem>
                   ),
                 ],
               ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => _navigateToTaskDetails(context),
-                  onTapDown: _onTapDown,
-                  onTapUp: _onTapUp,
-                  onTapCancel: _onTapCancel,
-                  borderRadius: BorderRadius.circular(12),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        // Task Icon
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: widget.isCompleted
-                                ? colorScheme.primary.withValues(alpha: 0.1)
-                                : colorScheme.surfaceContainerHighest,
-                          ),
-                          child: Icon(
-                            AppIcons.icons[widget.task.task.iconIndex],
-                            size: 20,
-                            color: widget.isCompleted
-                                ? colorScheme.primary
-                                : colorScheme.onSurface.withValues(alpha: 0.7),
-                          ),
-                        ),
-
-                        const SizedBox(width: 12),
-
-                        // Task Content
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                widget.task.task.title,
-                                style: textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: widget.isCompleted
-                                      ? colorScheme.onSurface.withValues(
-                                          alpha: 0.7,
-                                        )
-                                      : colorScheme.onSurface,
-                                  decoration: widget.isCompleted
-                                      ? TextDecoration.lineThrough
-                                      : null,
-                                  decorationColor: colorScheme.onSurface
-                                      .withValues(alpha: 0.5),
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 2),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.schedule_outlined,
-                                    size: 14,
-                                    color: colorScheme.onSurface.withValues(
-                                      alpha: 0.5,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    formatTaskDuration(
-                                      widget.task.task.duration,
-                                    ),
-                                    style: textTheme.bodySmall?.copyWith(
-                                      color: colorScheme.onSurface.withValues(
-                                        alpha: 0.6,
-                                      ),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(width: 8),
-
-                        // Completion Checkbox
-                        _CustomCheckbox(
-                          value: widget.isCompleted,
-                          onChanged: (value) => _onTaskToggled(context, value),
-                          colorScheme: colorScheme,
-                        ),
-                      ],
-                    ),
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                leading: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: widget.isCompleted
+                        ? colorScheme.primary.withValues(alpha: 0.1)
+                        : colorScheme.surfaceContainerHighest,
+                  ),
+                  child: Icon(
+                    AppIcons.icons[widget.task.task.iconIndex],
+                    size: 20,
+                    color: widget.isCompleted
+                        ? colorScheme.primary
+                        : colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
+                title: Text(
+                  widget.task.task.title,
+                  style: textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: widget.isCompleted
+                        ? colorScheme.onSurface.withValues(alpha: 0.7)
+                        : colorScheme.onSurface,
+                    decoration: widget.isCompleted
+                        ? TextDecoration.lineThrough
+                        : null,
+                    decorationColor: colorScheme.onSurface.withValues(
+                      alpha: 0.5,
+                    ),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Row(
+                  children: [
+                    Icon(
+                      Icons.schedule_outlined,
+                      size: 14,
+                      color: colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      formatTaskDuration(widget.task.task.duration),
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurface.withValues(alpha: 0.6),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 8,
+                  children: [
+                    _CustomCheckbox(
+                      value: widget.isCompleted,
+                      onChanged: (value) => _onTaskToggled(context, value),
+                      colorScheme: colorScheme,
+                    ),
+                    ReorderableDragStartListener(
+                      index: widget.index,
+                      child: Icon(
+                        Icons.drag_handle,
+                        color: colorScheme.outline,
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () => _navigateToTaskDetails(context),
               ),
             ),
           );
