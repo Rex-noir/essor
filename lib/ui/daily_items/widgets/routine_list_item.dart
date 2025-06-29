@@ -18,17 +18,17 @@ class RoutineListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final routineColor = Colors.lightBlueAccent;
 
     return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: routineColor.withOpacity(0.3)),
-      ),
-      clipBehavior: Clip.antiAlias,
       elevation: 0,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: colorScheme.outline.withValues(alpha: 0.1)),
+      ),
       child: InkWell(
         onTap: () {
           final routineDate =
@@ -54,61 +54,69 @@ class RoutineListItem extends StatelessWidget {
             ),
           );
         },
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
+          child: Row(
             children: [
+              // Icon container
               Container(
-                width: 64,
-                height: 64,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
-                  color: routineColor.withValues(alpha: .1),
                   shape: BoxShape.circle,
+                  color: routineColor.withValues(alpha: 0.1),
                 ),
                 child: Icon(
                   AppIcons.getIcon(routine.iconIndex),
-                  color: routineColor,
-                  size: 32,
+                  color: routineColor.shade700,
+                  size: 24,
                 ),
               ),
-              const SizedBox(height: 12),
-              Text(
-                routine.title,
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: color.onSurface,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                getFrequencyIntervalLabel(routine.frequency, routine.interval),
-                style: textTheme.bodySmall?.copyWith(
-                  color: color.onSurface.withOpacity(0.6),
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const Spacer(),
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: routineColor.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    'Routine',
-                    style: textTheme.labelSmall?.copyWith(
-                      color: routineColor,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 0.3,
+
+              const SizedBox(width: 16),
+
+              // Content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      routine.title,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
+                    const SizedBox(height: 4),
+                    Text(
+                      getFrequencyIntervalLabel(
+                        routine.frequency,
+                        routine.interval,
+                      ),
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurface.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Status badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: routineColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Routine',
+                  style: textTheme.labelSmall?.copyWith(
+                    color: routineColor.shade700,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 11,
                   ),
                 ),
               ),
