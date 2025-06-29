@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile/core/config/app_icons.dart';
-import 'package:mobile/domain/models/task_model.dart';
 import 'package:mobile/domain/models/task_with_entry_model.dart';
 import 'package:mobile/domain/repositories/routine_repository.dart';
 import 'package:mobile/domain/usecases/create_new_routine_usecase.dart';
@@ -10,8 +8,7 @@ import 'package:mobile/ui/routine_form/bloc/routine_form_bloc.dart';
 import 'package:mobile/ui/routine_form/screens/routine_form_screen.dart';
 import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
 import 'package:mobile/ui/view_routine/screens/new_routine_task_screen.dart';
-import 'package:mobile/ui/view_routine/screens/view_routine_task_screen.dart';
-import 'package:mobile/ui/view_routine/widgets/routine_task_duration.dart';
+import 'package:mobile/ui/view_routine/widgets/routine_task_list.dart';
 import 'package:mobile/utils/app_logger.dart';
 
 class ViewRoutineScreen extends StatelessWidget {
@@ -127,178 +124,7 @@ class ViewRoutineScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Expanded(
                     child: tasks.isNotEmpty
-                        ? ListView.separated(
-                            itemCount: tasks.length,
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 12),
-                            itemBuilder: (context, index) {
-                              final task = tasks[index];
-                              return Dismissible(
-                                key: Key(task.task.id),
-                                background: Container(
-                                  alignment: Alignment.centerLeft,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.errorContainer,
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Icon(
-                                    Icons.delete_outline,
-                                    color: theme.colorScheme.onErrorContainer,
-                                  ),
-                                ),
-                                secondaryBackground: Container(
-                                  alignment: Alignment.centerRight,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.errorContainer,
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Icon(
-                                    Icons.delete_outline,
-                                    color: theme.colorScheme.onErrorContainer,
-                                  ),
-                                ),
-                                onDismissed: (direction) {
-                                  context.read<ViewRoutineBloc>().add(
-                                    ViewRoutineTaskRemoved(task.task),
-                                  );
-
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      behavior: SnackBarBehavior.floating,
-                                      backgroundColor:
-                                          theme.colorScheme.errorContainer,
-                                      content: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.delete,
-                                            color: theme
-                                                .colorScheme
-                                                .onErrorContainer,
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: Text(
-                                              'Task removed.',
-                                              style: TextStyle(
-                                                color: theme
-                                                    .colorScheme
-                                                    .onErrorContainer,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    padding: EdgeInsets.zero,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    backgroundColor: theme
-                                        .colorScheme
-                                        .surfaceContainerHighest, // Set here
-                                  ),
-                                  onPressed: () async {
-                                    final bloc = context
-                                        .read<ViewRoutineBloc>();
-
-                                    final updatedTask =
-                                        await Navigator.of(
-                                          context,
-                                        ).push<TaskModel>(
-                                          MaterialPageRoute(
-                                            builder: (_) =>
-                                                ViewRoutineTaskScreen(
-                                                  task: task.task,
-                                                ),
-                                          ),
-                                        );
-                                    if (updatedTask != null) {
-                                      bloc.add(
-                                        ViewRoutineTaskUpdated(
-                                          task.copyWith(task: updatedTask),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  child: Ink(
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                AppIcons.icons[task
-                                                    .task
-                                                    .iconIndex],
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Text(
-                                                task.task.title,
-                                                style:
-                                                    theme.textTheme.bodyMedium,
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                formatTaskDuration(
-                                                  task.task.duration,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Checkbox(
-                                                value: task.entry.completed,
-                                                side: BorderSide(
-                                                  color: theme
-                                                      .colorScheme
-                                                      .primary
-                                                      .withValues(alpha: 0.7),
-                                                ),
-                                                shape: const CircleBorder(),
-                                                onChanged: (value) {
-                                                  context
-                                                      .read<ViewRoutineBloc>()
-                                                      .add(
-                                                        ViewRoutineTaskUpdated(
-                                                          task.copyWith(
-                                                            entry: task.entry
-                                                                .copyWith(
-                                                                  completed:
-                                                                      value,
-                                                                ),
-                                                          ),
-                                                        ),
-                                                      );
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          )
+                        ? RoutineTaskList(tasks: tasks, theme: theme)
                         : Center(
                             child: Text(
                               'Empty Task List',
