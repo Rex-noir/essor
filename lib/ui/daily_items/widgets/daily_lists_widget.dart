@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
+import 'package:mobile/ui/daily_items/widgets/daily_list_empty_widget.dart';
+
 import 'package:mobile/ui/daily_items/widgets/habit_list_item.dart';
 import 'package:mobile/ui/daily_items/widgets/routine_list_item.dart';
 
@@ -85,6 +87,30 @@ class _ListItemsPageState extends State<ListItemsPage>
     super.dispose();
   }
 
+  // Calculate responsive grid columns based on screen width
+  int _calculateCrossAxisCount(double screenWidth) {
+    if (screenWidth >= 1200) {
+      return 4; // Desktop
+    } else if (screenWidth >= 800) {
+      return 3; // Tablet landscape
+    } else if (screenWidth >= 600) {
+      return 2; // Tablet portrait
+    } else {
+      return 2; // Mobile - now shows 2 columns instead of 1
+    }
+  }
+
+  // Calculate responsive item spacing
+  double _calculateSpacing(double screenWidth) {
+    if (screenWidth >= 800) {
+      return 16.0; // Larger screens
+    } else if (screenWidth >= 400) {
+      return 12.0; // Medium mobile screens
+    } else {
+      return 1; // Smaller mobile screens
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -108,8 +134,12 @@ class _ListItemsPageState extends State<ListItemsPage>
                   opacity: widget.isLoading ? 0.7 : 1.0,
                   duration: const Duration(milliseconds: 300),
                   child: widget.items.isEmpty
-                      ? _buildEmptyState(theme, colorScheme)
-                      : _buildItemsList(),
+                      ? DailyListEmptyWidget(
+                          fadeAnimation: _fadeAnimation,
+                          theme: theme,
+                          colorScheme: colorScheme,
+                        )
+                      : _buildItemsGrid(),
                 ),
 
                 // Loading overlay
@@ -131,71 +161,56 @@ class _ListItemsPageState extends State<ListItemsPage>
     );
   }
 
-  Widget _buildEmptyState(ThemeData theme, ColorScheme colorScheme) {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0, 0.2),
-          end: Offset.zero,
-        ).animate(_fadeAnimation),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TweenAnimationBuilder<double>(
-                tween: Tween(begin: 0.0, end: 1.0),
-                duration: const Duration(milliseconds: 800),
-                curve: Curves.elasticOut,
-                builder: (context, scale, child) {
-                  return Transform.scale(
-                    scale: scale,
-                    child: Icon(
-                      Icons.add_box_outlined,
-                      size: 80,
-                      color: colorScheme.onSurface.withValues(alpha: .4),
-                    ),
+  Widget _buildItemsGrid() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = constraints.maxWidth;
+        final crossAxisCount = _calculateCrossAxisCount(screenWidth);
+        final spacing = _calculateSpacing(screenWidth);
+
+        return CustomScrollView(
+          key: PageStorageKey('tab_${widget.day}'),
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverPadding(
+              padding: EdgeInsets.only(bottom: 80),
+              sliver: SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: spacing,
+                  mainAxisSpacing: spacing,
+                  childAspectRatio: _calculateChildAspectRatio(crossAxisCount),
+                ),
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  return _AnimatedGridItem(
+                    index: index,
+                    animation: _fadeAnimation,
+                    child: _buildListItem(widget.items[index]),
                   );
-                },
+                }, childCount: widget.items.length),
               ),
-              const SizedBox(height: 16),
-              Text(
-                "No items for this day yet!",
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Add some habits or routines to get started.",
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurface.withValues(alpha: 0.5),
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
+            ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 100), // adjust height as needed
+            ),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildItemsList() {
-    return ListView.separated(
-      key: PageStorageKey('tab_${widget.day}'),
-      padding: const EdgeInsets.only(bottom: 80),
-      physics: const AlwaysScrollableScrollPhysics(),
-      separatorBuilder: (context, index) => const SizedBox(height: 8),
-      itemBuilder: (context, index) {
-        return _AnimatedListItem(
-          index: index,
-          animation: _fadeAnimation,
-          child: _buildListItem(widget.items[index]),
-        );
-      },
-      itemCount: widget.items.length,
-    );
+  // Calculate aspect ratio based on number of columns
+  double _calculateChildAspectRatio(int crossAxisCount) {
+    switch (crossAxisCount) {
+      case 2:
+        return 0.75; // Taller items on mobile
+      case 3:
+        return 0.85; // More height on tablets
+      case 4:
+        return 0.95; // Slightly taller on desktop
+      default:
+        return 0.8;
+    }
   }
 
   Widget _buildListItem(DailyItem item) {
@@ -212,12 +227,12 @@ class _ListItemsPageState extends State<ListItemsPage>
   bool get wantKeepAlive => true;
 }
 
-class _AnimatedListItem extends StatelessWidget {
+class _AnimatedGridItem extends StatelessWidget {
   final int index;
   final Animation<double> animation;
   final Widget child;
 
-  const _AnimatedListItem({
+  const _AnimatedGridItem({
     required this.index,
     required this.animation,
     required this.child,
@@ -225,12 +240,12 @@ class _AnimatedListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Stagger the animation based on the index
+    // Stagger the animation based on the index with a slightly different timing for grid
     final staggeredAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: animation,
         curve: Interval(
-          (index * 0.1).clamp(0.0, 1.0), // Stagger by 100ms per item
+          (index * 0.05).clamp(0.0, 0.8), // Faster stagger for grid items
           1.0,
           curve: Curves.easeOutCubic,
         ),
@@ -244,11 +259,11 @@ class _AnimatedListItem extends StatelessWidget {
           opacity: staggeredAnimation,
           child: SlideTransition(
             position: Tween<Offset>(
-              begin: const Offset(0, 0.3),
+              begin: const Offset(0, 0.2),
               end: Offset.zero,
             ).animate(staggeredAnimation),
             child: Transform.scale(
-              scale: 0.8 + (0.2 * staggeredAnimation.value),
+              scale: 0.9 + (0.1 * staggeredAnimation.value),
               child: this.child,
             ),
           ),

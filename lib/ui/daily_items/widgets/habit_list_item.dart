@@ -14,107 +14,76 @@ class HabitListItem extends StatelessWidget {
     final habitColor = Colors.amberAccent;
 
     return Card(
-      elevation: 0, // Soft appearance
+      elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16), // Softer corners
-        side: BorderSide(color: habitColor.withValues(alpha: 0.5)),
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: habitColor.withValues(alpha: .3)),
       ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 24,
-        ), // Increased padding for larger size
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Row(
-                spacing: 16, // Increased spacing
-                children: [
-                  Container(
-                    width: 56, // Larger icon container
-                    height: 56,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: habitColor.withValues(
-                        alpha: 0.1,
-                      ), // Soft background
-                      border: Border.all(
-                        color: habitColor.withValues(alpha: .3),
-                        width: 1.5,
-                      ),
-                    ),
-                    child: Icon(
-                      AppIcons.getIcon(habit.iconIndex),
-                      color: colorScheme.tertiary,
-                      size: 26, // Larger icon
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          habit.title,
-                          style: textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '30/480',
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurface.withValues(alpha: .6),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () {
+          // Optional: navigate or show details
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: habitColor.withValues(alpha: .1),
+                ),
+                child: Icon(
+                  AppIcons.getIcon(habit.iconIndex),
+                  color: habitColor,
+                  size: 32,
+                ),
               ),
-            ),
-            PopupMenuButton<String>(
-              onSelected: (value) {
-                // Handle menu selection
-                switch (value) {
-                  case 'edit':
-                    // Handle edit
-                    break;
-                  case 'delete':
-                    // Handle delete
-                    break;
-                }
-              },
-              itemBuilder: (BuildContext context) => [
-                const PopupMenuItem<String>(
-                  value: 'edit',
-                  child: Row(
-                    children: [
-                      Icon(Icons.edit_outlined),
-                      SizedBox(width: 8),
-                      Text('Edit'),
-                    ],
+              const SizedBox(height: 12),
+              Text(
+                habit.title,
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurface,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '30 / 480', // Placeholder, replace with real progress info
+                style: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurface.withValues(alpha: .6),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const Spacer(),
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: habitColor.withValues(alpha: .15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    'Habit',
+                    style: textTheme.labelSmall?.copyWith(
+                      color: habitColor.shade700,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.3,
+                    ),
                   ),
                 ),
-                const PopupMenuItem<String>(
-                  value: 'delete',
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete_outlined),
-                      SizedBox(width: 8),
-                      Text('Delete'),
-                    ],
-                  ),
-                ),
-              ],
-              padding: EdgeInsets.zero,
-              child: Icon(
-                Icons.more_horiz, // Horizontal three dots
-                color: colorScheme.onSurface.withValues(alpha: 0.6),
-                size: 24,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
