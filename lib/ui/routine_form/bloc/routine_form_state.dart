@@ -11,7 +11,7 @@ class RoutineFormState extends Equatable {
   final TimeOfDay startTime;
   final String title;
   final int iconIndex;
-  final RoutineFormMode? mode;
+  final RoutineFormMode mode;
   final String id;
 
   const RoutineFormState({

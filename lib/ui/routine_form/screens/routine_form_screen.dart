@@ -22,7 +22,7 @@ class RoutineFormScreen extends StatelessWidget {
     required RoutineModel routine,
   }) async {
     final taskRepo = context.read<TaskRepository>();
-
+    Navigator.pop(context);
     await Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -45,7 +45,21 @@ class RoutineFormScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
-      appBar: _buildAppBar(context, colorScheme),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: BlocBuilder<RoutineFormBloc, RoutineFormState>(
+          buildWhen: (prev, curr) => prev.mode != curr.mode,
+          builder: (context, state) {
+            return _buildAppBar(
+              context,
+              Theme.of(context).colorScheme,
+              state.mode == RoutineFormMode.create
+                  ? "New Routine"
+                  : "Edit Routine",
+            );
+          },
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -103,12 +117,13 @@ class RoutineFormScreen extends StatelessWidget {
   PreferredSizeWidget _buildAppBar(
     BuildContext context,
     ColorScheme colorScheme,
+    String label,
   ) {
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.transparent,
       title: Text(
-        "New Routine",
+        label,
         style: TextStyle(
           fontWeight: FontWeight.w600,
           color: colorScheme.onSurface,
