@@ -37,6 +37,7 @@ class RoutineFormBloc extends Bloc<RoutineFormEvent, RoutineFormState> {
     on<RoutineFormSubmitRequested>(_onRoutineSubmitRequested);
     on<RoutineFormInitial>(_onInitialize);
   }
+
   FutureOr<void> _onChangeFrequency(
     RoutineFormFrequencyUpated event,
     Emitter<RoutineFormState> emit,
@@ -81,7 +82,7 @@ class RoutineFormBloc extends Bloc<RoutineFormEvent, RoutineFormState> {
       logger.debug("Updating routine");
       await _updateRoutineUsecase(routine);
     }
-    event.onSubmit(routine: routine);
+    event.onSubmit(routine: routine, mode: state.mode);
   }
 
   void _onTitleChanged(

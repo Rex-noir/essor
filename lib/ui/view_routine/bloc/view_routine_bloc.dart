@@ -18,6 +18,7 @@ class ViewRoutineBloc extends Bloc<ViewRoutineEvent, ViewRoutineState> {
   final CreateNewTaskUsecase createNewTaskUsecase;
   final UpdateTaskWithEntryUsecase updateTaskWithEntryUsecase;
   final logger = TaggedLogger("ViewRoutineBloc");
+
   ViewRoutineBloc({
     required this.getTasksWithEntryUsecase,
     required this.createNewTaskUsecase,
@@ -27,6 +28,7 @@ class ViewRoutineBloc extends Bloc<ViewRoutineEvent, ViewRoutineState> {
     on<ViewRoutineTaskUpdated>(_onViewRoutineTaskUpdated);
     on<ViewRoutineNewTaskAdded>(_onNewTaskAdded);
     on<ViewRoutineTaskRemoved>(_onViewRoutineTaskRemoved);
+    on<ViewRoutineTaskOnReorder>(_onViewRoutineTaskOnReorder);
   }
 
   Future<void> _onViewRoutineStarted(
@@ -93,5 +95,24 @@ class ViewRoutineBloc extends Bloc<ViewRoutineEvent, ViewRoutineState> {
         .where((task) => task.task.id != event.task.id)
         .toList();
     emit(currentState.copyWith(tasks: newTasks));
+  }
+
+  FutureOr<void> _onViewRoutineTaskOnReorder(
+    ViewRoutineTaskOnReorder event,
+    Emitter<ViewRoutineState> emit,
+  ) async {
+    if (state is! ViewRoutineLoaded) return;
+
+    final currentState = state as ViewRoutineLoaded;
+
+    emit(currentState.copyWith(tasks: event.reorderedTasks));
+
+    // Persist updated order
+    for (final taskWithEntry in event.reorderedTasks) {
+      await updateTaskWithEntryUsecase(taskWithEntry);
+      logger.debug(
+        "Updated task order: ${taskWithEntry.task.title} -> ${taskWithEntry.task.order}",
+      );
+    }
   }
 }

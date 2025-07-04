@@ -1919,12 +1919,10 @@ class $TasksTableTable extends TasksTable
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
-  static const VerificationMeta _importanceMeta = const VerificationMeta(
-    'importance',
-  );
+  static const VerificationMeta _orderMeta = const VerificationMeta('order');
   @override
-  late final GeneratedColumn<int> importance = GeneratedColumn<int>(
-    'importance',
+  late final GeneratedColumn<int> order = GeneratedColumn<int>(
+    'order',
     aliasedName,
     false,
     type: DriftSqlType.int,
@@ -1959,7 +1957,7 @@ class $TasksTableTable extends TasksTable
     title,
     description,
     iconIndex,
-    importance,
+    order,
     duration,
     routineId,
   ];
@@ -2003,13 +2001,13 @@ class $TasksTableTable extends TasksTable
         iconIndex.isAcceptableOrUnknown(data['icon_index']!, _iconIndexMeta),
       );
     }
-    if (data.containsKey('importance')) {
+    if (data.containsKey('order')) {
       context.handle(
-        _importanceMeta,
-        importance.isAcceptableOrUnknown(data['importance']!, _importanceMeta),
+        _orderMeta,
+        order.isAcceptableOrUnknown(data['order']!, _orderMeta),
       );
     } else if (isInserting) {
-      context.missing(_importanceMeta);
+      context.missing(_orderMeta);
     }
     if (data.containsKey('routine_id')) {
       context.handle(
@@ -2042,9 +2040,9 @@ class $TasksTableTable extends TasksTable
         DriftSqlType.int,
         data['${effectivePrefix}icon_index'],
       )!,
-      importance: attachedDatabase.typeMapping.read(
+      order: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}importance'],
+        data['${effectivePrefix}order'],
       )!,
       duration: $TasksTableTable.$converterduration.fromSql(
         attachedDatabase.typeMapping.read(
@@ -2073,7 +2071,7 @@ class Task extends DataClass implements Insertable<Task> {
   final String title;
   final String? description;
   final int iconIndex;
-  final int importance;
+  final int order;
   final Duration duration;
   final String? routineId;
   const Task({
@@ -2081,7 +2079,7 @@ class Task extends DataClass implements Insertable<Task> {
     required this.title,
     this.description,
     required this.iconIndex,
-    required this.importance,
+    required this.order,
     required this.duration,
     this.routineId,
   });
@@ -2094,7 +2092,7 @@ class Task extends DataClass implements Insertable<Task> {
       map['description'] = Variable<String>(description);
     }
     map['icon_index'] = Variable<int>(iconIndex);
-    map['importance'] = Variable<int>(importance);
+    map['order'] = Variable<int>(order);
     {
       map['duration'] = Variable<int>(
         $TasksTableTable.$converterduration.toSql(duration),
@@ -2114,7 +2112,7 @@ class Task extends DataClass implements Insertable<Task> {
           ? const Value.absent()
           : Value(description),
       iconIndex: Value(iconIndex),
-      importance: Value(importance),
+      order: Value(order),
       duration: Value(duration),
       routineId: routineId == null && nullToAbsent
           ? const Value.absent()
@@ -2132,7 +2130,7 @@ class Task extends DataClass implements Insertable<Task> {
       title: serializer.fromJson<String>(json['title']),
       description: serializer.fromJson<String?>(json['description']),
       iconIndex: serializer.fromJson<int>(json['iconIndex']),
-      importance: serializer.fromJson<int>(json['importance']),
+      order: serializer.fromJson<int>(json['order']),
       duration: serializer.fromJson<Duration>(json['duration']),
       routineId: serializer.fromJson<String?>(json['routineId']),
     );
@@ -2145,7 +2143,7 @@ class Task extends DataClass implements Insertable<Task> {
       'title': serializer.toJson<String>(title),
       'description': serializer.toJson<String?>(description),
       'iconIndex': serializer.toJson<int>(iconIndex),
-      'importance': serializer.toJson<int>(importance),
+      'order': serializer.toJson<int>(order),
       'duration': serializer.toJson<Duration>(duration),
       'routineId': serializer.toJson<String?>(routineId),
     };
@@ -2156,7 +2154,7 @@ class Task extends DataClass implements Insertable<Task> {
     String? title,
     Value<String?> description = const Value.absent(),
     int? iconIndex,
-    int? importance,
+    int? order,
     Duration? duration,
     Value<String?> routineId = const Value.absent(),
   }) => Task(
@@ -2164,7 +2162,7 @@ class Task extends DataClass implements Insertable<Task> {
     title: title ?? this.title,
     description: description.present ? description.value : this.description,
     iconIndex: iconIndex ?? this.iconIndex,
-    importance: importance ?? this.importance,
+    order: order ?? this.order,
     duration: duration ?? this.duration,
     routineId: routineId.present ? routineId.value : this.routineId,
   );
@@ -2176,9 +2174,7 @@ class Task extends DataClass implements Insertable<Task> {
           ? data.description.value
           : this.description,
       iconIndex: data.iconIndex.present ? data.iconIndex.value : this.iconIndex,
-      importance: data.importance.present
-          ? data.importance.value
-          : this.importance,
+      order: data.order.present ? data.order.value : this.order,
       duration: data.duration.present ? data.duration.value : this.duration,
       routineId: data.routineId.present ? data.routineId.value : this.routineId,
     );
@@ -2191,7 +2187,7 @@ class Task extends DataClass implements Insertable<Task> {
           ..write('title: $title, ')
           ..write('description: $description, ')
           ..write('iconIndex: $iconIndex, ')
-          ..write('importance: $importance, ')
+          ..write('order: $order, ')
           ..write('duration: $duration, ')
           ..write('routineId: $routineId')
           ..write(')'))
@@ -2204,7 +2200,7 @@ class Task extends DataClass implements Insertable<Task> {
     title,
     description,
     iconIndex,
-    importance,
+    order,
     duration,
     routineId,
   );
@@ -2216,7 +2212,7 @@ class Task extends DataClass implements Insertable<Task> {
           other.title == this.title &&
           other.description == this.description &&
           other.iconIndex == this.iconIndex &&
-          other.importance == this.importance &&
+          other.order == this.order &&
           other.duration == this.duration &&
           other.routineId == this.routineId);
 }
@@ -2226,7 +2222,7 @@ class TaskCompanion extends UpdateCompanion<Task> {
   final Value<String> title;
   final Value<String?> description;
   final Value<int> iconIndex;
-  final Value<int> importance;
+  final Value<int> order;
   final Value<Duration> duration;
   final Value<String?> routineId;
   final Value<int> rowid;
@@ -2235,7 +2231,7 @@ class TaskCompanion extends UpdateCompanion<Task> {
     this.title = const Value.absent(),
     this.description = const Value.absent(),
     this.iconIndex = const Value.absent(),
-    this.importance = const Value.absent(),
+    this.order = const Value.absent(),
     this.duration = const Value.absent(),
     this.routineId = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2245,20 +2241,20 @@ class TaskCompanion extends UpdateCompanion<Task> {
     required String title,
     this.description = const Value.absent(),
     this.iconIndex = const Value.absent(),
-    required int importance,
+    required int order,
     required Duration duration,
     this.routineId = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        title = Value(title),
-       importance = Value(importance),
+       order = Value(order),
        duration = Value(duration);
   static Insertable<Task> custom({
     Expression<String>? id,
     Expression<String>? title,
     Expression<String>? description,
     Expression<int>? iconIndex,
-    Expression<int>? importance,
+    Expression<int>? order,
     Expression<int>? duration,
     Expression<String>? routineId,
     Expression<int>? rowid,
@@ -2268,7 +2264,7 @@ class TaskCompanion extends UpdateCompanion<Task> {
       if (title != null) 'title': title,
       if (description != null) 'description': description,
       if (iconIndex != null) 'icon_index': iconIndex,
-      if (importance != null) 'importance': importance,
+      if (order != null) 'order': order,
       if (duration != null) 'duration': duration,
       if (routineId != null) 'routine_id': routineId,
       if (rowid != null) 'rowid': rowid,
@@ -2280,7 +2276,7 @@ class TaskCompanion extends UpdateCompanion<Task> {
     Value<String>? title,
     Value<String?>? description,
     Value<int>? iconIndex,
-    Value<int>? importance,
+    Value<int>? order,
     Value<Duration>? duration,
     Value<String?>? routineId,
     Value<int>? rowid,
@@ -2290,7 +2286,7 @@ class TaskCompanion extends UpdateCompanion<Task> {
       title: title ?? this.title,
       description: description ?? this.description,
       iconIndex: iconIndex ?? this.iconIndex,
-      importance: importance ?? this.importance,
+      order: order ?? this.order,
       duration: duration ?? this.duration,
       routineId: routineId ?? this.routineId,
       rowid: rowid ?? this.rowid,
@@ -2312,8 +2308,8 @@ class TaskCompanion extends UpdateCompanion<Task> {
     if (iconIndex.present) {
       map['icon_index'] = Variable<int>(iconIndex.value);
     }
-    if (importance.present) {
-      map['importance'] = Variable<int>(importance.value);
+    if (order.present) {
+      map['order'] = Variable<int>(order.value);
     }
     if (duration.present) {
       map['duration'] = Variable<int>(
@@ -2336,7 +2332,7 @@ class TaskCompanion extends UpdateCompanion<Task> {
           ..write('title: $title, ')
           ..write('description: $description, ')
           ..write('iconIndex: $iconIndex, ')
-          ..write('importance: $importance, ')
+          ..write('order: $order, ')
           ..write('duration: $duration, ')
           ..write('routineId: $routineId, ')
           ..write('rowid: $rowid')
@@ -3659,7 +3655,7 @@ typedef $$TasksTableTableCreateCompanionBuilder =
       required String title,
       Value<String?> description,
       Value<int> iconIndex,
-      required int importance,
+      required int order,
       required Duration duration,
       Value<String?> routineId,
       Value<int> rowid,
@@ -3670,7 +3666,7 @@ typedef $$TasksTableTableUpdateCompanionBuilder =
       Value<String> title,
       Value<String?> description,
       Value<int> iconIndex,
-      Value<int> importance,
+      Value<int> order,
       Value<Duration> duration,
       Value<String?> routineId,
       Value<int> rowid,
@@ -3752,8 +3748,8 @@ class $$TasksTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get importance => $composableBuilder(
-    column: $table.importance,
+  ColumnFilters<int> get order => $composableBuilder(
+    column: $table.order,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3841,8 +3837,8 @@ class $$TasksTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get importance => $composableBuilder(
-    column: $table.importance,
+  ColumnOrderings<int> get order => $composableBuilder(
+    column: $table.order,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3898,10 +3894,8 @@ class $$TasksTableTableAnnotationComposer
   GeneratedColumn<int> get iconIndex =>
       $composableBuilder(column: $table.iconIndex, builder: (column) => column);
 
-  GeneratedColumn<int> get importance => $composableBuilder(
-    column: $table.importance,
-    builder: (column) => column,
-  );
+  GeneratedColumn<int> get order =>
+      $composableBuilder(column: $table.order, builder: (column) => column);
 
   GeneratedColumnWithTypeConverter<Duration, int> get duration =>
       $composableBuilder(column: $table.duration, builder: (column) => column);
@@ -3987,7 +3981,7 @@ class $$TasksTableTableTableManager
                 Value<String> title = const Value.absent(),
                 Value<String?> description = const Value.absent(),
                 Value<int> iconIndex = const Value.absent(),
-                Value<int> importance = const Value.absent(),
+                Value<int> order = const Value.absent(),
                 Value<Duration> duration = const Value.absent(),
                 Value<String?> routineId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -3996,7 +3990,7 @@ class $$TasksTableTableTableManager
                 title: title,
                 description: description,
                 iconIndex: iconIndex,
-                importance: importance,
+                order: order,
                 duration: duration,
                 routineId: routineId,
                 rowid: rowid,
@@ -4007,7 +4001,7 @@ class $$TasksTableTableTableManager
                 required String title,
                 Value<String?> description = const Value.absent(),
                 Value<int> iconIndex = const Value.absent(),
-                required int importance,
+                required int order,
                 required Duration duration,
                 Value<String?> routineId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -4016,7 +4010,7 @@ class $$TasksTableTableTableManager
                 title: title,
                 description: description,
                 iconIndex: iconIndex,
-                importance: importance,
+                order: order,
                 duration: duration,
                 routineId: routineId,
                 rowid: rowid,

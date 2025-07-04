@@ -8,10 +8,16 @@ import 'package:mobile/ui/view_routine/screens/view_routine_task_screen.dart';
 import 'package:mobile/ui/view_routine/widgets/routine_task_duration.dart';
 
 class RoutineTaskList extends StatelessWidget {
-  const RoutineTaskList({super.key, required this.tasks, required this.theme});
+  const RoutineTaskList({
+    super.key,
+    required this.tasks,
+    required this.theme,
+    required this.onReorderCompleted,
+  });
 
   final List<TaskWithEntryModel> tasks;
   final ThemeData theme;
+  final void Function(List<TaskWithEntryModel>) onReorderCompleted;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +43,25 @@ class RoutineTaskList extends StatelessWidget {
     );
   }
 
-  void _onReorder(int oldIndex, int newIndex) {}
+  void _onReorder(int oldIndex, int newIndex) {
+    final updated = List<TaskWithEntryModel>.from(tasks);
+
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+
+    final movedTask = updated.removeAt(oldIndex);
+    updated.insert(newIndex, movedTask);
+
+    final reordered = updated.asMap().entries.map((entry) {
+      final i = entry.key;
+      final model = entry.value;
+      return model.copyWith(task: model.task.copyWith(order: i));
+    }).toList();
+
+    // Let parent handle dispatching event and updating state
+    onReorderCompleted(reordered);
+  }
 }
 
 class _TaskItem extends StatefulWidget {

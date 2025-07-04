@@ -3,7 +3,7 @@ class TaskModel {
   final String title;
   final String? description;
   final int iconIndex;
-  final int importance;
+  final int order;
   final Duration duration;
   final String? routineId;
 
@@ -12,7 +12,7 @@ class TaskModel {
     required this.title,
     this.description,
     this.iconIndex = 0,
-    required this.importance,
+    required this.order,
     required this.duration,
     this.routineId,
   });
@@ -22,7 +22,7 @@ class TaskModel {
     String? title,
     String? description,
     int? iconIndex,
-    int? importance,
+    int? order,
     Duration? duration,
     String? routineId,
   }) {
@@ -31,16 +31,16 @@ class TaskModel {
       title: title ?? this.title,
       description: description ?? this.description,
       iconIndex: iconIndex ?? this.iconIndex,
-      importance: importance ?? this.importance,
+      order: order ?? this.order,
       duration: duration ?? this.duration,
       routineId: routineId ?? this.routineId,
     );
   }
-  
+
   @override
   String toString() {
     return 'TaskModel(id: $id, title: $title, description: $description, '
-        'iconIndex: $iconIndex, importance: $importance, duration: $duration, '
+        'iconIndex: $iconIndex, order: $order, duration: $duration, '
         'routineId: $routineId)';
   }
 }

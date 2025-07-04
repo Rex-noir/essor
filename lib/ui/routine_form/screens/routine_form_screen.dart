@@ -9,8 +9,8 @@ import 'package:mobile/domain/usecases/create_new_task_usecase.dart';
 import 'package:mobile/domain/usecases/get_tasks_with_entry_usecase.dart';
 import 'package:mobile/domain/usecases/update_task_with_entry_usecase.dart';
 import 'package:mobile/ui/routine_form/bloc/routine_form_bloc.dart';
-import 'package:mobile/ui/routine_form/widgets/routine_title_input.dart';
 import 'package:mobile/ui/routine_form/widgets/repeat_section_card.dart';
+import 'package:mobile/ui/routine_form/widgets/routine_title_input.dart';
 import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
 import 'package:mobile/ui/view_routine/screens/view_routine_screen.dart';
 
@@ -20,9 +20,12 @@ class RoutineFormScreen extends StatelessWidget {
   void onRoutineSubmit({
     required BuildContext context,
     required RoutineModel routine,
+    required RoutineFormMode mode,
   }) async {
     final taskRepo = context.read<TaskRepository>();
-    Navigator.pop(context);
+    if (mode == RoutineFormMode.edit) {
+      Navigator.pop(context);
+    }
     await Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -238,12 +241,17 @@ class RoutineFormScreen extends StatelessWidget {
                     ? () {
                         context.read<RoutineFormBloc>().add(
                           RoutineFormSubmitRequested(
-                            onSubmit: ({required RoutineModel routine}) {
-                              onRoutineSubmit(
-                                context: context,
-                                routine: routine,
-                              );
-                            },
+                            onSubmit:
+                                ({
+                                  required RoutineModel routine,
+                                  required RoutineFormMode mode,
+                                }) {
+                                  onRoutineSubmit(
+                                    context: context,
+                                    mode: mode,
+                                    routine: routine,
+                                  );
+                                },
                           ),
                         );
                       }

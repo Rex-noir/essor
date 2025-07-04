@@ -21,7 +21,16 @@ class ViewRoutineLoaded extends ViewRoutineState {
   @override
   List<Object?> get props => [routine, tasks];
 
-  ViewRoutineLoaded copyWith({RoutineModel? routine, List<TaskWithEntryModel>? tasks}) {
+  List<TaskWithEntryModel> get sortedTasks {
+    final sorted = List<TaskWithEntryModel>.from(tasks);
+    sorted.sort((a, b) => a.task.order.compareTo(b.task.order));
+    return sorted;
+  }
+
+  ViewRoutineLoaded copyWith({
+    RoutineModel? routine,
+    List<TaskWithEntryModel>? tasks,
+  }) {
     return ViewRoutineLoaded(
       routine: routine ?? this.routine,
       tasks: tasks ?? this.tasks,

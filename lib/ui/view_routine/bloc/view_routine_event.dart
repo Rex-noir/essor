@@ -39,3 +39,12 @@ class ViewRoutineTaskRemoved extends ViewRoutineEvent {
   @override
   List<Object> get props => [task];
 }
+
+class ViewRoutineTaskOnReorder extends ViewRoutineEvent {
+  final List<TaskWithEntryModel> reorderedTasks;
+
+  const ViewRoutineTaskOnReorder(this.reorderedTasks);
+
+  @override
+  List<Object> get props => [reorderedTasks];
+}

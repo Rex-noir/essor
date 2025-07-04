@@ -21,7 +21,7 @@ class TaskWithEntryDto {
           title: model.task.title,
           description: model.task.description,
           iconIndex: model.task.iconIndex,
-          importance: model.task.importance,
+          order: model.task.order,
         ),
         TaskEntry(
           completed: model.entry.completed,

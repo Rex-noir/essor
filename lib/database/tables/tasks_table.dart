@@ -11,7 +11,7 @@ class TasksTable extends Table {
   TextColumn get description => text().nullable()();
   IntColumn get iconIndex => integer().withDefault(const Constant(0))();
 
-  IntColumn get importance => integer()();
+  IntColumn get order => integer()();
 
   // Storing duration as total seconds
   IntColumn get duration => integer().map(const DurationConverter())();
@@ -28,17 +28,17 @@ extension TaskExtensions on Task {
     title: title,
     description: description,
     iconIndex: iconIndex,
-    importance: importance,
+    order: order,
     duration: duration,
     routineId: routineId,
   );
-  
-  Task fromModel(TaskModel model)=>Task(
+
+  Task fromModel(TaskModel model) => Task(
     id: model.id,
     title: model.title,
     description: model.description,
     iconIndex: model.iconIndex,
-    importance: model.importance,
+    order: model.order,
     duration: model.duration,
     routineId: model.routineId,
   );

@@ -37,7 +37,7 @@ class _NewRoutineTaskScreenState extends State<NewRoutineTaskScreen> {
       id: UuidV4().generate(),
       title: _titleController.text,
       iconIndex: _iconIndex,
-      importance: 1,
+      order: 1,
       routineId: widget.routineId,
     );
 

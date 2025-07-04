@@ -23,7 +23,7 @@ class ViewRoutineScreen extends StatelessWidget {
         if (state is ViewRoutineLoaded) {
           final routine = state.routine;
           final theme = Theme.of(context);
-          final tasks = state.tasks;
+          final tasks = state.sortedTasks;
 
           return Scaffold(
             appBar: AppBar(
@@ -124,7 +124,15 @@ class ViewRoutineScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Expanded(
                     child: tasks.isNotEmpty
-                        ? RoutineTaskList(tasks: tasks, theme: theme)
+                        ? RoutineTaskList(
+                            tasks: tasks,
+                            theme: theme,
+                            onReorderCompleted: (reorderedTasks) {
+                              context.read<ViewRoutineBloc>().add(
+                                ViewRoutineTaskOnReorder(reorderedTasks),
+                              );
+                            },
+                          )
                         : Center(
                             child: Text(
                               'Empty Task List',
