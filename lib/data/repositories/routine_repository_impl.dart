@@ -55,4 +55,12 @@ class RoutineRepositoryImpl implements RoutineRepository {
     );
     return updated.toModel();
   }
+
+  @override
+  Stream<List<RoutineModel>> fetchActiveRoutines(RoutineModel routine) {
+    return _routinesDao.watchActiveRoutines().map(
+      (listOfRoutinesFromDb) =>
+          listOfRoutinesFromDb.map((e) => e.toModel()).toList(),
+    );
+  }
 }

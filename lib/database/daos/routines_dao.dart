@@ -48,6 +48,12 @@ class RoutinesDao extends DatabaseAccessor<AppDatabase>
     )..where((tbl) => tbl.id.equals(routine.id.value))).getSingle();
   }
 
+  Stream<List<Routine>> watchActiveRoutines() {
+    return (select(
+      routinesTable,
+    )..where((tbl) => tbl.deletedAt.isNull())).watch();
+  }
+
   Future<Routine> updateRoutine(RoutineCompanion routine) async {
     await update(routinesTable).replace(routine);
     final newRoutine = await (select(
