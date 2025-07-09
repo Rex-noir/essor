@@ -7,5 +7,5 @@ abstract class RoutineRepository {
 
   Future<RoutineModel> updateRoutine(RoutineModel routine);
 
-  Stream<List<RoutineModel>> fetchActiveRoutines(RoutineModel routine);
+  Future<List<RoutineModel>> fetchActiveRoutines();
 }

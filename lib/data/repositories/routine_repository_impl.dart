@@ -46,6 +46,7 @@ class RoutineRepositoryImpl implements RoutineRepository {
         startDate: Value(routine.startDate),
         startTime: Value(routine.startTime),
         frequency: Value(routine.frequency),
+        lastScheduledAt: Value(routine.lastScheduledAt),
         interval: Value(routine.interval),
         updatedAt: Value(DateTime.now()),
         weeklyDays: Value(routine.weeklyDays),
@@ -57,10 +58,8 @@ class RoutineRepositoryImpl implements RoutineRepository {
   }
 
   @override
-  Stream<List<RoutineModel>> fetchActiveRoutines(RoutineModel routine) {
-    return _routinesDao.watchActiveRoutines().map(
-      (listOfRoutinesFromDb) =>
-          listOfRoutinesFromDb.map((e) => e.toModel()).toList(),
-    );
+  Future<List<RoutineModel>> fetchActiveRoutines() async {
+    final listOfRoutinesFromDb = await _routinesDao.getActiveRoutines();
+    return listOfRoutinesFromDb.map((e) => e.toModel()).toList();
   }
 }
