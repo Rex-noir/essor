@@ -65,6 +65,7 @@ class RoutineFormBloc extends Bloc<RoutineFormEvent, RoutineFormState> {
       frequency: state.selectedFrequency,
       weeklyDays: state.weeklyDays,
       monthlyDates: state.monthlyDates,
+      lastScheduledAt: null,
       interval: state.interval,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),

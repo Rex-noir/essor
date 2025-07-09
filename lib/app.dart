@@ -1,12 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobile/core/config/app_config.dart';
-import 'package:mobile/core/ui/layout/home_layout.dart';
 import 'package:mobile/core/network/api_client.dart';
 import 'package:mobile/core/theme/theme.dart';
 import 'package:mobile/core/theme/util.dart';
+import 'package:mobile/core/ui/layout/home_layout.dart';
 import 'package:mobile/data/datasources/auth_local_datasource.dart';
 import 'package:mobile/data/datasources/auth_remote_datasource.dart';
 import 'package:mobile/data/repositories/auth_token_storage_repository_impl.dart';
@@ -31,10 +32,13 @@ import 'package:mobile/domain/usecases/get_profile_usecase.dart';
 import 'package:mobile/domain/usecases/get_routines_for_date_usecase.dart';
 import 'package:mobile/domain/usecases/login_usecase.dart';
 import 'package:mobile/domain/usecases/logout_usecase.dart';
+import 'package:mobile/infrastracture/notification/blocs/notification_bloc.dart';
+import 'package:mobile/infrastracture/notification/servcies/routine_notification_service.dart';
 import 'package:mobile/ui/authentication/login/login_screen.dart';
 import 'package:mobile/ui/authentication/shared/bloc/authentication_bloc.dart';
 import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -47,6 +51,21 @@ class _AppState extends State<App> {
   AuthenticationStatus? _status;
   bool? _isFirstTime;
   late final AuthLocalDatasource _localAuth;
+
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  final AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  final DarwinInitializationSettings initializationSettingsIOS =
+      DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+      );
+
+  late final InitializationSettings initializationSettings;
 
   @override
   void initState() {
@@ -63,6 +82,8 @@ class _AppState extends State<App> {
     if (isFirstTime) {
       await _localAuth.setFlag(AppConfig.isFirstTimeKey, "false");
     }
+
+    _initializeNotification();
 
     setState(() {
       _status = token != null
@@ -106,6 +127,10 @@ class _AppState extends State<App> {
         RepositoryProvider<AppDatabase>(
           create: (_) => AppDatabase(),
           dispose: (db) => db.close(),
+        ),
+        RepositoryProvider<RoutineNotificationService>(
+          create: (_) =>
+              RoutineNotificationService(_flutterLocalNotificationsPlugin),
         ),
       ],
       child: Builder(
@@ -154,10 +179,18 @@ class _AppState extends State<App> {
                   GetRoutinesForDateUsecase(context.read<RoutineRepository>()),
                 )..add(DailyListInitialize()),
               ),
+              BlocProvider(
+                lazy: false,
+                create: (context) => NotificationBloc(
+                  routineNotificationService: context
+                      .read<RoutineNotificationService>(),
+                  routineRepository: context.read<RoutineRepository>(),
+                )..add(NotificationStarted()),
+              ),
             ],
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              title: 'My App',
+              title: 'Essor',
               theme: brightness == Brightness.light
                   ? theme.light()
                   : theme.dark(),
@@ -168,6 +201,54 @@ class _AppState extends State<App> {
       ),
     );
   }
+
+  void _initializeNotification() async {
+    tz.initializeTimeZones();
+    final initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
+
+    await _flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: notificationTapBackground,
+      onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
+    );
+
+    _requestPermissions();
+  }
+
+  Future<void> _requestPermissions() async {
+    final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+        _flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >();
+
+    if (androidImplementation != null) {
+      await androidImplementation.requestNotificationsPermission();
+      await androidImplementation.requestExactAlarmsPermission();
+    }
+
+    final IOSFlutterLocalNotificationsPlugin? iosImplementation =
+        _flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin
+            >();
+
+    if (iosImplementation != null) {
+      await iosImplementation.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+    }
+  }
+}
+
+@pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse response) {
+  debugPrint('Background notification tapped: ${response.payload}');
 }
 
 class SplashScreen extends StatelessWidget {

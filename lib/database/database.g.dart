@@ -178,6 +178,18 @@ class $RoutinesTableTable extends RoutinesTable
     requiredDuringInsert: false,
     defaultValue: const Constant(1),
   );
+  static const VerificationMeta _lastScheduledAtMeta = const VerificationMeta(
+    'lastScheduledAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastScheduledAt =
+      GeneratedColumn<DateTime>(
+        'last_scheduled_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -195,6 +207,7 @@ class $RoutinesTableTable extends RoutinesTable
     updatedAt,
     deletedAt,
     syncVersion,
+    lastScheduledAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -283,6 +296,15 @@ class $RoutinesTableTable extends RoutinesTable
         ),
       );
     }
+    if (data.containsKey('last_scheduled_at')) {
+      context.handle(
+        _lastScheduledAtMeta,
+        lastScheduledAt.isAcceptableOrUnknown(
+          data['last_scheduled_at']!,
+          _lastScheduledAtMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -360,6 +382,10 @@ class $RoutinesTableTable extends RoutinesTable
         DriftSqlType.int,
         data['${effectivePrefix}sync_version'],
       )!,
+      lastScheduledAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_scheduled_at'],
+      ),
     );
   }
 
@@ -394,6 +420,7 @@ class Routine extends DataClass implements Insertable<Routine> {
   final DateTime updatedAt;
   final DateTime? deletedAt;
   final int syncVersion;
+  final DateTime? lastScheduledAt;
   const Routine({
     required this.id,
     required this.title,
@@ -410,6 +437,7 @@ class Routine extends DataClass implements Insertable<Routine> {
     required this.updatedAt,
     this.deletedAt,
     required this.syncVersion,
+    this.lastScheduledAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -449,6 +477,9 @@ class Routine extends DataClass implements Insertable<Routine> {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
     map['sync_version'] = Variable<int>(syncVersion);
+    if (!nullToAbsent || lastScheduledAt != null) {
+      map['last_scheduled_at'] = Variable<DateTime>(lastScheduledAt);
+    }
     return map;
   }
 
@@ -473,6 +504,9 @@ class Routine extends DataClass implements Insertable<Routine> {
           ? const Value.absent()
           : Value(deletedAt),
       syncVersion: Value(syncVersion),
+      lastScheduledAt: lastScheduledAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastScheduledAt),
     );
   }
 
@@ -497,6 +531,7 @@ class Routine extends DataClass implements Insertable<Routine> {
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
       syncVersion: serializer.fromJson<int>(json['syncVersion']),
+      lastScheduledAt: serializer.fromJson<DateTime?>(json['lastScheduledAt']),
     );
   }
   @override
@@ -518,6 +553,7 @@ class Routine extends DataClass implements Insertable<Routine> {
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
       'syncVersion': serializer.toJson<int>(syncVersion),
+      'lastScheduledAt': serializer.toJson<DateTime?>(lastScheduledAt),
     };
   }
 
@@ -537,6 +573,7 @@ class Routine extends DataClass implements Insertable<Routine> {
     DateTime? updatedAt,
     Value<DateTime?> deletedAt = const Value.absent(),
     int? syncVersion,
+    Value<DateTime?> lastScheduledAt = const Value.absent(),
   }) => Routine(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -553,6 +590,9 @@ class Routine extends DataClass implements Insertable<Routine> {
     updatedAt: updatedAt ?? this.updatedAt,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
     syncVersion: syncVersion ?? this.syncVersion,
+    lastScheduledAt: lastScheduledAt.present
+        ? lastScheduledAt.value
+        : this.lastScheduledAt,
   );
   Routine copyWithCompanion(RoutineCompanion data) {
     return Routine(
@@ -579,6 +619,9 @@ class Routine extends DataClass implements Insertable<Routine> {
       syncVersion: data.syncVersion.present
           ? data.syncVersion.value
           : this.syncVersion,
+      lastScheduledAt: data.lastScheduledAt.present
+          ? data.lastScheduledAt.value
+          : this.lastScheduledAt,
     );
   }
 
@@ -599,7 +642,8 @@ class Routine extends DataClass implements Insertable<Routine> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt, ')
-          ..write('syncVersion: $syncVersion')
+          ..write('syncVersion: $syncVersion, ')
+          ..write('lastScheduledAt: $lastScheduledAt')
           ..write(')'))
         .toString();
   }
@@ -621,6 +665,7 @@ class Routine extends DataClass implements Insertable<Routine> {
     updatedAt,
     deletedAt,
     syncVersion,
+    lastScheduledAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -640,7 +685,8 @@ class Routine extends DataClass implements Insertable<Routine> {
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.deletedAt == this.deletedAt &&
-          other.syncVersion == this.syncVersion);
+          other.syncVersion == this.syncVersion &&
+          other.lastScheduledAt == this.lastScheduledAt);
 }
 
 class RoutineCompanion extends UpdateCompanion<Routine> {
@@ -659,6 +705,7 @@ class RoutineCompanion extends UpdateCompanion<Routine> {
   final Value<DateTime> updatedAt;
   final Value<DateTime?> deletedAt;
   final Value<int> syncVersion;
+  final Value<DateTime?> lastScheduledAt;
   final Value<int> rowid;
   const RoutineCompanion({
     this.id = const Value.absent(),
@@ -676,6 +723,7 @@ class RoutineCompanion extends UpdateCompanion<Routine> {
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
     this.syncVersion = const Value.absent(),
+    this.lastScheduledAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   RoutineCompanion.insert({
@@ -694,6 +742,7 @@ class RoutineCompanion extends UpdateCompanion<Routine> {
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
     this.syncVersion = const Value.absent(),
+    this.lastScheduledAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        title = Value(title),
@@ -716,6 +765,7 @@ class RoutineCompanion extends UpdateCompanion<Routine> {
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? deletedAt,
     Expression<int>? syncVersion,
+    Expression<DateTime>? lastScheduledAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -734,6 +784,7 @@ class RoutineCompanion extends UpdateCompanion<Routine> {
       if (updatedAt != null) 'updated_at': updatedAt,
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (syncVersion != null) 'sync_version': syncVersion,
+      if (lastScheduledAt != null) 'last_scheduled_at': lastScheduledAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -754,6 +805,7 @@ class RoutineCompanion extends UpdateCompanion<Routine> {
     Value<DateTime>? updatedAt,
     Value<DateTime?>? deletedAt,
     Value<int>? syncVersion,
+    Value<DateTime?>? lastScheduledAt,
     Value<int>? rowid,
   }) {
     return RoutineCompanion(
@@ -772,6 +824,7 @@ class RoutineCompanion extends UpdateCompanion<Routine> {
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
       syncVersion: syncVersion ?? this.syncVersion,
+      lastScheduledAt: lastScheduledAt ?? this.lastScheduledAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -832,6 +885,9 @@ class RoutineCompanion extends UpdateCompanion<Routine> {
     if (syncVersion.present) {
       map['sync_version'] = Variable<int>(syncVersion.value);
     }
+    if (lastScheduledAt.present) {
+      map['last_scheduled_at'] = Variable<DateTime>(lastScheduledAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -856,6 +912,7 @@ class RoutineCompanion extends UpdateCompanion<Routine> {
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt, ')
           ..write('syncVersion: $syncVersion, ')
+          ..write('lastScheduledAt: $lastScheduledAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2691,6 +2748,7 @@ typedef $$RoutinesTableTableCreateCompanionBuilder =
       Value<DateTime> updatedAt,
       Value<DateTime?> deletedAt,
       Value<int> syncVersion,
+      Value<DateTime?> lastScheduledAt,
       Value<int> rowid,
     });
 typedef $$RoutinesTableTableUpdateCompanionBuilder =
@@ -2710,6 +2768,7 @@ typedef $$RoutinesTableTableUpdateCompanionBuilder =
       Value<DateTime> updatedAt,
       Value<DateTime?> deletedAt,
       Value<int> syncVersion,
+      Value<DateTime?> lastScheduledAt,
       Value<int> rowid,
     });
 
@@ -2832,6 +2891,11 @@ class $$RoutinesTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<DateTime> get lastScheduledAt => $composableBuilder(
+    column: $table.lastScheduledAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
   Expression<bool> tasksTableRefs(
     Expression<bool> Function($$TasksTableTableFilterComposer f) f,
   ) {
@@ -2941,6 +3005,11 @@ class $$RoutinesTableTableOrderingComposer
     column: $table.syncVersion,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get lastScheduledAt => $composableBuilder(
+    column: $table.lastScheduledAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$RoutinesTableTableAnnotationComposer
@@ -3004,6 +3073,11 @@ class $$RoutinesTableTableAnnotationComposer
 
   GeneratedColumn<int> get syncVersion => $composableBuilder(
     column: $table.syncVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastScheduledAt => $composableBuilder(
+    column: $table.lastScheduledAt,
     builder: (column) => column,
   );
 
@@ -3076,6 +3150,7 @@ class $$RoutinesTableTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> syncVersion = const Value.absent(),
+                Value<DateTime?> lastScheduledAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RoutineCompanion(
                 id: id,
@@ -3093,6 +3168,7 @@ class $$RoutinesTableTableTableManager
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
                 syncVersion: syncVersion,
+                lastScheduledAt: lastScheduledAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -3112,6 +3188,7 @@ class $$RoutinesTableTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> syncVersion = const Value.absent(),
+                Value<DateTime?> lastScheduledAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RoutineCompanion.insert(
                 id: id,
@@ -3129,6 +3206,7 @@ class $$RoutinesTableTableTableManager
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
                 syncVersion: syncVersion,
+                lastScheduledAt: lastScheduledAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

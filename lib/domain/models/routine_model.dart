@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
+import 'package:mobile/infrastracture/notification/servcies/notification_service.dart';
 
-class RoutineModel {
+class RoutineModel implements Notifiable {
+  @override
   final String id;
   final String title;
   final String? description;
@@ -17,6 +19,7 @@ class RoutineModel {
   final DateTime updatedAt;
   final DateTime? deletedAt;
   final int syncVersion;
+  final DateTime? lastScheduledAt;
   final int iconIndex;
 
   RoutineModel({
@@ -33,7 +36,68 @@ class RoutineModel {
     required this.createdAt,
     required this.updatedAt,
     required this.deletedAt,
+    required this.lastScheduledAt,
     required this.iconIndex,
     required this.syncVersion,
   });
+
+  RoutineModel copyWith({
+    String? id,
+    String? title,
+    String? description,
+    DateTime? startDate,
+    List<int>? weeklyDays,
+    ItemFrequency? frequency,
+    List<int>? monthlyDates,
+    TimeOfDay? startTime,
+    int? interval,
+    bool? isShared,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    DateTime? deletedAt,
+    int? syncVersion,
+    DateTime? lastScheduledAt,
+    int? iconIndex,
+  }) {
+    return RoutineModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      startDate: startDate ?? this.startDate,
+      weeklyDays: weeklyDays ?? List.from(this.weeklyDays),
+      frequency: frequency ?? this.frequency,
+      monthlyDates: monthlyDates ?? List.from(this.monthlyDates),
+      startTime: startTime ?? this.startTime,
+      interval: interval ?? this.interval,
+      isShared: isShared ?? this.isShared,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      syncVersion: syncVersion ?? this.syncVersion,
+      lastScheduledAt: lastScheduledAt ?? this.lastScheduledAt,
+      iconIndex: iconIndex ?? this.iconIndex,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'RoutineModel('
+        'id: $id, '
+        'title: $title, '
+        'description: $description, '
+        'startDate: $startDate, '
+        'weeklyDays: $weeklyDays, '
+        'frequency: $frequency, '
+        'monthlyDates: $monthlyDates, '
+        'startTime: ${startTime.toString()}, '
+        'interval: $interval, '
+        'isShared: $isShared, '
+        'createdAt: $createdAt, '
+        'updatedAt: $updatedAt, '
+        'deletedAt: $deletedAt, '
+        'syncVersion: $syncVersion, '
+        'lastScheduledAt: $lastScheduledAt, '
+        'iconIndex: $iconIndex'
+        ')';
+  }
 }
