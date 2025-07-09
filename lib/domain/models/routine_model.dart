@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
 import 'package:mobile/infrastracture/notification/servcies/notification_service.dart';
 
@@ -99,5 +100,11 @@ class RoutineModel implements Notifiable {
         'lastScheduledAt: $lastScheduledAt, '
         'iconIndex: $iconIndex'
         ')';
+  }
+
+  bool get shouldScheduleRoutine {
+    final now = DateTime.now().dateOnly;
+    if (lastScheduledAt == null) return true;
+    return now.isAfter(lastScheduledAt!.dateOnly);
   }
 }

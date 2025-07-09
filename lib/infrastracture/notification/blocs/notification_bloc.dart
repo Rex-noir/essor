@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/domain/repositories/routine_repository.dart';
 import 'package:mobile/infrastracture/notification/servcies/notification_service.dart';
@@ -22,12 +21,14 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     required this.routineRepository,
   }) : super(NotificationInitial()) {
     on<NotificationStarted>(_onStarted);
+    on<NotificationForRoutineRequested>(_onRoutineScheduleRequested);
   }
 
   FutureOr<void> _onStarted(
     NotificationStarted event,
     Emitter<NotificationState> emit,
   ) async {
+    // Routines
     final routines = await routineRepository.fetchActiveRoutines();
     for (final routine in routines) {
       try {
@@ -35,25 +36,35 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
           scheduledDate,
         ) async {
           logger.debug("Checking routine $routine");
-          if (_shouldSchedule(routine)) {
-            await routineNotificationService.schedule(routine, (
-              scheduledDate,
-            ) async {
-              final updated = routine.copyWith(lastScheduledAt: scheduledDate);
-              await routineRepository.updateRoutine(updated);
-            });
+          if ((routine.shouldScheduleRoutine)) {
+            await _scheduleRoutine(routine);
           }
         });
       } catch (e) {
         logger.error("Error happened", e);
+        emit(NotificationError(e.toString()));
       }
     }
   }
 
-  bool _shouldSchedule(RoutineModel routine) {
-    final now = (DateTime.now()).dateOnly;
-    final last = routine.lastScheduledAt;
-    if (last == null) return true;
-    return now.isAfter((last).dateOnly);
+  _scheduleRoutine(RoutineModel routine) async {
+    await routineNotificationService.schedule(routine, (scheduledDate) async {
+      final updated = routine.copyWith(lastScheduledAt: scheduledDate);
+      await routineRepository.updateRoutine(updated);
+    });
+  }
+
+  Future<void> _onRoutineScheduleRequested(
+    NotificationForRoutineRequested event,
+    Emitter<NotificationState> emit,
+  ) async {
+    try {
+      if (event.routine.shouldScheduleRoutine) {
+        await _scheduleRoutine(event.routine);
+      }
+    } catch (e) {
+      logger.error("Error happened", e);
+      emit(NotificationError(e.toString()));
+    }
   }
 }
