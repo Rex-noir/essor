@@ -33,12 +33,10 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
   }
 
   Future<void> _scheduleDailyNotifications(Schedulable model) async {
-    final now = DateTime.now();
-
     logger.debug("Scheduling daily notification $model");
 
     for (int i = 0; i < 30; i++) {
-      final scheduleDate = now.add(Duration(days: i));
+      final scheduleDate = model.startDate.add(Duration(days: i));
 
       if (_shouldScheduleForDate(model, scheduleDate)) {
         final notificationTime = DateTime(
@@ -49,7 +47,7 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
           model.startTime.minute,
         );
 
-        if (notificationTime.isAfter(now)) {
+        if (notificationTime.isAfter(model.startDate)) {
           await _scheduleRoutine(model, notificationTime);
         }
       }
@@ -57,10 +55,8 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
   }
 
   Future<void> _scheduleWeeklyNotifications(Schedulable model) async {
-    final now = DateTime.now();
-
     for (int week = 0; week < 12; week++) {
-      final baseDate = now.add(Duration(days: week * 7));
+      final baseDate = model.startDate.add(Duration(days: week * 7));
       for (int weekday in model.weeklyDays) {
         final scheduleDate = baseDate.getNextWeekDay(weekday);
         if (_shouldScheduleForDate(model, scheduleDate)) {
@@ -71,7 +67,7 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
             model.startTime.hour,
             model.startTime.minute,
           );
-          if (notificationTime.isAfter(now)) {
+          if (notificationTime.isAfter(model.startDate)) {
             await _scheduleRoutine(model, notificationTime);
           }
         }
@@ -80,10 +76,12 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
   }
 
   Future<void> _scheduleMonthlyNotifications(Schedulable model) async {
-    final now = DateTime.now();
-
     for (int month = 0; month < 12; month++) {
-      final targetMonth = DateTime(now.year, now.month + month, 1);
+      final targetMonth = DateTime(
+        model.startDate.year,
+        model.startDate.month + month,
+        1,
+      );
 
       for (int day in model.monthlyDates) {
         try {
@@ -101,7 +99,7 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
               model.startTime.hour,
               model.startTime.minute,
             );
-            if (notificationTime.isAfter(now)) {
+            if (notificationTime.isAfter(model.startDate)) {
               await _scheduleRoutine(model, notificationTime);
             }
           }
