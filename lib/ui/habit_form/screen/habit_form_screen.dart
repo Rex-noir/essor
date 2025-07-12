@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:mobile/core/extensions/date_extensions.dart';
+import 'package:mobile/domain/models/habit_model.dart';
+import 'package:mobile/infrastructure/notification/blocs/notification_bloc.dart';
 import 'package:mobile/ui/habit_form/bloc/habit_form_bloc.dart';
 import 'package:mobile/ui/habit_form/screen/habit_form_first_page.dart';
 import 'package:mobile/ui/habit_form/screen/habit_form_second_page.dart';
@@ -258,7 +260,31 @@ class _HabitFormScreenState extends State<HabitFormScreen> {
   }
 
   void _createHabit(BuildContext context, HabitFormState state) {
-    context.read<HabitFormBloc>().add(HabitFormSubmitted());
+    final habit = HabitModel(
+      id: state.id,
+      title: state.title,
+      description: state.description,
+      iconIndex: state.iconIndex,
+      habitType: state.habitType,
+      frequency: state.frequency,
+      createdAt: DateTime.now(),
+      deletedAt: null,
+      interval: state.interval,
+      isActive: state.isActive,
+      weeklyDays: state.weeklyDays,
+      monthlyDates: state.monthlyDates,
+      startDate: state.startDate.dateOnly,
+      startTime: state.startTime,
+      lastScheduledAt: state.lastScheduledAt,
+      targetUnit: state.targetUnit,
+      targetValue: state.targetValue,
+      targetOperator: state.targetOperator,
+      updatedAt: DateTime.now(),
+    );
+    context.read<HabitFormBloc>().add(HabitFormSubmitted(habit));
+    context.read<NotificationBloc>().add(
+      NotificationScheduleForHabitRequested(habit),
+    );
     Navigator.of(context).pop();
   }
 }

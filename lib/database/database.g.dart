@@ -1117,6 +1117,18 @@ class $HabitsTableTable extends HabitsTable
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _lastScheduledAtMeta = const VerificationMeta(
+    'lastScheduledAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastScheduledAt =
+      GeneratedColumn<DateTime>(
+        'last_scheduled_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1137,6 +1149,7 @@ class $HabitsTableTable extends HabitsTable
     createdAt,
     updatedAt,
     deletedAt,
+    lastScheduledAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1233,6 +1246,15 @@ class $HabitsTableTable extends HabitsTable
         deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
       );
     }
+    if (data.containsKey('last_scheduled_at')) {
+      context.handle(
+        _lastScheduledAtMeta,
+        lastScheduledAt.isAcceptableOrUnknown(
+          data['last_scheduled_at']!,
+          _lastScheduledAtMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1326,6 +1348,10 @@ class $HabitsTableTable extends HabitsTable
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
       ),
+      lastScheduledAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_scheduled_at'],
+      ),
     );
   }
 
@@ -1367,6 +1393,7 @@ class Habit extends DataClass implements Insertable<Habit> {
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? deletedAt;
+  final DateTime? lastScheduledAt;
   const Habit({
     required this.id,
     required this.title,
@@ -1386,6 +1413,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     required this.createdAt,
     required this.updatedAt,
     this.deletedAt,
+    this.lastScheduledAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1440,6 +1468,9 @@ class Habit extends DataClass implements Insertable<Habit> {
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
+    if (!nullToAbsent || lastScheduledAt != null) {
+      map['last_scheduled_at'] = Variable<DateTime>(lastScheduledAt);
+    }
     return map;
   }
 
@@ -1471,6 +1502,9 @@ class Habit extends DataClass implements Insertable<Habit> {
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
+      lastScheduledAt: lastScheduledAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastScheduledAt),
     );
   }
 
@@ -1500,6 +1534,7 @@ class Habit extends DataClass implements Insertable<Habit> {
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      lastScheduledAt: serializer.fromJson<DateTime?>(json['lastScheduledAt']),
     );
   }
   @override
@@ -1524,6 +1559,7 @@ class Habit extends DataClass implements Insertable<Habit> {
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'lastScheduledAt': serializer.toJson<DateTime?>(lastScheduledAt),
     };
   }
 
@@ -1546,6 +1582,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     DateTime? createdAt,
     DateTime? updatedAt,
     Value<DateTime?> deletedAt = const Value.absent(),
+    Value<DateTime?> lastScheduledAt = const Value.absent(),
   }) => Habit(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -1565,6 +1602,9 @@ class Habit extends DataClass implements Insertable<Habit> {
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    lastScheduledAt: lastScheduledAt.present
+        ? lastScheduledAt.value
+        : this.lastScheduledAt,
   );
   Habit copyWithCompanion(HabitCompanion data) {
     return Habit(
@@ -1598,6 +1638,9 @@ class Habit extends DataClass implements Insertable<Habit> {
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      lastScheduledAt: data.lastScheduledAt.present
+          ? data.lastScheduledAt.value
+          : this.lastScheduledAt,
     );
   }
 
@@ -1621,7 +1664,8 @@ class Habit extends DataClass implements Insertable<Habit> {
           ..write('targetOperator: $targetOperator, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
-          ..write('deletedAt: $deletedAt')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('lastScheduledAt: $lastScheduledAt')
           ..write(')'))
         .toString();
   }
@@ -1646,6 +1690,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     createdAt,
     updatedAt,
     deletedAt,
+    lastScheduledAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -1668,7 +1713,8 @@ class Habit extends DataClass implements Insertable<Habit> {
           other.targetOperator == this.targetOperator &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
-          other.deletedAt == this.deletedAt);
+          other.deletedAt == this.deletedAt &&
+          other.lastScheduledAt == this.lastScheduledAt);
 }
 
 class HabitCompanion extends UpdateCompanion<Habit> {
@@ -1690,6 +1736,7 @@ class HabitCompanion extends UpdateCompanion<Habit> {
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> deletedAt;
+  final Value<DateTime?> lastScheduledAt;
   final Value<int> rowid;
   const HabitCompanion({
     this.id = const Value.absent(),
@@ -1710,6 +1757,7 @@ class HabitCompanion extends UpdateCompanion<Habit> {
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
+    this.lastScheduledAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   HabitCompanion.insert({
@@ -1731,6 +1779,7 @@ class HabitCompanion extends UpdateCompanion<Habit> {
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
+    this.lastScheduledAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        title = Value(title),
@@ -1758,6 +1807,7 @@ class HabitCompanion extends UpdateCompanion<Habit> {
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? deletedAt,
+    Expression<DateTime>? lastScheduledAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1779,6 +1829,7 @@ class HabitCompanion extends UpdateCompanion<Habit> {
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (deletedAt != null) 'deleted_at': deletedAt,
+      if (lastScheduledAt != null) 'last_scheduled_at': lastScheduledAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1802,6 +1853,7 @@ class HabitCompanion extends UpdateCompanion<Habit> {
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<DateTime?>? deletedAt,
+    Value<DateTime?>? lastScheduledAt,
     Value<int>? rowid,
   }) {
     return HabitCompanion(
@@ -1823,6 +1875,7 @@ class HabitCompanion extends UpdateCompanion<Habit> {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
+      lastScheduledAt: lastScheduledAt ?? this.lastScheduledAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1896,6 +1949,9 @@ class HabitCompanion extends UpdateCompanion<Habit> {
     if (deletedAt.present) {
       map['deleted_at'] = Variable<DateTime>(deletedAt.value);
     }
+    if (lastScheduledAt.present) {
+      map['last_scheduled_at'] = Variable<DateTime>(lastScheduledAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1923,6 +1979,7 @@ class HabitCompanion extends UpdateCompanion<Habit> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt, ')
+          ..write('lastScheduledAt: $lastScheduledAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3285,6 +3342,7 @@ typedef $$HabitsTableTableCreateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<DateTime?> deletedAt,
+      Value<DateTime?> lastScheduledAt,
       Value<int> rowid,
     });
 typedef $$HabitsTableTableUpdateCompanionBuilder =
@@ -3307,6 +3365,7 @@ typedef $$HabitsTableTableUpdateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<DateTime?> deletedAt,
+      Value<DateTime?> lastScheduledAt,
       Value<int> rowid,
     });
 
@@ -3414,6 +3473,11 @@ class $$HabitsTableTableFilterComposer
     column: $table.deletedAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<DateTime> get lastScheduledAt => $composableBuilder(
+    column: $table.lastScheduledAt,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$HabitsTableTableOrderingComposer
@@ -3514,6 +3578,11 @@ class $$HabitsTableTableOrderingComposer
     column: $table.deletedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get lastScheduledAt => $composableBuilder(
+    column: $table.lastScheduledAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$HabitsTableTableAnnotationComposer
@@ -3593,6 +3662,11 @@ class $$HabitsTableTableAnnotationComposer
 
   GeneratedColumn<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastScheduledAt => $composableBuilder(
+    column: $table.lastScheduledAt,
+    builder: (column) => column,
+  );
 }
 
 class $$HabitsTableTableTableManager
@@ -3641,6 +3715,7 @@ class $$HabitsTableTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
+                Value<DateTime?> lastScheduledAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => HabitCompanion(
                 id: id,
@@ -3661,6 +3736,7 @@ class $$HabitsTableTableTableManager
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
+                lastScheduledAt: lastScheduledAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -3683,6 +3759,7 @@ class $$HabitsTableTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
+                Value<DateTime?> lastScheduledAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => HabitCompanion.insert(
                 id: id,
@@ -3703,6 +3780,7 @@ class $$HabitsTableTableTableManager
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
+                lastScheduledAt: lastScheduledAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

@@ -1,7 +1,6 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
-import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/domain/enums/habit_target_operator_enum.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
 import 'package:mobile/domain/enums/item_type.dart';
@@ -16,6 +15,7 @@ part 'habit_form_state.dart';
 class HabitFormBloc extends Bloc<HabitFormEvent, HabitFormState> {
   final logger = TaggedLogger("HabitFormBloc");
   final HabitRepository _repository;
+
   HabitFormBloc(this._repository) : super(HabitFormState.empty()) {
     on<HabitFormInitial>((event, emit) {
       final habit = event.habit;
@@ -99,32 +99,12 @@ class HabitFormBloc extends Bloc<HabitFormEvent, HabitFormState> {
     );
 
     on<HabitFormSubmitted>((event, emit) {
-      final habit = HabitModel(
-        id: state.id,
-        title: state.title,
-        description: state.description,
-        iconIndex: state.iconIndex,
-        habitType: state.habitType,
-        frequency: state.frequency,
-        createdAt: DateTime.now(),
-        deletedAt: null,
-        interval: state.interval,
-        isActive: state.isActive,
-        weeklyDays: state.weeklyDays,
-        monthlyDates: state.monthlyDates,
-        startDate: state.startDate.dateOnly,
-        startTime: state.startTime,
-        targetUnit: state.targetUnit,
-        targetValue: state.targetValue,
-        targetOperator: state.targetOperator,
-        updatedAt: DateTime.now(),
-      );
       if (state.mode == HabitFormMode.edit) {
         // TODO : Update the habit
-        _repository.updateHabit(habit);
+        _repository.updateHabit(event.habit);
       } else {
         // TODO : create the habit
-        _repository.createHabit(habit);
+        _repository.createHabit(event.habit);
       }
     });
   }

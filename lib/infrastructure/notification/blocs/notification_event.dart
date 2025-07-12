@@ -9,11 +9,20 @@ class NotificationStarted extends NotificationEvent {
   List<Object?> get props => [];
 }
 
-final class NotificationForRoutineRequested extends NotificationEvent {
-  final RoutineModel routine;
+final class NotificationScheduleForRoutineRequested extends NotificationEvent {
+  final RoutineModel model;
 
-  const NotificationForRoutineRequested(this.routine);
+  const NotificationScheduleForRoutineRequested(this.model);
 
   @override
-  List<Object?> get props => [routine];
+  List<Object?> get props => [model];
+}
+
+final class NotificationScheduleForHabitRequested extends NotificationEvent {
+  final HabitModel model;
+
+  const NotificationScheduleForHabitRequested(this.model);
+
+  @override
+  List<Object?> get props => [model];
 }

@@ -19,12 +19,14 @@ final class HabitFormState extends Equatable {
   final TargetOperator targetOperator;
   final HabitFormMode mode;
   final TimeOfDay startTime;
+  final DateTime? lastScheduledAt;
 
   const HabitFormState({
     required this.id,
     required this.title,
     required this.description,
     required this.iconIndex,
+    required this.lastScheduledAt,
     required this.frequency,
     required this.startDate,
     required this.weeklyDays,
@@ -44,6 +46,7 @@ final class HabitFormState extends Equatable {
     title: '',
     description: '',
     iconIndex: 1,
+    lastScheduledAt: null,
     frequency: ItemFrequency.daily,
     startDate: DateTime.now(),
     weeklyDays: const [],
@@ -74,6 +77,7 @@ final class HabitFormState extends Equatable {
     TargetOperator? targetOperator,
     TimeOfDay? startTime,
     HabitFormMode? mode,
+    DateTime? lastScheduledAt,
   }) {
     return HabitFormState(
       id: id ?? this.id,
@@ -84,6 +88,7 @@ final class HabitFormState extends Equatable {
       startDate: startDate ?? this.startDate,
       weeklyDays: weeklyDays ?? this.weeklyDays,
       monthlyDates: monthlyDates ?? this.monthlyDates,
+      lastScheduledAt: lastScheduledAt ?? this.lastScheduledAt,
       interval: interval ?? this.interval,
       isActive: isActive ?? this.isActive,
       habitType: habitType ?? this.habitType,

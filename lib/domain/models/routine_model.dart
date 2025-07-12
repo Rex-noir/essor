@@ -1,26 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
-import 'package:mobile/infrastructure/notification/services/notification_service.dart';
+import 'package:mobile/infrastructure/notification/models/schedulable_model.dart';
 
-class RoutineModel implements Notifiable {
+class RoutineModel extends Schedulable {
   @override
   final String id;
+  @override
   final String title;
+  @override
   final String? description;
+  @override
   final DateTime startDate;
+  @override
   final List<int> weeklyDays;
+  @override
   final ItemFrequency frequency;
+  @override
   final List<int> monthlyDates;
+  @override
   final TimeOfDay startTime;
 
+  @override
   final int interval;
+  @override
+  final DateTime? lastScheduledAt;
+
   final bool isShared;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? deletedAt;
   final int syncVersion;
-  final DateTime? lastScheduledAt;
+
   final int iconIndex;
 
   RoutineModel({
@@ -100,11 +110,5 @@ class RoutineModel implements Notifiable {
         'lastScheduledAt: $lastScheduledAt, '
         'iconIndex: $iconIndex'
         ')';
-  }
-
-  bool get shouldScheduleRoutine {
-    final now = DateTime.now().dateOnly;
-    if (lastScheduledAt == null) return true;
-    return now.isAfter(lastScheduledAt!.dateOnly);
   }
 }

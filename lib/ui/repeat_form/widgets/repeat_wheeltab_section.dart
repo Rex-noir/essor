@@ -83,9 +83,9 @@ class RepeatWheeltabSection extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        colorScheme.primary.withOpacity(0.15),
+                        colorScheme.primary.withValues(alpha: 0.15),
                         colorScheme.primary,
-                        colorScheme.primary.withOpacity(0.15),
+                        colorScheme.primary.withValues(alpha: 0.15),
                       ],
                     ),
                   ),
@@ -100,9 +100,9 @@ class RepeatWheeltabSection extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        colorScheme.primary.withOpacity(0.15),
+                        colorScheme.primary.withValues(alpha: 0.15),
                         colorScheme.primary,
-                        colorScheme.primary.withOpacity(0.15),
+                        colorScheme.primary.withValues(alpha: 0.15),
                       ],
                     ),
                   ),

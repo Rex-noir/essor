@@ -55,7 +55,7 @@ Future<int?> showIconPicker(
                         borderRadius: BorderRadius.circular(999),
                         splashColor: Theme.of(
                           context,
-                        ).colorScheme.primary.withOpacity(0.2),
+                        ).colorScheme.primary.withValues(alpha: 0.2),
                         child: Ink(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,

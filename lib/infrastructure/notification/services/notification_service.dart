@@ -1,14 +1,11 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:mobile/infrastructure/notification/models/schedulable_model.dart';
 import 'package:timezone/timezone.dart' as tz;
-
-abstract class Notifiable {
-  String get id;
-}
 
 typedef NotificationCallback = void Function(DateTime date);
 
-abstract class NotificationService<T extends Notifiable> {
+abstract class NotificationService<T extends Schedulable> {
   final FlutterLocalNotificationsPlugin _plugin;
 
   late NotificationCallback onScheduled;

@@ -33,7 +33,7 @@ import 'package:mobile/domain/usecases/get_routines_for_date_usecase.dart';
 import 'package:mobile/domain/usecases/login_usecase.dart';
 import 'package:mobile/domain/usecases/logout_usecase.dart';
 import 'package:mobile/infrastructure/notification/blocs/notification_bloc.dart';
-import 'package:mobile/infrastructure/notification/services/routine_notification_service.dart';
+import 'package:mobile/infrastructure/notification/services/notification_service_impl.dart';
 import 'package:mobile/ui/authentication/login/login_screen.dart';
 import 'package:mobile/ui/authentication/shared/bloc/authentication_bloc.dart';
 import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
@@ -128,9 +128,9 @@ class _AppState extends State<App> {
           create: (_) => AppDatabase(),
           dispose: (db) => db.close(),
         ),
-        RepositoryProvider<RoutineNotificationService>(
+        RepositoryProvider<NotificationServiceImpl>(
           create: (_) =>
-              RoutineNotificationService(_flutterLocalNotificationsPlugin),
+              NotificationServiceImpl(_flutterLocalNotificationsPlugin),
         ),
       ],
       child: Builder(
@@ -183,8 +183,9 @@ class _AppState extends State<App> {
                 lazy: false,
                 create: (context) => NotificationBloc(
                   routineNotificationService: context
-                      .read<RoutineNotificationService>(),
+                      .read<NotificationServiceImpl>(),
                   routineRepository: context.read<RoutineRepository>(),
+                  habitRepository: context.read<HabitRepository>(),
                 )..add(NotificationStarted()),
               ),
             ],

@@ -28,7 +28,7 @@ class RoutineFormScreen extends StatelessWidget {
       Navigator.pop(context);
     }
     context.read<NotificationBloc>().add(
-      NotificationForRoutineRequested(routine),
+      NotificationScheduleForRoutineRequested(routine),
     );
     await Navigator.pushReplacement(
       context,
