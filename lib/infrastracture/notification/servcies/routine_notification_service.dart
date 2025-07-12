@@ -1,9 +1,8 @@
 import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
 import 'package:mobile/domain/models/routine_model.dart';
+import 'package:mobile/infrastructure/notification/services/notification_service.dart';
 import 'package:mobile/utils/app_logger.dart';
-
-import 'notification_service.dart';
 
 class RoutineNotificationService extends NotificationService<RoutineModel> {
   RoutineNotificationService(super.plugin);
