@@ -1,11 +1,14 @@
 import 'package:drift/drift.dart';
+import 'package:mobile/data/dto/habit_with_entry_dto.dart';
 import 'package:mobile/database/database.dart';
+import 'package:mobile/database/tables/habit_entries_table.dart';
 import 'package:mobile/database/tables/habits_table.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
+import 'package:rxdart/rxdart.dart';
 
 part 'habits_dao.g.dart';
 
-@DriftAccessor(tables: [HabitsTable])
+@DriftAccessor(tables: [HabitsTable, HabitEntriesTable])
 class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
   HabitsDao(super.attachedDatabase);
 
@@ -49,6 +52,25 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
     )..where((tbl) => tbl.id.equals(habit.id.value))).getSingle();
 
     return insertedHabit;
+  }
+
+  Stream<List<HabitWithEntryDto>> watchHabitsWithEntryForDate(DateTime date) {
+    final habitsStream = getHabitsForDate(date);
+    final entriesStream = (select(
+      habitEntriesTable,
+    )..where((tbl) => tbl.entryDate.equals(date))).watch();
+
+    return Rx.combineLatest2(habitsStream, entriesStream, (
+      List<Habit> habits,
+      List<HabitEntry> entries,
+    ) {
+      final entryMap = {for (final e in entries) e.habitId: e};
+
+      return habits.map((habit) {
+        final entry = entryMap[habit.id];
+        return HabitWithEntryDto(habit: habit, entry: entry);
+      }).toList();
+    });
   }
 
   Future<Habit> updateHabit(HabitCompanion habit) async {

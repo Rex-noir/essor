@@ -8,30 +8,13 @@ sealed class DailyListState extends Equatable {
   List<Object?> get props => [];
 }
 
-abstract class DailyItem {}
-
-class HabitItem extends DailyItem {
-  final HabitModel habit;
-  HabitItem(this.habit);
-}
-
-class RoutineItem extends DailyItem {
-  final RoutineModel routine;
-  RoutineItem(this.routine);
-}
-
-class TaskItem extends DailyItem {
-  final TaskModel task;
-  TaskItem(this.task);
-}
-
 final class DailyListInitial extends DailyListState {}
 
 final class DailyListLoading extends DailyListState {}
 
 class DailyListLoaded extends DailyListState {
-  final List<HabitModel> habits;
-  final List<RoutineModel> routines;
+  final List<HabitWithEntryModel> habits;
+  final List<RoutineWithTaskEntries> routines;
   final List<DateTime> days;
   final int selectedIndex;
   final bool isLoading;
@@ -47,18 +30,20 @@ class DailyListLoaded extends DailyListState {
   @override
   List<Object?> get props => [habits, days, selectedIndex, routines];
 
-  List<DailyItem> get items {
+  List<DailyItemModel> get items {
     return [
-      ...habits.map((h) => HabitItem(h)),
-      ...routines.map((r) => RoutineItem(r)),
+      ...habits.map((h) => DailyItemHabitModel(habit: h.habit, entry: h.entry)),
+      ...routines.map(
+        (r) => DailyItemRoutineModel(routine: r.routine, tasks: r.tasks),
+      ),
     ];
   }
 
   DateTime get selectedDate => days[selectedIndex];
 
   DailyListLoaded copyWith({
-    List<HabitModel>? habits,
-    List<RoutineModel>? routines,
+    List<HabitWithEntryModel>? habits,
+    List<RoutineWithTaskEntries>? routines,
     List<TaskModel>? tasks,
     List<DateTime>? days,
     int? selectedIndex,

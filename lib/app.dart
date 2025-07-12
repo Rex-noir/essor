@@ -27,9 +27,7 @@ import 'package:mobile/domain/repositories/habit_repository.dart';
 import 'package:mobile/domain/repositories/profile_repository.dart';
 import 'package:mobile/domain/repositories/routine_repository.dart';
 import 'package:mobile/domain/repositories/task_repository.dart';
-import 'package:mobile/domain/usecases/get_habits_for_date_usecase.dart';
 import 'package:mobile/domain/usecases/get_profile_usecase.dart';
-import 'package:mobile/domain/usecases/get_routines_for_date_usecase.dart';
 import 'package:mobile/domain/usecases/login_usecase.dart';
 import 'package:mobile/domain/usecases/logout_usecase.dart';
 import 'package:mobile/infrastructure/notification/blocs/notification_bloc.dart';
@@ -175,8 +173,8 @@ class _AppState extends State<App> {
               BlocProvider(
                 lazy: false,
                 create: (context) => DailyListBloc(
-                  GetHabitsForDateUsecase(context.read<HabitRepository>()),
-                  GetRoutinesForDateUsecase(context.read<RoutineRepository>()),
+                  routineRepository: context.read<RoutineRepository>(),
+                  habitRepository: context.read<HabitRepository>(),
                 )..add(DailyListInitialize()),
               ),
               BlocProvider(

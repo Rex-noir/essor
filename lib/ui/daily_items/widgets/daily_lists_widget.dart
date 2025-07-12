@@ -1,13 +1,15 @@
 // Updated ListItemsPage - Non-grid minimalist list version
 import 'package:flutter/material.dart';
-import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
+import 'package:mobile/ui/daily_items/models/daily_item_habit_model.dart';
+import 'package:mobile/ui/daily_items/models/daily_item_model.dart';
+import 'package:mobile/ui/daily_items/models/daily_item_routine_model.dart';
 import 'package:mobile/ui/daily_items/widgets/daily_list_empty_widget.dart';
 import 'package:mobile/ui/daily_items/widgets/habit_list_item.dart';
 import 'package:mobile/ui/daily_items/widgets/routine_list_item.dart';
 
 class ListItemsPage extends StatefulWidget {
   final String day;
-  final List<DailyItem> items;
+  final List<DailyItemModel> items;
   final VoidCallback onRefresh;
   final bool isLoading;
 
@@ -156,11 +158,11 @@ class _ListItemsPageState extends State<ListItemsPage>
     );
   }
 
-  Widget _buildListItem(DailyItem item) {
-    if (item is HabitItem) {
+  Widget _buildListItem(DailyItemModel item) {
+    if (item is DailyItemHabitModel) {
       return HabitListItem(habit: item.habit);
-    } else if (item is RoutineItem) {
-      return RoutineListItem(routine: item.routine);
+    } else if (item is DailyItemRoutineModel) {
+      return RoutineListItem(model: item);
     } else {
       return const SizedBox.shrink();
     }

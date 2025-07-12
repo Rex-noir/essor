@@ -2,21 +2,24 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:mobile/core/extensions/date_extensions.dart';
-import 'package:mobile/domain/models/habit_model.dart';
-import 'package:mobile/domain/models/routine_model.dart';
+import 'package:mobile/domain/models/habit_with_entry_model.dart';
+import 'package:mobile/domain/models/routine_with_task_entries.dart';
 import 'package:mobile/domain/models/task_model.dart';
-import 'package:mobile/domain/usecases/get_habits_for_date_usecase.dart';
-import 'package:mobile/domain/usecases/get_routines_for_date_usecase.dart';
+import 'package:mobile/domain/repositories/habit_repository.dart';
+import 'package:mobile/domain/repositories/routine_repository.dart';
+import 'package:mobile/ui/daily_items/models/daily_item_habit_model.dart';
+import 'package:mobile/ui/daily_items/models/daily_item_model.dart';
+import 'package:mobile/ui/daily_items/models/daily_item_routine_model.dart';
 import 'package:mobile/utils/app_logger.dart';
+import 'package:rxdart/rxdart.dart';
 
 part 'daily_list_event.dart';
 part 'daily_list_state.dart';
 
 class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
-  final GetHabitsForDateUsecase getHabitsForDate;
-  final GetRoutinesForDateUsecase getRoutinesForDate;
+  final HabitRepository _habitRepository;
+  final RoutineRepository _routineRepository;
   final logger = AppLogger.tag('DailyListBloc');
 
   static const int initialDaysEachSide = 15;
@@ -27,8 +30,12 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
   int _currentSelectedIndex = 0;
   DateTime? _currentSelectedDate;
 
-  DailyListBloc(this.getHabitsForDate, this.getRoutinesForDate)
-    : super(DailyListInitial()) {
+  DailyListBloc({
+    required HabitRepository habitRepository,
+    required RoutineRepository routineRepository,
+  }) : _habitRepository = habitRepository,
+       _routineRepository = routineRepository,
+       super(DailyListInitial()) {
     on<DailyListInitialize>(_onInitialize);
     on<DailyListDateChanged>(_onDateChanged);
     on<_DailyListDataUpdated>(
@@ -127,13 +134,14 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
   }
 
   void _subscribeToDataStreams(DateTime date) {
-    final habitStream = getHabitsForDate.call(date);
-    final routineStream = getRoutinesForDate.call(date);
+    final habitStream = _habitRepository.fetchHabitsWithEntryForDate(date);
+    final routineStream = _routineRepository
+        .fetchRoutinesWithTaskEntriesForDate(date);
 
     final combinedStream =
         Rx.combineLatest2<
-          List<HabitModel>,
-          List<RoutineModel>,
+          List<HabitWithEntryModel>,
+          List<RoutineWithTaskEntries>,
           _DailyListDataUpdated
         >(
           habitStream,
@@ -184,8 +192,8 @@ class DailyListBloc extends Bloc<DailyListEvent, DailyListState> {
 
 // Internal event for data updates
 class _DailyListDataUpdated extends DailyListEvent {
-  final List<HabitModel> habits;
-  final List<RoutineModel> routines;
+  final List<HabitWithEntryModel> habits;
+  final List<RoutineWithTaskEntries> routines;
   final DateTime date;
 
   const _DailyListDataUpdated({

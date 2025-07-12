@@ -3,11 +3,14 @@ import 'package:mobile/database/daos/habits_dao.dart';
 import 'package:mobile/database/database.dart';
 import 'package:mobile/database/tables/habits_table.dart';
 import 'package:mobile/domain/models/habit_model.dart';
+import 'package:mobile/domain/models/habit_with_entry_model.dart';
 import 'package:mobile/domain/repositories/habit_repository.dart';
 
 class HabitRepositoryImpl implements HabitRepository {
   final HabitsDao _habitsDao;
+
   HabitRepositoryImpl({required HabitsDao habitsDao}) : _habitsDao = habitsDao;
+
   @override
   Stream<List<HabitModel>> fetchHabitsForDate(DateTime date) {
     return _habitsDao.getHabitsForDate(date).map((listOfHabitsFromDb) {
@@ -61,5 +64,12 @@ class HabitRepositoryImpl implements HabitRepository {
 
     final updatedHabit = await _habitsDao.updateHabit(companion);
     return updatedHabit.toModel();
+  }
+
+  @override
+  Stream<List<HabitWithEntryModel>> fetchHabitsWithEntryForDate(DateTime date) {
+    return _habitsDao
+        .watchHabitsWithEntryForDate(date)
+        .map((dtos) => dtos.map((dto) => dto.toModel()).toList());
   }
 }

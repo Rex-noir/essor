@@ -5,12 +5,12 @@ import 'package:mobile/domain/models/habit_with_entry_model.dart';
 
 class HabitWithEntryDto {
   final Habit habit;
-  final HabitEntry entry;
+  final HabitEntry? entry;
 
   HabitWithEntryDto({required this.habit, required this.entry});
 
   HabitWithEntryModel toModel() =>
-      HabitWithEntryModel(habit: habit.toModel(), entry: entry.toModel());
+      HabitWithEntryModel(habit: habit.toModel(), entry: entry?.toModel());
 
   factory HabitWithEntryDto.fromModel(HabitWithEntryModel model) {
     final habit = model.habit;
@@ -38,12 +38,14 @@ class HabitWithEntryDto {
         deletedAt: habit.deletedAt,
         lastScheduledAt: habit.lastScheduledAt,
       ),
-      entry: HabitEntry(
-        id: entry.id,
-        habitId: entry.habitId,
-        entryDate: entry.entryDate,
-        value: entry.value,
-      ),
+      entry: entry != null
+          ? HabitEntry(
+              id: entry.id,
+              habitId: entry.habitId,
+              entryDate: entry.entryDate,
+              value: entry.value,
+            )
+          : null,
     );
   }
 }

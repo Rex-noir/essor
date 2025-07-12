@@ -1,126 +1,190 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/config/app_icons.dart';
-import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/domain/repositories/task_repository.dart';
-import 'package:mobile/domain/usecases/create_new_task_usecase.dart';
-import 'package:mobile/domain/usecases/get_tasks_with_entry_usecase.dart';
-import 'package:mobile/domain/usecases/update_task_with_entry_usecase.dart';
 import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
+import 'package:mobile/ui/daily_items/models/daily_item_routine_model.dart';
 import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
 import 'package:mobile/ui/view_routine/screens/view_routine_screen.dart';
 import 'package:mobile/utils/item_util.dart';
 
 class RoutineListItem extends StatelessWidget {
-  final RoutineModel routine;
+  final DailyItemRoutineModel model;
 
-  const RoutineListItem({super.key, required this.routine});
+  const RoutineListItem({super.key, required this.model});
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final routineColor = Colors.lightBlueAccent;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Card(
-      elevation: 0,
-      margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(
+    // More subtle color palette
+    final primaryColor = colorScheme.primary;
+    final surfaceColor = isDark
+        ? colorScheme.surface.withValues(alpha: 0.6)
+        : colorScheme.surface;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: surfaceColor,
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: colorScheme.outline.withValues(alpha: 0.1)),
+        border: Border.all(
+          color: colorScheme.outline.withValues(alpha: 0.08),
+          width: 0.5,
+        ),
       ),
-      child: InkWell(
-        onTap: () {
-          final routineDate =
-              (context.read<DailyListBloc>().state as DailyListLoaded)
-                  .selectedDate;
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => BlocProvider(
-                create: (_) => ViewRoutineBloc(
-                  getTasksWithEntryUsecase: GetTasksWithEntryUsecase(
-                    context.read<TaskRepository>(),
-                  ),
-                  createNewTaskUsecase: CreateNewTaskUsecase(
-                    context.read<TaskRepository>(),
-                  ),
-                  updateTaskWithEntryUsecase: UpdateTaskWithEntryUsecase(
-                    context.read<TaskRepository>(),
-                  ),
-                )..add(ViewRoutineStarted(routine, routineDate)),
-                child: ViewRoutineScreen(),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            final routineDate =
+                (context.read<DailyListBloc>().state as DailyListLoaded)
+                    .selectedDate;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BlocProvider(
+                  create: (_) =>
+                      ViewRoutineBloc(repo: context.read<TaskRepository>())
+                        ..add(ViewRoutineStarted(model.routine, routineDate)),
+                  child: ViewRoutineScreen(),
+                ),
               ),
+            );
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Row(
+              children: [
+                // Minimalist icon
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: primaryColor.withValues(alpha: 0.06),
+                  ),
+                  child: Icon(
+                    AppIcons.getIcon(model.routine.iconIndex),
+                    color: primaryColor.withValues(alpha: 0.7),
+                    size: 18,
+                  ),
+                ),
+
+                const SizedBox(width: 16),
+
+                // Content area
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title with refined typography
+                      Text(
+                        model.routine.title,
+                        style: textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: colorScheme.onSurface,
+                          letterSpacing: -0.2,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+
+                      const SizedBox(height: 2),
+
+                      // Frequency - more subtle
+                      Text(
+                        getFrequencyIntervalLabel(
+                          model.routine.frequency,
+                          model.routine.interval,
+                        ),
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurface.withValues(alpha: 0.5),
+                          fontSize: 12,
+                          letterSpacing: 0.1,
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Refined progress indicator
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 2,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(1),
+                                color: colorScheme.outline.withValues(
+                                  alpha: 0.1,
+                                ),
+                              ),
+                              child: FractionallySizedBox(
+                                alignment: Alignment.centerLeft,
+                                widthFactor: model.progress,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(1),
+                                    color: primaryColor.withValues(alpha: 0.6),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            "${(model.progress * 100).toInt()}%",
+                            style: textTheme.bodySmall?.copyWith(
+                              fontSize: 10,
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.4,
+                              ),
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(width: 12),
+
+                // Routine indicator badge
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: primaryColor.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    'ROUTINE',
+                    style: textTheme.bodySmall?.copyWith(
+                      fontSize: 9,
+                      color: primaryColor.withValues(alpha: 0.7),
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(width: 8),
+
+                // Subtle chevron indicator
+                Icon(
+                  Icons.chevron_right,
+                  size: 16,
+                  color: colorScheme.onSurface.withValues(alpha: 0.3),
+                ),
+              ],
             ),
-          );
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              // Icon container
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: routineColor.withValues(alpha: 0.1),
-                ),
-                child: Icon(
-                  AppIcons.getIcon(routine.iconIndex),
-                  color: routineColor.shade700,
-                  size: 24,
-                ),
-              ),
-
-              const SizedBox(width: 16),
-
-              // Content
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      routine.title,
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: colorScheme.onSurface,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      getFrequencyIntervalLabel(
-                        routine.frequency,
-                        routine.interval,
-                      ),
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurface.withValues(alpha: 0.6),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Status badge
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: routineColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  'Routine',
-                  style: textTheme.labelSmall?.copyWith(
-                    color: routineColor.shade700,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 11,
-                  ),
-                ),
-              ),
-            ],
           ),
         ),
       ),

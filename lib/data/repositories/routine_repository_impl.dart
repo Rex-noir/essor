@@ -3,6 +3,7 @@ import 'package:mobile/database/daos/routines_dao.dart';
 import 'package:mobile/database/database.dart';
 import 'package:mobile/database/tables/routines_table.dart';
 import 'package:mobile/domain/models/routine_model.dart';
+import 'package:mobile/domain/models/routine_with_task_entries.dart';
 import 'package:mobile/domain/repositories/routine_repository.dart';
 
 class RoutineRepositoryImpl implements RoutineRepository {
@@ -61,5 +62,12 @@ class RoutineRepositoryImpl implements RoutineRepository {
   Future<List<RoutineModel>> fetchActiveRoutines() async {
     final listOfRoutinesFromDb = await _routinesDao.getActiveRoutines();
     return listOfRoutinesFromDb.map((e) => e.toModel()).toList();
+  }
+
+  @override
+  Stream<List<RoutineWithTaskEntries>> fetchRoutinesWithTaskEntriesForDate(
+    DateTime date,
+  ) {
+    return _routinesDao.watchRoutineWithTaskEntriesForDate(date);
   }
 }
