@@ -1,5 +1,7 @@
 import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
+import 'package:mobile/domain/models/habit_model.dart';
+import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/infrastructure/notification/models/schedulable_model.dart';
 import 'package:mobile/infrastructure/notification/services/notification_service.dart';
 import 'package:mobile/utils/app_logger.dart';
@@ -111,10 +113,31 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
   }
 
   Future<void> _scheduleRoutine(Schedulable model, DateTime notificationTime) {
+    String title;
+    String body;
+
+    if (model is HabitModel) {
+      title = "Habit Reminder: ${model.title}";
+      body = model.description?.isNotEmpty == true
+          ? model.description!
+          : "It's time to build your habit: '${model.title}'";
+    } else if (model is RoutineModel) {
+      title = "Routine Reminder: ${model.title}";
+      body = model.description?.isNotEmpty == true
+          ? model.description!
+          : "Start your routine: '${model.title}'";
+    } else {
+      // fallback for other possible schedulables
+      title = "Reminder: ${model.title}";
+      body = model.description?.isNotEmpty == true
+          ? model.description!
+          : "Time for '${model.title}'";
+    }
+
     return scheduleSimpleNotification(
       id: generateId(model.id),
-      title: model.title,
-      body: model.description ?? "Time for your model'",
+      title: title,
+      body: body,
       scheduledTime: notificationTime,
       payload: model.id,
     );
