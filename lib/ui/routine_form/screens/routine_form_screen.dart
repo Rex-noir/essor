@@ -5,9 +5,6 @@ import 'package:mobile/core/ui/widgets/show_icon_picker.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
 import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/domain/repositories/task_repository.dart';
-import 'package:mobile/domain/usecases/create_new_task_usecase.dart';
-import 'package:mobile/domain/usecases/get_tasks_with_entry_usecase.dart';
-import 'package:mobile/domain/usecases/update_task_with_entry_usecase.dart';
 import 'package:mobile/infrastructure/notification/blocs/notification_bloc.dart';
 import 'package:mobile/ui/routine_form/bloc/routine_form_bloc.dart';
 import 'package:mobile/ui/routine_form/widgets/repeat_section_card.dart';
@@ -23,7 +20,6 @@ class RoutineFormScreen extends StatelessWidget {
     required RoutineModel routine,
     required RoutineFormMode mode,
   }) async {
-    final taskRepo = context.read<TaskRepository>();
     if (mode == RoutineFormMode.edit) {
       Navigator.pop(context);
     }
@@ -34,11 +30,9 @@ class RoutineFormScreen extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (_) => BlocProvider<ViewRoutineBloc>(
-          create: (context) => ViewRoutineBloc(
-            getTasksWithEntryUsecase: GetTasksWithEntryUsecase(taskRepo),
-            createNewTaskUsecase: CreateNewTaskUsecase(taskRepo),
-            updateTaskWithEntryUsecase: UpdateTaskWithEntryUsecase(taskRepo),
-          )..add(ViewRoutineStarted(routine, routine.startDate)),
+          create: (context) =>
+              ViewRoutineBloc(repo: context.read<TaskRepository>())
+                ..add(ViewRoutineStarted(routine, routine.startDate)),
           child: ViewRoutineScreen(),
         ),
       ),

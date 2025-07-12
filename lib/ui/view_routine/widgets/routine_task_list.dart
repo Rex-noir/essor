@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/config/app_icons.dart';
+import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/domain/models/task_model.dart';
 import 'package:mobile/domain/models/task_with_entry_model.dart';
 import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
@@ -27,7 +28,7 @@ class RoutineTaskList extends StatelessWidget {
       buildDefaultDragHandles: false,
       itemBuilder: (context, index) {
         final task = tasks[index];
-        final isCompleted = task.entry.completed;
+        final isCompleted = task.entry?.completed ?? false;
 
         return Padding(
           key: ValueKey(tasks[index].task.id), // must be stable and unique
@@ -308,9 +309,9 @@ class _TaskItemState extends State<_TaskItem>
   void _onTaskToggled(BuildContext context, bool? value) {
     context.read<ViewRoutineBloc>().add(
       ViewRoutineTaskUpdated(
-        widget.task.copyWith(
-          entry: widget.task.entry.copyWith(completed: value),
-        ),
+        task: widget.task.task,
+        date: DateTime.now().dateOnly,
+        value: value ?? false,
       ),
     );
   }
@@ -325,7 +326,13 @@ class _TaskItemState extends State<_TaskItem>
     );
 
     if (updatedTask != null) {
-      bloc.add(ViewRoutineTaskUpdated(widget.task.copyWith(task: updatedTask)));
+      bloc.add(
+        ViewRoutineTaskUpdated(
+          task: updatedTask,
+          date: DateTime.now().dateOnly,
+          value: widget.task.entry?.completed ?? false,
+        ),
+      );
     }
   }
 }

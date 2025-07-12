@@ -3,7 +3,7 @@ import 'package:mobile/domain/models/task_model.dart';
 
 class TaskWithEntryModel {
   final TaskModel task;
-  final TaskEntryModel entry;
+  final TaskEntryModel? entry;
 
   const TaskWithEntryModel({required this.task, required this.entry});
 

@@ -5,25 +5,19 @@ import 'package:equatable/equatable.dart';
 import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/domain/models/task_model.dart';
 import 'package:mobile/domain/models/task_with_entry_model.dart';
-import 'package:mobile/domain/usecases/create_new_task_usecase.dart';
-import 'package:mobile/domain/usecases/get_tasks_with_entry_usecase.dart';
-import 'package:mobile/domain/usecases/update_task_with_entry_usecase.dart';
+import 'package:mobile/domain/repositories/task_repository.dart';
 import 'package:mobile/utils/app_logger.dart';
 
 part 'view_routine_event.dart';
 part 'view_routine_state.dart';
 
 class ViewRoutineBloc extends Bloc<ViewRoutineEvent, ViewRoutineState> {
-  final GetTasksWithEntryUsecase getTasksWithEntryUsecase;
-  final CreateNewTaskUsecase createNewTaskUsecase;
-  final UpdateTaskWithEntryUsecase updateTaskWithEntryUsecase;
+  final TaskRepository _taskRepository;
   final logger = TaggedLogger("ViewRoutineBloc");
 
-  ViewRoutineBloc({
-    required this.getTasksWithEntryUsecase,
-    required this.createNewTaskUsecase,
-    required this.updateTaskWithEntryUsecase,
-  }) : super(ViewRoutineInitial()) {
+  ViewRoutineBloc({required TaskRepository repo})
+    : _taskRepository = repo,
+      super(ViewRoutineInitial()) {
     on<ViewRoutineStarted>(_onViewRoutineStarted);
     on<ViewRoutineTaskUpdated>(_onViewRoutineTaskUpdated);
     on<ViewRoutineNewTaskAdded>(_onNewTaskAdded);
@@ -35,7 +29,7 @@ class ViewRoutineBloc extends Bloc<ViewRoutineEvent, ViewRoutineState> {
     ViewRoutineStarted event,
     Emitter<ViewRoutineState> emit,
   ) async {
-    final tasks = await getTasksWithEntryUsecase.call(
+    final tasks = await _taskRepository.fetchTasksForRoutine(
       event.routine,
       event.date,
     );
@@ -55,10 +49,7 @@ class ViewRoutineBloc extends Bloc<ViewRoutineEvent, ViewRoutineState> {
     final currentState = state as ViewRoutineLoaded;
     final newTask = [...currentState.tasks, event.task];
     emit(currentState.copyWith(tasks: newTask));
-    final insertedTask = await createNewTaskUsecase(
-      event.task,
-      event.task.entry.entryDate,
-    );
+    final insertedTask = await _taskRepository.createNewTask(event.task);
     logger.debug("Inserted new task $insertedTask");
   }
 
@@ -70,15 +61,16 @@ class ViewRoutineBloc extends Bloc<ViewRoutineEvent, ViewRoutineState> {
       return;
     }
     final currentState = state as ViewRoutineLoaded;
+
+    final updated = await _taskRepository.updateTask(event.task);
     final newTasks = currentState.tasks.map((task) {
-      if (task.task.id == event.task.task.id) {
-        return event.task;
+      if (task.task.id == updated.task.id) {
+        return updated;
       }
       return task;
     }).toList();
     emit(currentState.copyWith(tasks: newTasks));
 
-    final updated = await updateTaskWithEntryUsecase(event.task);
     logger.debug("Update task $updated");
   }
 
@@ -107,12 +99,7 @@ class ViewRoutineBloc extends Bloc<ViewRoutineEvent, ViewRoutineState> {
 
     emit(currentState.copyWith(tasks: event.reorderedTasks));
 
-    // Persist updated order
-    for (final taskWithEntry in event.reorderedTasks) {
-      await updateTaskWithEntryUsecase(taskWithEntry);
-      logger.debug(
-        "Updated task order: ${taskWithEntry.task.title} -> ${taskWithEntry.task.order}",
-      );
-    }
+    final tasks = event.reorderedTasks.map((t) => t.task).toList();
+    _taskRepository.reorderTasks(tasks);
   }
 }

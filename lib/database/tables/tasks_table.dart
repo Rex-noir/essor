@@ -7,14 +7,18 @@ import 'package:mobile/domain/models/task_model.dart';
 @DataClassName("Task", companion: "TaskCompanion")
 class TasksTable extends Table {
   TextColumn get id => text()();
+
   TextColumn get title => text()();
+
   TextColumn get description => text().nullable()();
+
   IntColumn get iconIndex => integer().withDefault(const Constant(0))();
 
   IntColumn get order => integer()();
 
   // Storing duration as total seconds
   IntColumn get duration => integer().map(const DurationConverter())();
+
   TextColumn get routineId =>
       text().references(RoutinesTable, #id).nullable()(); // Added .nullable()
 
@@ -31,15 +35,5 @@ extension TaskExtensions on Task {
     order: order,
     duration: duration,
     routineId: routineId,
-  );
-
-  Task fromModel(TaskModel model) => Task(
-    id: model.id,
-    title: model.title,
-    description: model.description,
-    iconIndex: model.iconIndex,
-    order: model.order,
-    duration: model.duration,
-    routineId: model.routineId,
   );
 }
