@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:mobile/domain/models/routine_model.dart';
+import 'package:mobile/domain/models/task_entry_model.dart';
 import 'package:mobile/domain/models/task_model.dart';
 import 'package:mobile/domain/models/task_with_entry_model.dart';
 import 'package:mobile/domain/repositories/task_repository.dart';
@@ -23,6 +24,7 @@ class ViewRoutineBloc extends Bloc<ViewRoutineEvent, ViewRoutineState> {
     on<ViewRoutineNewTaskAdded>(_onNewTaskAdded);
     on<ViewRoutineTaskRemoved>(_onViewRoutineTaskRemoved);
     on<ViewRoutineTaskOnReorder>(_onViewRoutineTaskOnReorder);
+    on<ViewRoutineTaskEntryUpdated>(_onViewRoutineTaskEntryUpdated);
   }
 
   Future<void> _onViewRoutineStarted(
@@ -101,5 +103,22 @@ class ViewRoutineBloc extends Bloc<ViewRoutineEvent, ViewRoutineState> {
 
     final tasks = event.reorderedTasks.map((t) => t.task).toList();
     _taskRepository.reorderTasks(tasks);
+  }
+
+  Future<void> _onViewRoutineTaskEntryUpdated(
+    ViewRoutineTaskEntryUpdated event,
+    Emitter<ViewRoutineState> emit,
+  ) async {
+    if (state is! ViewRoutineLoaded) return;
+    final currentState = state as ViewRoutineLoaded;
+
+    final updated = await _taskRepository.updateEntry(event.entry);
+    final newTasks = currentState.tasks.map((task) {
+      if (task.task.id == updated.task.id) {
+        return updated;
+      }
+      return task;
+    }).toList();
+    emit(currentState.copyWith(tasks: newTasks));
   }
 }

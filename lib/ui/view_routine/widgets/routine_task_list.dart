@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/config/app_icons.dart';
 import 'package:mobile/core/extensions/date_extensions.dart';
+import 'package:mobile/domain/models/task_entry_model.dart';
 import 'package:mobile/domain/models/task_model.dart';
 import 'package:mobile/domain/models/task_with_entry_model.dart';
+import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
 import 'package:mobile/ui/view_routine/bloc/view_routine_bloc.dart';
 import 'package:mobile/ui/view_routine/screens/view_routine_task_screen.dart';
 import 'package:mobile/ui/view_routine/widgets/routine_task_duration.dart';
+import 'package:uuid/v4.dart';
 
 class RoutineTaskList extends StatelessWidget {
   const RoutineTaskList({
@@ -307,11 +310,24 @@ class _TaskItemState extends State<_TaskItem>
   }
 
   void _onTaskToggled(BuildContext context, bool? value) {
+    final state = context.read<DailyListBloc>().state;
+    var date = DateTime.now();
+    if (state is DailyListLoaded) {
+      date = state.selectedDate;
+    }
     context.read<ViewRoutineBloc>().add(
-      ViewRoutineTaskUpdated(
-        task: widget.task.task,
-        date: DateTime.now().dateOnly,
-        value: value ?? false,
+      ViewRoutineTaskEntryUpdated(
+        widget.task.entry != null
+            ? widget.task.entry!.copyWith(
+                completed: value ?? false,
+                entryDate: date.dateOnly,
+              )
+            : TaskEntryModel(
+                id: UuidV4().generate(),
+                taskId: widget.task.task.id,
+                entryDate: date.dateOnly,
+                completed: value ?? false,
+              ),
       ),
     );
   }
@@ -326,13 +342,7 @@ class _TaskItemState extends State<_TaskItem>
     );
 
     if (updatedTask != null) {
-      bloc.add(
-        ViewRoutineTaskUpdated(
-          task: updatedTask,
-          date: DateTime.now().dateOnly,
-          value: widget.task.entry?.completed ?? false,
-        ),
-      );
+      bloc.add(ViewRoutineTaskUpdated(task: updatedTask));
     }
   }
 }

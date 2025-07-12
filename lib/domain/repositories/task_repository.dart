@@ -1,5 +1,5 @@
-import 'package:mobile/database/database.dart';
 import 'package:mobile/domain/models/routine_model.dart';
+import 'package:mobile/domain/models/task_entry_model.dart';
 import 'package:mobile/domain/models/task_model.dart';
 import 'package:mobile/domain/models/task_with_entry_model.dart';
 
@@ -15,7 +15,7 @@ abstract class TaskRepository {
 
   Future<TaskWithEntryModel> updateTask(TaskModel task);
 
-  Future<TaskEntry> updateEntry(TaskEntry entry);
+  Future<TaskWithEntryModel> updateEntry(TaskEntryModel? entry);
 
   Future<List<TaskModel>> reorderTasks(List<TaskModel> tasks);
 }

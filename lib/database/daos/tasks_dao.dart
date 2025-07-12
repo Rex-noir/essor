@@ -127,6 +127,12 @@ class TasksDao extends DatabaseAccessor<AppDatabase> with _$TasksDaoMixin {
     }
   }
 
+  Future<TaskEntry> upsertTaskEntry(
+    String taskId,
+    DateTime date,
+    bool completed,
+  ) => _upsertTaskEntry(taskId, date, completed);
+
   Future<List<Task>> reorderTasks(List<TaskCompanion> orderedTasks) async {
     return transaction(() async {
       final results = <Task>[];

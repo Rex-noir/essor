@@ -4,7 +4,7 @@ sealed class ViewRoutineEvent extends Equatable {
   const ViewRoutineEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class ViewRoutineStarted extends ViewRoutineEvent {
@@ -28,17 +28,20 @@ class ViewRoutineNewTaskAdded extends ViewRoutineEvent {
 
 class ViewRoutineTaskUpdated extends ViewRoutineEvent {
   final TaskModel task;
-  final DateTime date;
-  final bool value;
 
-  const ViewRoutineTaskUpdated({
-    required this.task,
-    required this.date,
-    required this.value,
-  });
+  const ViewRoutineTaskUpdated({required this.task});
 
   @override
-  List<Object> get props => [task, date, value];
+  List<Object> get props => [task];
+}
+
+final class ViewRoutineTaskEntryUpdated extends ViewRoutineEvent {
+  final TaskEntryModel entry;
+
+  const ViewRoutineTaskEntryUpdated(this.entry);
+
+  @override
+  List<Object?> get props => [entry];
 }
 
 class ViewRoutineTaskRemoved extends ViewRoutineEvent {
