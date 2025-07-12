@@ -9,6 +9,7 @@ import 'package:mobile/database/converters/int_list_converter.dart';
 import 'package:mobile/database/converters/item_frequency_converter.dart';
 import 'package:mobile/database/converters/item_type_converter.dart';
 import 'package:mobile/database/converters/time_of_day_converter.dart';
+import 'package:mobile/database/tables/habit_entries_table.dart';
 import 'package:mobile/database/tables/habits_table.dart';
 import 'package:mobile/database/tables/routines_table.dart';
 import 'package:mobile/database/tables/task_entries_table.dart';
@@ -22,7 +23,13 @@ import 'package:path_provider/path_provider.dart';
 part 'database.g.dart';
 
 @DriftDatabase(
-  tables: [RoutinesTable, HabitsTable, TasksTable, TaskEntriesTable],
+  tables: [
+    RoutinesTable,
+    HabitsTable,
+    TasksTable,
+    TaskEntriesTable,
+    HabitEntriesTable,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
