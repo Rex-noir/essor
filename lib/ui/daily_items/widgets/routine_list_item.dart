@@ -58,8 +58,9 @@ class RoutineListItem extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Minimalist icon
+                // Icon at top left
                 Container(
                   width: 36,
                   height: 36,
@@ -108,45 +109,27 @@ class RoutineListItem extends StatelessWidget {
                         ),
                       ),
 
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 4),
 
-                      // Refined progress indicator
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              height: 2,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(1),
-                                color: colorScheme.outline.withValues(
-                                  alpha: 0.1,
-                                ),
-                              ),
-                              child: FractionallySizedBox(
-                                alignment: Alignment.centerLeft,
-                                widthFactor: model.progress,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(1),
-                                    color: primaryColor.withValues(alpha: 0.6),
-                                  ),
-                                ),
-                              ),
-                            ),
+                      // Routine indicator badge - moved here
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: primaryColor.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          'ROUTINE',
+                          style: textTheme.bodySmall?.copyWith(
+                            fontSize: 9,
+                            color: primaryColor.withValues(alpha: 0.7),
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.5,
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            "${(model.progress * 100).toInt()}%",
-                            style: textTheme.bodySmall?.copyWith(
-                              fontSize: 10,
-                              color: colorScheme.onSurface.withValues(
-                                alpha: 0.4,
-                              ),
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0.2,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
@@ -154,34 +137,35 @@ class RoutineListItem extends StatelessWidget {
 
                 const SizedBox(width: 12),
 
-                // Routine indicator badge
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: primaryColor.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    'ROUTINE',
-                    style: textTheme.bodySmall?.copyWith(
-                      fontSize: 9,
-                      color: primaryColor.withValues(alpha: 0.7),
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.5,
+                // Circular progress indicator at top right
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                      width: 32,
+                      height: 32,
+                      child: Stack(
+                        children: [
+                          // Percentage text
+                          Container(
+                            width: 32,
+                            height: 32,
+                            alignment: Alignment.center,
+                            child: Text(
+                              "${(model.progress * 100).toInt()}%",
+                              style: textTheme.bodySmall?.copyWith(
+                                fontSize: 8,
+                                color: colorScheme.onSurface.withValues(
+                                  alpha: 0.6,
+                                ),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-
-                const SizedBox(width: 8),
-
-                // Subtle chevron indicator
-                Icon(
-                  Icons.chevron_right,
-                  size: 16,
-                  color: colorScheme.onSurface.withValues(alpha: 0.3),
+                  ],
                 ),
               ],
             ),
