@@ -8,7 +8,6 @@ import 'package:mobile/infrastructure/notification/services/notification_service
 import 'package:mobile/utils/app_logger.dart';
 
 part 'notification_event.dart';
-
 part 'notification_state.dart';
 
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
