@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
-import 'package:mobile/infrastracture/notification/servcies/notification_service.dart';
+import 'package:mobile/infrastructure/notification/services/notification_service.dart';
 
 class RoutineModel implements Notifiable {
   @override

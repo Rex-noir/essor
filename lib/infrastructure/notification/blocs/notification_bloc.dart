@@ -4,10 +4,11 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/domain/repositories/routine_repository.dart';
-import 'package:mobile/infrastracture/notification/servcies/notification_service.dart';
+import 'package:mobile/infrastructure/notification/services/notification_service.dart';
 import 'package:mobile/utils/app_logger.dart';
 
 part 'notification_event.dart';
+
 part 'notification_state.dart';
 
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {

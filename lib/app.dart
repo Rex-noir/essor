@@ -32,8 +32,8 @@ import 'package:mobile/domain/usecases/get_profile_usecase.dart';
 import 'package:mobile/domain/usecases/get_routines_for_date_usecase.dart';
 import 'package:mobile/domain/usecases/login_usecase.dart';
 import 'package:mobile/domain/usecases/logout_usecase.dart';
-import 'package:mobile/infrastracture/notification/blocs/notification_bloc.dart';
-import 'package:mobile/infrastracture/notification/servcies/routine_notification_service.dart';
+import 'package:mobile/infrastructure/notification/blocs/notification_bloc.dart';
+import 'package:mobile/infrastructure/notification/services/routine_notification_service.dart';
 import 'package:mobile/ui/authentication/login/login_screen.dart';
 import 'package:mobile/ui/authentication/shared/bloc/authentication_bloc.dart';
 import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
@@ -248,7 +248,9 @@ class _AppState extends State<App> {
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse response) {
-  debugPrint('Background notification tapped: ${response.payload}');
+  debugPrint(
+    'Background infrastructure.infrastructure.notification tapped: ${response.payload}',
+  );
 }
 
 class SplashScreen extends StatelessWidget {

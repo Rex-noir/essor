@@ -8,7 +8,7 @@ import 'package:mobile/domain/repositories/task_repository.dart';
 import 'package:mobile/domain/usecases/create_new_task_usecase.dart';
 import 'package:mobile/domain/usecases/get_tasks_with_entry_usecase.dart';
 import 'package:mobile/domain/usecases/update_task_with_entry_usecase.dart';
-import 'package:mobile/infrastracture/notification/blocs/notification_bloc.dart';
+import 'package:mobile/infrastructure/notification/blocs/notification_bloc.dart';
 import 'package:mobile/ui/routine_form/bloc/routine_form_bloc.dart';
 import 'package:mobile/ui/routine_form/widgets/repeat_section_card.dart';
 import 'package:mobile/ui/routine_form/widgets/routine_title_input.dart';
