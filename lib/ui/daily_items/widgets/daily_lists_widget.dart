@@ -160,7 +160,7 @@ class _ListItemsPageState extends State<ListItemsPage>
 
   Widget _buildListItem(DailyItemModel item) {
     if (item is DailyItemHabitModel) {
-      return HabitListItem(habit: item.habit);
+      return HabitListItem(model: item);
     } else if (item is DailyItemRoutineModel) {
       return RoutineListItem(model: item);
     } else {
