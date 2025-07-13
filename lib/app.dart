@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobile/core/config/app_config.dart';
+import 'package:mobile/core/extensions/platform_extensions.dart';
 import 'package:mobile/core/network/api_client.dart';
 import 'package:mobile/core/theme/theme.dart';
 import 'package:mobile/core/theme/util.dart';
@@ -81,7 +82,9 @@ class _AppState extends State<App> {
       await _localAuth.setFlag(AppConfig.isFirstTimeKey, "false");
     }
 
-    _initializeNotification();
+    if (PlatformExtensions.isMobile) {
+      _initializeNotification();
+    }
 
     setState(() {
       _status = token != null
@@ -177,15 +180,16 @@ class _AppState extends State<App> {
                   habitRepository: context.read<HabitRepository>(),
                 )..add(DailyListInitialize()),
               ),
-              BlocProvider(
-                lazy: false,
-                create: (context) => NotificationBloc(
-                  routineNotificationService: context
-                      .read<NotificationServiceImpl>(),
-                  routineRepository: context.read<RoutineRepository>(),
-                  habitRepository: context.read<HabitRepository>(),
-                )..add(NotificationStarted()),
-              ),
+              if (PlatformExtensions.isMobile)
+                BlocProvider(
+                  lazy: false,
+                  create: (context) => NotificationBloc(
+                    routineNotificationService: context
+                        .read<NotificationServiceImpl>(),
+                    routineRepository: context.read<RoutineRepository>(),
+                    habitRepository: context.read<HabitRepository>(),
+                  )..add(NotificationStarted()),
+                ),
             ],
             child: MaterialApp(
               debugShowCheckedModeBanner: false,

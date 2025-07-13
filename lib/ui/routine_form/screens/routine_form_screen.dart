@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/config/app_icons.dart';
+import 'package:mobile/core/extensions/platform_extensions.dart';
 import 'package:mobile/core/ui/widgets/show_icon_picker.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
 import 'package:mobile/domain/models/routine_model.dart';
@@ -23,9 +24,11 @@ class RoutineFormScreen extends StatelessWidget {
     if (mode == RoutineFormMode.edit) {
       Navigator.pop(context);
     }
-    context.read<NotificationBloc>().add(
-      NotificationScheduleForRoutineRequested(routine),
-    );
+    if (PlatformExtensions.isMobile) {
+      context.read<NotificationBloc>().add(
+        NotificationScheduleForRoutineRequested(routine),
+      );
+    }
     await Navigator.pushReplacement(
       context,
       MaterialPageRoute(
