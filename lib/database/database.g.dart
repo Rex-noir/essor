@@ -2809,11 +2809,11 @@ class $HabitEntriesTableTable extends HabitEntriesTable
   );
   static const VerificationMeta _valueMeta = const VerificationMeta('value');
   @override
-  late final GeneratedColumn<int> value = GeneratedColumn<int>(
+  late final GeneratedColumn<double> value = GeneratedColumn<double>(
     'value',
     aliasedName,
     false,
-    type: DriftSqlType.int,
+    type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
   @override
@@ -2881,7 +2881,7 @@ class $HabitEntriesTableTable extends HabitEntriesTable
         data['${effectivePrefix}entry_date'],
       )!,
       value: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
+        DriftSqlType.double,
         data['${effectivePrefix}value'],
       )!,
     );
@@ -2897,7 +2897,7 @@ class HabitEntry extends DataClass implements Insertable<HabitEntry> {
   final String id;
   final String habitId;
   final DateTime entryDate;
-  final int value;
+  final double value;
   const HabitEntry({
     required this.id,
     required this.habitId,
@@ -2910,7 +2910,7 @@ class HabitEntry extends DataClass implements Insertable<HabitEntry> {
     map['id'] = Variable<String>(id);
     map['habit_id'] = Variable<String>(habitId);
     map['entry_date'] = Variable<DateTime>(entryDate);
-    map['value'] = Variable<int>(value);
+    map['value'] = Variable<double>(value);
     return map;
   }
 
@@ -2932,7 +2932,7 @@ class HabitEntry extends DataClass implements Insertable<HabitEntry> {
       id: serializer.fromJson<String>(json['id']),
       habitId: serializer.fromJson<String>(json['habitId']),
       entryDate: serializer.fromJson<DateTime>(json['entryDate']),
-      value: serializer.fromJson<int>(json['value']),
+      value: serializer.fromJson<double>(json['value']),
     );
   }
   @override
@@ -2942,7 +2942,7 @@ class HabitEntry extends DataClass implements Insertable<HabitEntry> {
       'id': serializer.toJson<String>(id),
       'habitId': serializer.toJson<String>(habitId),
       'entryDate': serializer.toJson<DateTime>(entryDate),
-      'value': serializer.toJson<int>(value),
+      'value': serializer.toJson<double>(value),
     };
   }
 
@@ -2950,7 +2950,7 @@ class HabitEntry extends DataClass implements Insertable<HabitEntry> {
     String? id,
     String? habitId,
     DateTime? entryDate,
-    int? value,
+    double? value,
   }) => HabitEntry(
     id: id ?? this.id,
     habitId: habitId ?? this.habitId,
@@ -2993,7 +2993,7 @@ class HabitEntryCompanion extends UpdateCompanion<HabitEntry> {
   final Value<String> id;
   final Value<String> habitId;
   final Value<DateTime> entryDate;
-  final Value<int> value;
+  final Value<double> value;
   final Value<int> rowid;
   const HabitEntryCompanion({
     this.id = const Value.absent(),
@@ -3006,7 +3006,7 @@ class HabitEntryCompanion extends UpdateCompanion<HabitEntry> {
     required String id,
     required String habitId,
     required DateTime entryDate,
-    required int value,
+    required double value,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        habitId = Value(habitId),
@@ -3016,7 +3016,7 @@ class HabitEntryCompanion extends UpdateCompanion<HabitEntry> {
     Expression<String>? id,
     Expression<String>? habitId,
     Expression<DateTime>? entryDate,
-    Expression<int>? value,
+    Expression<double>? value,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3032,7 +3032,7 @@ class HabitEntryCompanion extends UpdateCompanion<HabitEntry> {
     Value<String>? id,
     Value<String>? habitId,
     Value<DateTime>? entryDate,
-    Value<int>? value,
+    Value<double>? value,
     Value<int>? rowid,
   }) {
     return HabitEntryCompanion(
@@ -3057,7 +3057,7 @@ class HabitEntryCompanion extends UpdateCompanion<HabitEntry> {
       map['entry_date'] = Variable<DateTime>(entryDate.value);
     }
     if (value.present) {
-      map['value'] = Variable<int>(value.value);
+      map['value'] = Variable<double>(value.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -5007,7 +5007,7 @@ typedef $$HabitEntriesTableTableCreateCompanionBuilder =
       required String id,
       required String habitId,
       required DateTime entryDate,
-      required int value,
+      required double value,
       Value<int> rowid,
     });
 typedef $$HabitEntriesTableTableUpdateCompanionBuilder =
@@ -5015,7 +5015,7 @@ typedef $$HabitEntriesTableTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> habitId,
       Value<DateTime> entryDate,
-      Value<int> value,
+      Value<double> value,
       Value<int> rowid,
     });
 
@@ -5066,7 +5066,7 @@ class $$HabitEntriesTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get value => $composableBuilder(
+  ColumnFilters<double> get value => $composableBuilder(
     column: $table.value,
     builder: (column) => ColumnFilters(column),
   );
@@ -5114,7 +5114,7 @@ class $$HabitEntriesTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get value => $composableBuilder(
+  ColumnOrderings<double> get value => $composableBuilder(
     column: $table.value,
     builder: (column) => ColumnOrderings(column),
   );
@@ -5158,7 +5158,7 @@ class $$HabitEntriesTableTableAnnotationComposer
   GeneratedColumn<DateTime> get entryDate =>
       $composableBuilder(column: $table.entryDate, builder: (column) => column);
 
-  GeneratedColumn<int> get value =>
+  GeneratedColumn<double> get value =>
       $composableBuilder(column: $table.value, builder: (column) => column);
 
   $$HabitsTableTableAnnotationComposer get habitId {
@@ -5221,7 +5221,7 @@ class $$HabitEntriesTableTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> habitId = const Value.absent(),
                 Value<DateTime> entryDate = const Value.absent(),
-                Value<int> value = const Value.absent(),
+                Value<double> value = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => HabitEntryCompanion(
                 id: id,
@@ -5235,7 +5235,7 @@ class $$HabitEntriesTableTableTableManager
                 required String id,
                 required String habitId,
                 required DateTime entryDate,
-                required int value,
+                required double value,
                 Value<int> rowid = const Value.absent(),
               }) => HabitEntryCompanion.insert(
                 id: id,

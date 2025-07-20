@@ -81,4 +81,8 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
 
     return updatedHabit;
   }
+
+  Future<void> upsertEntry(HabitEntryCompanion data) async {
+    await into(habitEntriesTable).insertOnConflictUpdate(data);
+  }
 }

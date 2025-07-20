@@ -12,7 +12,7 @@ class HabitEntriesTable extends Table {
 
   DateTimeColumn get entryDate => dateTime()();
 
-  IntColumn get value => integer()();
+  RealColumn get value => real()();
 
   @override
   Set<Column<Object>>? get primaryKey => {id};

@@ -4,7 +4,9 @@ enum TargetOperator implements Comparable<TargetOperator> {
   equalTo(symbol: '=');
 
   final String symbol;
+
   const TargetOperator({required this.symbol});
+
   static TargetOperator? fromSymbol(String value) {
     for (final op in TargetOperator.values) {
       if (op.symbol == value) {
@@ -15,5 +17,8 @@ enum TargetOperator implements Comparable<TargetOperator> {
   }
 
   @override
-  int compareTo(TargetOperator other) => index.compareTo(other.index); // or custom logic
+  int compareTo(TargetOperator other) => index.compareTo(other.index);
+
+  @override
+  String toString() => symbol;
 }

@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:mobile/database/daos/habits_dao.dart';
 import 'package:mobile/database/database.dart';
 import 'package:mobile/database/tables/habits_table.dart';
+import 'package:mobile/domain/models/habit_entry_model.dart';
 import 'package:mobile/domain/models/habit_model.dart';
 import 'package:mobile/domain/models/habit_with_entry_model.dart';
 import 'package:mobile/domain/repositories/habit_repository.dart';
@@ -71,5 +72,17 @@ class HabitRepositoryImpl implements HabitRepository {
     return _habitsDao
         .watchHabitsWithEntryForDate(date)
         .map((dtos) => dtos.map((dto) => dto.toModel()).toList());
+  }
+
+  @override
+  Future<void> upsertEntry(HabitEntryModel entry) {
+    return _habitsDao.upsertEntry(
+      HabitEntryCompanion(
+        id: Value(entry.id),
+        habitId: Value(entry.habitId),
+        value: Value(entry.value),
+        entryDate: Value(entry.entryDate),
+      ),
+    );
   }
 }

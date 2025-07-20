@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/config/app_icons.dart';
 import 'package:mobile/domain/enums/item_type.dart';
+import 'package:mobile/domain/repositories/habit_repository.dart';
 import 'package:mobile/ui/daily_items/models/daily_item_habit_model.dart';
+import 'package:mobile/ui/view_habit/blocs/view_habit_bloc.dart';
+import 'package:mobile/ui/view_habit/models/view_habit_model.dart';
+import 'package:mobile/ui/view_habit/screens/view_habit_screen.dart';
 
 class HabitListItem extends StatelessWidget {
   final DailyItemHabitModel model;
+  final DateTime date;
 
-  const HabitListItem({required this.model, super.key});
+  const HabitListItem({required this.model, required this.date, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +44,21 @@ class HabitListItem extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            // Navigate or show details
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  create: (_) => ViewHabitBloc(context.read<HabitRepository>())
+                    ..add(
+                      ViewHabitStarted(
+                        ViewHabitModel(habit: model.habit, entry: model.entry),
+                        date,
+                      ),
+                    ),
+                  child: ViewHabitScreen(),
+                ),
+              ),
+            );
           },
           borderRadius: BorderRadius.circular(12),
           child: Padding(
