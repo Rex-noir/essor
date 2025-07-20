@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:mobile/ui/daily_items/bloc/daily_list_bloc.dart';
-import 'package:mobile/ui/daily_items/widgets/daily_list_tabs.dart';
 import 'package:mobile/ui/daily_items/widgets/daily_list_header.dart';
+import 'package:mobile/ui/daily_items/widgets/daily_list_tabs.dart';
 import 'package:mobile/ui/daily_items/widgets/daily_lists_widget.dart';
 import 'package:mobile/utils/app_logger.dart';
 
@@ -221,6 +220,7 @@ class _DailyListScreenState extends State<DailyListScreen>
                               key: ValueKey(day),
                               items: isCurrent ? state.items : [],
                               isLoading: state.isLoading,
+                              selectedDate: state.selectedDate,
                               onRefresh: () {
                                 // refresh logic
                               },

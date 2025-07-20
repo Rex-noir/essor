@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile/core/extensions/date_extensions.dart';
+import 'package:mobile/core/extensions/platform_extensions.dart';
 import 'package:mobile/domain/models/habit_model.dart';
 import 'package:mobile/infrastructure/notification/blocs/notification_bloc.dart';
 import 'package:mobile/ui/habit_form/bloc/habit_form_bloc.dart';
@@ -282,9 +283,11 @@ class _HabitFormScreenState extends State<HabitFormScreen> {
       updatedAt: DateTime.now(),
     );
     context.read<HabitFormBloc>().add(HabitFormSubmitted(habit));
-    context.read<NotificationBloc>().add(
-      NotificationScheduleForHabitRequested(habit),
-    );
+    if (PlatformExtensions.isMobile) {
+      context.read<NotificationBloc>().add(
+        NotificationScheduleForHabitRequested(habit),
+      );
+    }
     Navigator.of(context).pop();
   }
 }

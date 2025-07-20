@@ -12,12 +12,14 @@ class ListItemsPage extends StatefulWidget {
   final List<DailyItemModel> items;
   final VoidCallback onRefresh;
   final bool isLoading;
+  final DateTime selectedDate;
 
   const ListItemsPage({
     required this.day,
     required this.items,
     required this.onRefresh,
     required this.isLoading,
+    required this.selectedDate,
     super.key,
   });
 
@@ -160,7 +162,7 @@ class _ListItemsPageState extends State<ListItemsPage>
 
   Widget _buildListItem(DailyItemModel item) {
     if (item is DailyItemHabitModel) {
-      return HabitListItem(model: item);
+      return HabitListItem(model: item, date: widget.selectedDate);
     } else if (item is DailyItemRoutineModel) {
       return RoutineListItem(model: item);
     } else {
