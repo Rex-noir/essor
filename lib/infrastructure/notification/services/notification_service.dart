@@ -46,6 +46,7 @@ abstract class NotificationService<T extends Schedulable> {
     required String title,
     required String body,
     required DateTime scheduledTime,
+    required DateTimeComponents matchDateTimeComponents,
     String? payload,
     String channelId = 'default_channer',
     String channelName = "Default",
@@ -79,7 +80,7 @@ abstract class NotificationService<T extends Schedulable> {
       platformChannelSpecifics,
       payload: payload,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time,
+      matchDateTimeComponents: matchDateTimeComponents,
     );
     onScheduled(scheduledTime);
   }

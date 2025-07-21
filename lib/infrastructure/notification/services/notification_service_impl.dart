@@ -1,7 +1,9 @@
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
 import 'package:mobile/domain/models/habit_model.dart';
 import 'package:mobile/domain/models/routine_model.dart';
+import 'package:mobile/infrastructure/notification/failures/notification_failure.dart';
 import 'package:mobile/infrastructure/notification/models/schedulable_model.dart';
 import 'package:mobile/infrastructure/notification/services/notification_service.dart';
 import 'package:mobile/utils/app_logger.dart';
@@ -35,6 +37,10 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
   Future<void> _scheduleDailyNotifications(Schedulable model) async {
     logger.debug("Scheduling daily notification $model");
 
+    if (model.interval == 0) {
+      throw NotificationDailyIntervalIsZero();
+    }
+
     for (int i = 0; i < 30; i++) {
       final scheduleDate = model.startDate.add(Duration(days: i));
 
@@ -47,14 +53,21 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
           model.startTime.minute,
         );
 
-        if (notificationTime.isAfter(model.startDate)) {
-          await _scheduleRoutine(model, notificationTime);
+        if (!notificationTime.isBefore(DateTime.now())) {
+          await _scheduleRoutine(
+            model,
+            notificationTime,
+            DateTimeComponents.dateAndTime,
+          );
         }
       }
     }
   }
 
   Future<void> _scheduleWeeklyNotifications(Schedulable model) async {
+    if (model.weeklyDays.isEmpty) {
+      throw NotificationWeeklyDaysEmptyFailure();
+    }
     for (int week = 0; week < 12; week++) {
       final baseDate = model.startDate.add(Duration(days: week * 7));
       for (int weekday in model.weeklyDays) {
@@ -67,8 +80,12 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
             model.startTime.hour,
             model.startTime.minute,
           );
-          if (notificationTime.isAfter(model.startDate)) {
-            await _scheduleRoutine(model, notificationTime);
+          if (!notificationTime.isBefore(DateTime.now())) {
+            await _scheduleRoutine(
+              model,
+              notificationTime,
+              DateTimeComponents.dateAndTime,
+            );
           }
         }
       }
@@ -76,6 +93,9 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
   }
 
   Future<void> _scheduleMonthlyNotifications(Schedulable model) async {
+    if (model.monthlyDates.isEmpty) {
+      throw NotificationMonthlyDaysEmpty();
+    }
     for (int month = 0; month < 12; month++) {
       final targetMonth = DateTime(
         model.startDate.year,
@@ -99,8 +119,12 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
               model.startTime.hour,
               model.startTime.minute,
             );
-            if (notificationTime.isAfter(model.startDate)) {
-              await _scheduleRoutine(model, notificationTime);
+            if (!notificationTime.isBefore(DateTime.now())) {
+              await _scheduleRoutine(
+                model,
+                notificationTime,
+                DateTimeComponents.dateAndTime,
+              );
             }
           }
         } catch (e) {
@@ -110,7 +134,11 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
     }
   }
 
-  Future<void> _scheduleRoutine(Schedulable model, DateTime notificationTime) {
+  Future<void> _scheduleRoutine(
+    Schedulable model,
+    DateTime notificationTime,
+    DateTimeComponents dateTimeComponents,
+  ) {
     String title;
     String body;
 
@@ -138,6 +166,7 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
       body: body,
       scheduledTime: notificationTime,
       payload: model.id,
+      matchDateTimeComponents: dateTimeComponents,
     );
   }
 
