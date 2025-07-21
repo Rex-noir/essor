@@ -19,29 +19,41 @@ abstract class Failure extends Equatable implements Exception {
 
 // General network-related failures
 class NetworkFailure extends Failure {
-  const NetworkFailure({super.message, super.code});
+  const NetworkFailure({String? message, String? code})
+    : super(
+        message: message ?? 'Network error occurred.',
+        code: code ?? 'ne-err',
+      );
 }
 
 class ServerFailure extends Failure {
-  const ServerFailure({String? message, super.code})
-    : super(message: message ?? 'An unexpected server error occurred.');
+  const ServerFailure({String? message, String? code})
+    : super(
+        message: message ?? 'An unexpected server error occurred.',
+        code: code ?? 'ser-err',
+      );
 }
 
-// Represents errors related to local data storage (e.g., SharedPreferences, Hive)
 class CacheFailure extends Failure {
-  const CacheFailure({String? message})
-    : super(message: message ?? 'Failed to access local data.');
+  const CacheFailure({String? message, String? code})
+    : super(
+        message: message ?? 'Failed to access local data.',
+        code: code ?? 'cache_error',
+      );
 }
 
-// Represents cases where the application is unauthorized (e.g., 401, 403, invalid token)
-// This can be used for both login failures and token refresh failures.
 class UnauthorizedFailure extends Failure {
-  const UnauthorizedFailure({String? message, super.code})
-    : super(message: message ?? 'Authentication failed. Please log in again.');
+  const UnauthorizedFailure({String? message, String? code})
+    : super(
+        message: message ?? 'Authentication failed. Please log in again.',
+        code: code ?? 'unau-err',
+      );
 }
 
-// A catch-all for any unknown or unhandled exceptions
 class UnknownFailure extends Failure {
-  const UnknownFailure({String? message, super.code})
-    : super(message: message ?? 'An unknown error occurred.');
+  const UnknownFailure({String? message, String? code})
+    : super(
+        message: message ?? 'An unknown error occurred.',
+        code: code ?? 'unknown-err',
+      );
 }
