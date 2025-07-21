@@ -28,4 +28,20 @@ abstract class Schedulable {
     if (lastScheduledAt == null) return true;
     return now.isAfter(lastScheduledAt!.dateOnly);
   }
+
+  @override
+  String toString() {
+    return 'Schedulable('
+        'id: $id, '
+        'title: $title, '
+        'description: $description, '
+        'startDate: $startDate, '
+        'startTime: ${startTime}, '
+        'frequency: $frequency, '
+        'weeklyDays: $weeklyDays, '
+        'monthlyDates: $monthlyDates, '
+        'lastScheduledAt: $lastScheduledAt, '
+        'interval: $interval'
+        ')';
+  }
 }
