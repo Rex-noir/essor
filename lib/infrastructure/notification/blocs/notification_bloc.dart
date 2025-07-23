@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:mobile/domain/models/habit_model.dart';
+import 'package:mobile/domain/models/notification_entry_model.dart';
 import 'package:mobile/domain/models/routine_model.dart';
 import 'package:mobile/domain/repositories/habit_repository.dart';
+import 'package:mobile/domain/repositories/notification_entry_repository.dart';
 import 'package:mobile/domain/repositories/routine_repository.dart';
+import 'package:mobile/infrastructure/notification/models/schedulable_model.dart';
 import 'package:mobile/infrastructure/notification/services/notification_service.dart';
 import 'package:mobile/utils/app_logger.dart';
 
@@ -16,6 +19,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   final NotificationService routineNotificationService;
   final RoutineRepository routineRepository;
   final HabitRepository habitRepository;
+  final NotificationEntryRepository _entryRepository;
 
   final logger = TaggedLogger("NotificationBloc");
 
@@ -23,10 +27,15 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     required this.routineNotificationService,
     required this.routineRepository,
     required this.habitRepository,
-  }) : super(NotificationInitial()) {
+    required NotificationEntryRepository entryRepo,
+  }) : _entryRepository = entryRepo,
+       super(NotificationInitial()) {
     on<NotificationStarted>(_onStarted);
     on<NotificationScheduleForRoutineRequested>(_onRoutineScheduleRequested);
     on<NotificationScheduleForHabitRequested>(_onHabitScheduleRequested);
+    on<NotificationScheduleCancelRequestedForModel>(
+      _onNotificationCancelRequested,
+    );
   }
 
   FutureOr<void> _onStarted(
@@ -37,14 +46,9 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     final routines = await routineRepository.fetchActiveRoutines();
     for (final routine in routines) {
       try {
-        await routineNotificationService.schedule(routine, (
-          scheduledDate,
-        ) async {
-          logger.debug("Checking routine $routine");
-          if ((routine.shouldScheduleRoutine)) {
-            await _scheduleRoutine(routine);
-          }
-        });
+        if (routine.shouldScheduleRoutine) {
+          await _scheduleRoutine(routine);
+        }
       } catch (e) {
         logger.error("Error happened", e);
         emit(NotificationError(e.toString()));
@@ -52,11 +56,19 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     }
   }
 
-  _scheduleRoutine(RoutineModel routine) async {
-    await routineNotificationService.schedule(routine, (scheduledDate) async {
-      final updated = routine.copyWith(lastScheduledAt: scheduledDate);
-      await routineRepository.updateRoutine(updated);
-    });
+  _syncScheduleToDatabase(
+    String modelId,
+    DateTime date,
+    int notificationId,
+  ) async {
+    _entryRepository.insertEntry(
+      NotificationEntryModel(
+        modelId: modelId,
+        notificationId: notificationId,
+        date: date,
+        id: null,
+      ),
+    );
   }
 
   Future<void> _onRoutineScheduleRequested(
@@ -73,10 +85,22 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     }
   }
 
+  Future<void> _scheduleRoutine(RoutineModel routine) async {
+    await routineNotificationService.schedule(routine, (
+      scheduledDate,
+      id,
+    ) async {
+      final updated = routine.copyWith(lastScheduledAt: scheduledDate);
+      await routineRepository.updateRoutine(updated);
+      _syncScheduleToDatabase(routine.id, scheduledDate, id);
+    });
+  }
+
   Future<void> _scheduleHabit(HabitModel habit) async {
-    await routineNotificationService.schedule(habit, (scheduledDate) async {
+    await routineNotificationService.schedule(habit, (scheduledDate, id) async {
       final updated = habit.copyWith(lastScheduledAt: scheduledDate);
       await habitRepository.updateHabit(updated);
+      _syncScheduleToDatabase(habit.id, scheduledDate, id);
     });
   }
 
@@ -87,6 +111,26 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     try {
       if (event.model.shouldScheduleRoutine) {
         await _scheduleHabit(event.model);
+      }
+    } catch (e) {
+      logger.error("Error happened", e);
+      emit(NotificationError(e.toString()));
+    }
+  }
+
+  Future<void> _onNotificationCancelRequested(
+    NotificationScheduleCancelRequestedForModel event,
+    Emitter<NotificationState> emit,
+  ) async {
+    try {
+      final entries = await _entryRepository.getAllEntriesByModelId(
+        event.model.id,
+      );
+      for (final entry in entries) {
+        await routineNotificationService.cancelNotificationById(
+          entry.notificationId,
+        );
+        await _entryRepository.deleteEntry(entry);
       }
     } catch (e) {
       logger.error("Error happened", e);

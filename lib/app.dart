@@ -14,10 +14,12 @@ import 'package:mobile/data/datasources/auth_remote_datasource.dart';
 import 'package:mobile/data/repositories/auth_token_storage_repository_impl.dart';
 import 'package:mobile/data/repositories/authentication_repository_impl.dart';
 import 'package:mobile/data/repositories/habit_repository_impl.dart';
+import 'package:mobile/data/repositories/notification_entry_repository_impl.dart';
 import 'package:mobile/data/repositories/profile_repository_impl.dart';
 import 'package:mobile/data/repositories/routine_repository_impl.dart';
 import 'package:mobile/data/repositories/task_repository_impl.dart';
 import 'package:mobile/database/daos/habits_dao.dart';
+import 'package:mobile/database/daos/notification_entry_dao.dart';
 import 'package:mobile/database/daos/routines_dao.dart';
 import 'package:mobile/database/daos/tasks_dao.dart';
 import 'package:mobile/database/database.dart';
@@ -25,6 +27,7 @@ import 'package:mobile/domain/enums/authentication_status.dart';
 import 'package:mobile/domain/repositories/auth_token_storage_repository.dart';
 import 'package:mobile/domain/repositories/authentication_repository.dart';
 import 'package:mobile/domain/repositories/habit_repository.dart';
+import 'package:mobile/domain/repositories/notification_entry_repository.dart';
 import 'package:mobile/domain/repositories/profile_repository.dart';
 import 'package:mobile/domain/repositories/routine_repository.dart';
 import 'package:mobile/domain/repositories/task_repository.dart';
@@ -151,6 +154,11 @@ class _AppState extends State<App> {
                 habitsDao: HabitsDao(context.read<AppDatabase>()),
               ),
             ),
+            RepositoryProvider<NotificationEntryRepository>(
+              create: (_) => NotificationEntryRepositoryImpl(
+                NotificationEntryDao(context.read<AppDatabase>()),
+              ),
+            ),
           ],
           child: MultiBlocProvider(
             providers: [
@@ -188,6 +196,7 @@ class _AppState extends State<App> {
                         .read<NotificationServiceImpl>(),
                     routineRepository: context.read<RoutineRepository>(),
                     habitRepository: context.read<HabitRepository>(),
+                    entryRepo: context.read<NotificationEntryRepository>(),
                   )..add(NotificationStarted()),
                 ),
             ],
@@ -252,7 +261,7 @@ class _AppState extends State<App> {
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse response) {
   debugPrint(
-    'Background infrastructure.infrastructure.notification tapped: ${response.payload}',
+    'Background infrastructure notification tapped: ${response.payload}',
   );
 }
 

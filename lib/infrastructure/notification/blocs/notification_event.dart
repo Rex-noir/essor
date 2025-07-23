@@ -26,3 +26,13 @@ final class NotificationScheduleForHabitRequested extends NotificationEvent {
   @override
   List<Object?> get props => [model];
 }
+
+final class NotificationScheduleCancelRequestedForModel
+    extends NotificationEvent {
+  final Schedulable model;
+
+  const NotificationScheduleCancelRequestedForModel(this.model);
+
+  @override
+  List<Object?> get props => [model];
+}

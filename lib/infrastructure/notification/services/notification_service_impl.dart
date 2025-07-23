@@ -1,5 +1,7 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:mobile/core/extensions/date_extensions.dart';
 import 'package:mobile/domain/enums/item_frequency.dart';
 import 'package:mobile/domain/models/habit_model.dart';
 import 'package:mobile/domain/models/routine_model.dart';
@@ -35,31 +37,37 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
   }
 
   Future<void> _scheduleDailyNotifications(Schedulable model) async {
-    logger.debug("Scheduling daily notification $model");
-
     if (model.interval == 0) {
       throw NotificationDailyIntervalIsZero();
     }
 
-    for (int i = 0; i < 30; i++) {
-      final scheduleDate = model.startDate.add(Duration(days: i));
+    final now = DateTime.now();
+    final startDay = DateTime(
+      model.startDate.year,
+      model.startDate.month,
+      model.startDate.day,
+    );
 
-      if (_shouldScheduleForDate(model, scheduleDate)) {
-        final notificationTime = DateTime(
-          scheduleDate.year,
-          scheduleDate.month,
-          scheduleDate.day,
-          model.startTime.hour,
-          model.startTime.minute,
+    final occurrencesToSchedule = 10;
+
+    for (int i = 0; i < occurrencesToSchedule; i++) {
+      final scheduleDate = startDay.add(Duration(days: i * model.interval));
+
+      final notificationTime = DateTime(
+        scheduleDate.year,
+        scheduleDate.month,
+        scheduleDate.day,
+        model.startTime.hour,
+        model.startTime.minute,
+      );
+
+      if (!notificationTime.isBefore(now)) {
+        await _scheduleRoutine(
+          model,
+          notificationTime,
+          null, // one-time only
+          scheduleDate,
         );
-
-        if (!notificationTime.isBefore(DateTime.now())) {
-          await _scheduleRoutine(
-            model,
-            notificationTime,
-            DateTimeComponents.dateAndTime,
-          );
-        }
       }
     }
   }
@@ -68,26 +76,58 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
     if (model.weeklyDays.isEmpty) {
       throw NotificationWeeklyDaysEmptyFailure();
     }
-    for (int week = 0; week < 12; week++) {
-      final baseDate = model.startDate.add(Duration(days: week * 7));
-      for (int weekday in model.weeklyDays) {
-        final scheduleDate = baseDate.getNextWeekDay(weekday);
-        if (_shouldScheduleForDate(model, scheduleDate)) {
-          final notificationTime = DateTime(
-            scheduleDate.year,
-            scheduleDate.month,
-            scheduleDate.day,
-            model.startTime.hour,
-            model.startTime.minute,
-          );
-          if (!notificationTime.isBefore(DateTime.now())) {
-            await _scheduleRoutine(
-              model,
-              notificationTime,
-              DateTimeComponents.dateAndTime,
-            );
-          }
+
+    logger.debug(
+      "Received _scheduleWeeklyNotifications notification for model $model",
+    );
+
+    final now = DateTime.now();
+    final startMonth = DateTime(model.startDate.year, model.startDate.month, 1);
+
+    // Schedule strictly from startMonth forward
+    final monthsToSchedule = model.interval == 1 ? 3 : 2;
+
+    for (int i = 0; i < monthsToSchedule; i++) {
+      final targetMonth = DateTime(
+        startMonth.year,
+        startMonth.month + (i * model.interval),
+        1,
+      );
+
+      final daysInMonth = DateUtils.getDaysInMonth(
+        targetMonth.year,
+        targetMonth.month,
+      );
+
+      for (int day = 1; day <= daysInMonth; day++) {
+        final currentDate = DateTime(targetMonth.year, targetMonth.month, day);
+
+        if (!model.weeklyDays.contains(currentDate.weekday)) {
+          continue;
         }
+
+        final notificationTime = DateTime(
+          currentDate.year,
+          currentDate.month,
+          currentDate.day,
+          model.startTime.hour,
+          model.startTime.minute,
+        );
+
+        if (notificationTime.isBefore(now)) {
+          continue;
+        }
+
+        logger.debug(
+          "Scheduling notification on $notificationTime for model ${model.id}",
+        );
+
+        await _scheduleRoutine(
+          model,
+          notificationTime,
+          null, // one-time only
+          currentDate,
+        );
       }
     }
   }
@@ -96,10 +136,29 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
     if (model.monthlyDates.isEmpty) {
       throw NotificationMonthlyDaysEmpty();
     }
-    for (int month = 0; month < 12; month++) {
+
+    final now = DateTime.now();
+    final startMonth = DateTime(model.startDate.year, model.startDate.month, 1);
+
+    // Calculate current month relative to start
+    final monthsDifference =
+        (now.year - startMonth.year) * 12 + (now.month - startMonth.month);
+    final currentIntervalMonth = (monthsDifference / model.interval).floor();
+
+    // Find next valid interval month
+    final nextIntervalMonth =
+        monthsDifference % model.interval == 0 &&
+            model.monthlyDates.any((day) => _isMonthDayUpcoming(now, day))
+        ? currentIntervalMonth
+        : currentIntervalMonth + 1;
+
+    // Schedule for the next 2-3 interval months
+    final monthsToSchedule = model.interval == 1 ? 3 : 2;
+
+    for (int monthOffset = 0; monthOffset < monthsToSchedule; monthOffset++) {
       final targetMonth = DateTime(
-        model.startDate.year,
-        model.startDate.month + month,
+        startMonth.year,
+        startMonth.month + (nextIntervalMonth + monthOffset) * model.interval,
         1,
       );
 
@@ -111,23 +170,24 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
             day,
           );
 
-          if (_shouldScheduleForDate(model, scheduleDate)) {
-            final notificationTime = DateTime(
-              scheduleDate.year,
-              scheduleDate.month,
-              scheduleDate.day,
-              model.startTime.hour,
-              model.startTime.minute,
+          final notificationTime = DateTime(
+            scheduleDate.year,
+            scheduleDate.month,
+            scheduleDate.day,
+            model.startTime.hour,
+            model.startTime.minute,
+          );
+
+          if (!notificationTime.isBefore(now)) {
+            await _scheduleRoutine(
+              model,
+              notificationTime,
+              DateTimeComponents.dateAndTime,
+              scheduleDate,
             );
-            if (!notificationTime.isBefore(DateTime.now())) {
-              await _scheduleRoutine(
-                model,
-                notificationTime,
-                DateTimeComponents.dateAndTime,
-              );
-            }
           }
         } catch (e) {
+          // Skip invalid dates (like Feb 30th)
           continue;
         }
       }
@@ -137,7 +197,8 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
   Future<void> _scheduleRoutine(
     Schedulable model,
     DateTime notificationTime,
-    DateTimeComponents dateTimeComponents,
+    DateTimeComponents? dateTimeComponents,
+    DateTime scheduleDate,
   ) {
     String title;
     String body;
@@ -160,34 +221,45 @@ class NotificationServiceImpl extends NotificationService<Schedulable> {
           : "Time for '${model.title}'";
     }
 
+    // Generate unique ID based on model ID and schedule date
+    final uniqueId = __generateNotificationId(model.id, scheduleDate);
+
     return scheduleSimpleNotification(
-      id: generateId(model.id),
+      id: uniqueId,
       title: title,
       body: body,
       scheduledTime: notificationTime,
-      payload: model.id,
+      payload: jsonEncode({
+        'id': model.id,
+        'time': notificationTime.toIso8601String(),
+        'date': scheduleDate.toIso8601String(),
+        'item': model is HabitModel ? "HABIT" : "ROUTINE",
+      }),
       matchDateTimeComponents: dateTimeComponents,
     );
   }
 
-  bool _shouldScheduleForDate(Schedulable model, DateTime scheduleDate) {
-    final daysDifference = scheduleDate.difference(model.startDate).inDays;
-    switch (model.frequency) {
-      case ItemFrequency.daily:
-        return daysDifference >= 0 && daysDifference % model.interval == 0;
-      case ItemFrequency.weekly:
-        final weeksDifference = (daysDifference / 7).floor();
-        return model.weeklyDays.contains(scheduleDate.weekday) &&
-            weeksDifference >= 0 &&
-            weeksDifference % model.interval == 0;
-      case ItemFrequency.monthly:
-        final isMatchingDay = model.monthlyDates.contains(scheduleDate.day);
-        final monthDiff =
-            (scheduleDate.year - model.startDate.year) * 12 +
-            (scheduleDate.month - model.startDate.month);
-        return isMatchingDay &&
-            monthDiff >= 0 &&
-            monthDiff % model.interval == 0;
+  /// Generate a unique ID based on the model ID and schedule date
+  int __generateNotificationId(String modelId, DateTime scheduleDate) {
+    final dateString =
+        '${scheduleDate.year}${scheduleDate.month.toString().padLeft(2, '0')}${scheduleDate.day.toString().padLeft(2, '0')}';
+    final combinedString = '$modelId$dateString';
+    return combinedString.hashCode.abs();
+  }
+
+  /// Check if a month day is still upcoming in the current month
+  bool _isMonthDayUpcoming(DateTime now, int day) {
+    if (day > now.day) return true;
+    if (day == now.day) {
+      final todayScheduledTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        now.hour,
+        now.minute,
+      );
+      return todayScheduledTime.isAfter(now);
     }
+    return false;
   }
 }

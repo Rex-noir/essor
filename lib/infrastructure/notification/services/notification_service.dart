@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mobile/infrastructure/notification/models/schedulable_model.dart';
+import 'package:mobile/utils/app_logger.dart';
 import 'package:timezone/timezone.dart' as tz;
 
-typedef NotificationCallback = void Function(DateTime date);
+typedef NotificationCallback = void Function(DateTime date, int id);
 
 abstract class NotificationService<T extends Schedulable> {
   final FlutterLocalNotificationsPlugin _plugin;
 
   late NotificationCallback onScheduled;
+
+  final logger = TaggedLogger("NotificationService");
 
   NotificationService(this._plugin);
 
@@ -23,6 +26,14 @@ abstract class NotificationService<T extends Schedulable> {
     await _plugin.cancelAll();
   }
 
+  Future<void> cancelNotificationById(int id) async {
+    await _plugin.cancel(id);
+  }
+
+  Future<List<ActiveNotification>> getAllActiveNotifications() async {
+    return _plugin.getActiveNotifications();
+  }
+
   @protected
   Future<void> rescheduleAll(
     List<T> data,
@@ -34,7 +45,6 @@ abstract class NotificationService<T extends Schedulable> {
     }
   }
 
-  @protected
   Future<List<PendingNotificationRequest>>
   getPendingNotificationRequests() async {
     return await _plugin.pendingNotificationRequests();
@@ -46,7 +56,7 @@ abstract class NotificationService<T extends Schedulable> {
     required String title,
     required String body,
     required DateTime scheduledTime,
-    required DateTimeComponents matchDateTimeComponents,
+    required DateTimeComponents? matchDateTimeComponents,
     String? payload,
     String channelId = 'default_channer',
     String channelName = "Default",
@@ -82,7 +92,7 @@ abstract class NotificationService<T extends Schedulable> {
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: matchDateTimeComponents,
     );
-    onScheduled(scheduledTime);
+    onScheduled(scheduledTime, id);
   }
 
   @protected

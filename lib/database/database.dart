@@ -11,6 +11,7 @@ import 'package:mobile/database/converters/item_type_converter.dart';
 import 'package:mobile/database/converters/time_of_day_converter.dart';
 import 'package:mobile/database/tables/habit_entries_table.dart';
 import 'package:mobile/database/tables/habits_table.dart';
+import 'package:mobile/database/tables/notification_entries_table.dart';
 import 'package:mobile/database/tables/routines_table.dart';
 import 'package:mobile/database/tables/task_entries_table.dart';
 import 'package:mobile/database/tables/tasks_table.dart';
@@ -29,6 +30,7 @@ part 'database.g.dart';
     TasksTable,
     TaskEntriesTable,
     HabitEntriesTable,
+    NotificationEntriesTable,
   ],
 )
 class AppDatabase extends _$AppDatabase {

@@ -36,7 +36,7 @@ abstract class Schedulable {
         'title: $title, '
         'description: $description, '
         'startDate: $startDate, '
-        'startTime: ${startTime}, '
+        'startTime: $startTime, '
         'frequency: $frequency, '
         'weeklyDays: $weeklyDays, '
         'monthlyDates: $monthlyDates, '
