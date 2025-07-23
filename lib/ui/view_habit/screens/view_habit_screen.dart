@@ -4,6 +4,7 @@ import 'package:mobile/domain/enums/item_type.dart';
 import 'package:mobile/domain/models/habit_entry_model.dart';
 import 'package:mobile/domain/models/habit_model.dart';
 import 'package:mobile/ui/view_habit/blocs/view_habit_bloc.dart';
+import 'package:mobile/utils/app_logger.dart';
 import 'package:mobile/utils/item_util.dart';
 import 'package:uuid/v4.dart';
 
@@ -16,6 +17,8 @@ class ViewHabitScreen extends StatefulWidget {
 
 class _ViewHabitScreenState extends State<ViewHabitScreen> {
   final TextEditingController _valueController = TextEditingController();
+
+  final logger = TaggedLogger("ViewHabitScreen");
 
   bool _binaryValue = true;
   bool _initialized = false;
@@ -69,7 +72,7 @@ class _ViewHabitScreenState extends State<ViewHabitScreen> {
       }
       _valueController.text = entry.value.toString();
     } else {
-      _binaryValue = true;
+      _binaryValue = false;
       _valueController.clear();
     }
   }
@@ -454,8 +457,9 @@ class _ViewHabitScreenState extends State<ViewHabitScreen> {
   }
 
   void _updateButtonState(double value, HabitEntryModel? entry) {
-    final isChanged = entry != null && entry.value != value;
-
+    final oldValue = entry?.value ?? 0.0;
+    final isChanged = oldValue != value;
+    logger.debug("isChanged $isChanged , newValue $value, oldValue $oldValue");
     setState(() {
       _isDisabled = !isChanged;
     });
